@@ -1,0 +1,94 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="RenderNode" version="3">
+  <DEPS>
+    <ID name="RenderNode" mc="Class" uid="924deecf-a56d-44f5-be83-6ea3a396566c"/>
+    <COMPID name="assignTask()" mc="Interface" uid="5e8d6a7e-a87c-4a88-8fc6-c402d9bf475b"/>
+    <EXTID name="NodeController" mc="Class" uid="c114508f-b9ab-40ab-9c68-7031003ed3c2"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="RenderNode" mc="Class" uid="924deecf-a56d-44f5-be83-6ea3a396566c"/>
+    <PID name="Master Controller Device" mc="Package" uid="1b543cd6-e304-4948-82e3-c4a7aa5ea5bc"/>
+    <ATTRIBUTES>
+      <ATT name="IsActive">false</ATT>
+      <ATT name="IsMain">false</ATT>
+      <ATT name="IsElementary">false</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[RenderNode]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES>
+      <COMP relation="OwnedEnd">
+        <OBJECT>
+          <ID name="" mc="AssociationEnd" uid="1a406fc5-33d9-4551-a7cf-465bfccc4dfa"/>
+          <PID name="RenderNode" mc="Class" uid="924deecf-a56d-44f5-be83-6ea3a396566c"/>
+          <ATTRIBUTES>
+            <ATT name="Aggregation">KindIsAssociation</ATT>
+            <ATT name="IsChangeable">true</ATT>
+            <ATT name="Changeable">ReadWrite</ATT>
+            <ATT name="IsDerived">false</ATT>
+            <ATT name="IsOrdered">false</ATT>
+            <ATT name="IsUnique">false</ATT>
+            <ATT name="MultiplicityMin"><![CDATA[1]]></ATT>
+            <ATT name="MultiplicityMax"><![CDATA[1]]></ATT>
+            <ATT name="Visibility">Public</ATT>
+            <ATT name="IsClass">false</ATT>
+            <ATT name="IsAbstract">false</ATT>
+            <ATT name="Name"></ATT>
+            <ATT name="status">1970354901745664</ATT>
+          </ATTRIBUTES>
+          <DEPENDENCIES>
+            <LINK relation="Target">
+              <ID name="NodeController" mc="Class" uid="c114508f-b9ab-40ab-9c68-7031003ed3c2"/>
+            </LINK>
+            <COMP relation="Opposite">
+              <OBJECT>
+                <ID name="" mc="AssociationEnd" uid="66fa492f-b907-44df-9f0e-9b587f764c8c"/>
+                <PID name="RenderNode" mc="Class" uid="924deecf-a56d-44f5-be83-6ea3a396566c"/>
+                <ATTRIBUTES>
+                  <ATT name="Aggregation">KindIsAssociation</ATT>
+                  <ATT name="IsChangeable">true</ATT>
+                  <ATT name="Changeable">ReadWrite</ATT>
+                  <ATT name="IsDerived">false</ATT>
+                  <ATT name="IsOrdered">false</ATT>
+                  <ATT name="IsUnique">false</ATT>
+                  <ATT name="MultiplicityMin"><![CDATA[1]]></ATT>
+                  <ATT name="MultiplicityMax"><![CDATA[1]]></ATT>
+                  <ATT name="Visibility">Public</ATT>
+                  <ATT name="IsClass">false</ATT>
+                  <ATT name="IsAbstract">false</ATT>
+                  <ATT name="Name"></ATT>
+                  <ATT name="status">1970354901745664</ATT>
+                </ATTRIBUTES>
+                <DEPENDENCIES>
+                  <COMP relation="Opposite">
+                    <COMPID name="" mc="AssociationEnd" uid="1a406fc5-33d9-4551-a7cf-465bfccc4dfa"/>
+                  </COMP>
+                  <COMP relation="Association">
+                    <OBJECT>
+                      <ID name="" mc="Association" uid="bb7f43b2-b0ff-43a6-8b63-5fba8769b311"/>
+                      <PID name="RenderNode" mc="Class" uid="924deecf-a56d-44f5-be83-6ea3a396566c"/>
+                      <ATTRIBUTES>
+                        <ATT name="Name"></ATT>
+                        <ATT name="status">1970354901745664</ATT>
+                      </ATTRIBUTES>
+                      <DEPENDENCIES></DEPENDENCIES>
+                    </OBJECT>
+                  </COMP>
+                </DEPENDENCIES>
+              </OBJECT>
+            </COMP>
+            <COMP relation="Association">
+              <COMPID name="" mc="Association" uid="bb7f43b2-b0ff-43a6-8b63-5fba8769b311"/>
+            </COMP>
+          </DEPENDENCIES>
+        </OBJECT>
+      </COMP>
+      <COMP relation="OwnedElement">
+        <COMPID name="assignTask()" mc="Interface" uid="5e8d6a7e-a87c-4a88-8fc6-c402d9bf475b"/>
+      </COMP>
+    </DEPENDENCIES>
+  </OBJECT>
+</EXT>

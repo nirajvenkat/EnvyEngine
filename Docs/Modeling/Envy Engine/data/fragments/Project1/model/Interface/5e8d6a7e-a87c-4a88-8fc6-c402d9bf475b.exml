@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="assignTask()" version="3">
+  <DEPS>
+    <ID name="assignTask()" mc="Interface" uid="5e8d6a7e-a87c-4a88-8fc6-c402d9bf475b"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="assignTask()" mc="Interface" uid="5e8d6a7e-a87c-4a88-8fc6-c402d9bf475b"/>
+    <PID name="RenderNode" mc="Class" uid="924deecf-a56d-44f5-be83-6ea3a396566c"/>
+    <ATTRIBUTES>
+      <ATT name="IsElementary">false</ATT>
+      <ATT name="IsAbstract">true</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[assignTask()]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES></DEPENDENCIES>
+  </OBJECT>
+</EXT>

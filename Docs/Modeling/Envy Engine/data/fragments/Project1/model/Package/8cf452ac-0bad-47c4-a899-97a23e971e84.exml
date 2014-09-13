@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="Render Node Device" version="3">
+  <DEPS>
+    <ID name="Render Node Device" mc="Package" uid="8cf452ac-0bad-47c4-a899-97a23e971e84"/>
+    <COMPID name="NodeController" mc="Class" uid="c114508f-b9ab-40ab-9c68-7031003ed3c2"/>
+    <COMPID name="World" mc="Class" uid="93fafa63-db0b-4bcf-b557-755392b01df9"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="Render Node Device" mc="Package" uid="8cf452ac-0bad-47c4-a899-97a23e971e84"/>
+    <PID name="Envy" mc="Package" uid="b384a6cc-bc8d-4478-9ef0-7ca0e69ee801"/>
+    <ATTRIBUTES>
+      <ATT name="IsInstantiable">false</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[Render Node Device]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES>
+      <COMP relation="OwnedElement">
+        <COMPID name="NodeController" mc="Class" uid="c114508f-b9ab-40ab-9c68-7031003ed3c2"/>
+        <COMPID name="World" mc="Class" uid="93fafa63-db0b-4bcf-b557-755392b01df9"/>
+      </COMP>
+    </DEPENDENCIES>
+  </OBJECT>
+</EXT>

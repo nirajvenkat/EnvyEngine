@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="EngineUser" version="3">
+  <DEPS>
+    <ID name="EngineUser" mc="Actor" uid="1a8da90f-83e9-4321-b531-503a2cea7a10"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="EngineUser" mc="Actor" uid="1a8da90f-83e9-4321-b531-503a2cea7a10"/>
+    <PID name="Envy" mc="Package" uid="b384a6cc-bc8d-4478-9ef0-7ca0e69ee801"/>
+    <ATTRIBUTES>
+      <ATT name="IsElementary">false</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[EngineUser]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES></DEPENDENCIES>
+  </OBJECT>
+</EXT>

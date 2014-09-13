@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="Renderer" version="3">
+  <DEPS>
+    <ID name="Renderer" mc="Class" uid="125c61f8-ce05-48cf-bb42-1660419dedb0"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="Renderer" mc="Class" uid="125c61f8-ce05-48cf-bb42-1660419dedb0"/>
+    <PID name="Envy" mc="Package" uid="b384a6cc-bc8d-4478-9ef0-7ca0e69ee801"/>
+    <ATTRIBUTES>
+      <ATT name="IsActive">false</ATT>
+      <ATT name="IsMain">false</ATT>
+      <ATT name="IsElementary">false</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[Renderer]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES></DEPENDENCIES>
+  </OBJECT>
+</EXT>

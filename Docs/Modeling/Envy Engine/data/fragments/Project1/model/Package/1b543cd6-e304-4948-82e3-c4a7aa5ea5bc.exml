@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="Master Controller Device" version="3">
+  <DEPS>
+    <ID name="Master Controller Device" mc="Package" uid="1b543cd6-e304-4948-82e3-c4a7aa5ea5bc"/>
+    <COMPID name="FrameList" mc="Class" uid="f68cd1ac-6bde-470a-ab53-6f32c5a03e9a"/>
+    <COMPID name="MasterController" mc="Class" uid="2ac94461-73fd-45ae-8ee6-6e6480963de9"/>
+    <COMPID name="RenderNode" mc="Class" uid="924deecf-a56d-44f5-be83-6ea3a396566c"/>
+    <COMPID name="TaskList" mc="Class" uid="bb4c568a-15b2-4932-a2b3-00b3736b8c01"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="Master Controller Device" mc="Package" uid="1b543cd6-e304-4948-82e3-c4a7aa5ea5bc"/>
+    <PID name="Envy" mc="Package" uid="b384a6cc-bc8d-4478-9ef0-7ca0e69ee801"/>
+    <ATTRIBUTES>
+      <ATT name="IsInstantiable">false</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[Master Controller Device]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES>
+      <COMP relation="OwnedElement">
+        <COMPID name="MasterController" mc="Class" uid="2ac94461-73fd-45ae-8ee6-6e6480963de9"/>
+        <COMPID name="RenderNode" mc="Class" uid="924deecf-a56d-44f5-be83-6ea3a396566c"/>
+        <COMPID name="TaskList" mc="Class" uid="bb4c568a-15b2-4932-a2b3-00b3736b8c01"/>
+        <COMPID name="FrameList" mc="Class" uid="f68cd1ac-6bde-470a-ab53-6f32c5a03e9a"/>
+      </COMP>
+    </DEPENDENCIES>
+  </OBJECT>
+</EXT>

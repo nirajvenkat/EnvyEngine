@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="getNextFrame()" version="3">
+  <DEPS>
+    <ID name="getNextFrame()" mc="Interface" uid="182e2e1e-1fb2-41c3-9170-659aefaaa165"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="getNextFrame()" mc="Interface" uid="182e2e1e-1fb2-41c3-9170-659aefaaa165"/>
+    <PID name="FrameList" mc="Class" uid="f68cd1ac-6bde-470a-ab53-6f32c5a03e9a"/>
+    <ATTRIBUTES>
+      <ATT name="IsElementary">false</ATT>
+      <ATT name="IsAbstract">true</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[getNextFrame()]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES></DEPENDENCIES>
+  </OBJECT>
+</EXT>

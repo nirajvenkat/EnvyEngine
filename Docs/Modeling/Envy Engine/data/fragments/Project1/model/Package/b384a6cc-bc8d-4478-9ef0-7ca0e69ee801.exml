@@ -1,0 +1,53 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="Envy" version="3">
+  <DEPS>
+    <ID name="Envy" mc="Package" uid="b384a6cc-bc8d-4478-9ef0-7ca0e69ee801"/>
+    <COMPID name="Bitmap" mc="DataType" uid="bcbb82a8-e86b-49b3-b7ca-ad1dbe432410"/>
+    <COMPID name="CameraConfig" mc="Class" uid="38952c98-ac20-4f9f-b34a-bfa46136044e"/>
+    <COMPID name="EngineUser" mc="Actor" uid="1a8da90f-83e9-4321-b531-503a2cea7a10"/>
+    <COMPID name="Envy Major Classes" mc="ClassDiagram" uid="74e9116a-af28-407b-aa99-bc74a254a51c"/>
+    <COMPID name="Envy Use Case diagram" mc="UseCaseDiagram" uid="5896dbe1-52f7-40d7-8ad1-67d98974dca2"/>
+    <COMPID name="Frame" mc="Class" uid="c8b4c272-88fe-469b-a8c3-2ce723e8c34e"/>
+    <COMPID name="Interaction" mc="Interaction" uid="b3cc97cc-8604-4279-a9ed-e183f80b08dc"/>
+    <COMPID name="Master Controller Device" mc="Package" uid="1b543cd6-e304-4948-82e3-c4a7aa5ea5bc"/>
+    <COMPID name="NodeController" mc="Class" uid="cdd1f0cd-9941-4208-a6ef-d887d815a508"/>
+    <COMPID name="Render Node Device" mc="Package" uid="8cf452ac-0bad-47c4-a899-97a23e971e84"/>
+    <COMPID name="RenderObject" mc="Class" uid="10f73d73-545a-474d-a786-a6bbdf8207bb"/>
+    <COMPID name="RenderTask" mc="Class" uid="07610b10-2ed4-4871-a5e5-b011a40cafbc"/>
+    <COMPID name="Renderer" mc="Class" uid="125c61f8-ce05-48cf-bb42-1660419dedb0"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="Envy" mc="Package" uid="b384a6cc-bc8d-4478-9ef0-7ca0e69ee801"/>
+    <PID name="Project1" mc="Project" uid="712a8597-d53d-4756-9fbb-ae881aaf0e1a"/>
+    <ATTRIBUTES>
+      <ATT name="IsInstantiable">false</ATT>
+      <ATT name="IsAbstract">false</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[Envy]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES>
+      <COMP relation="OwnedBehavior">
+        <COMPID name="Interaction" mc="Interaction" uid="b3cc97cc-8604-4279-a9ed-e183f80b08dc"/>
+      </COMP>
+      <COMP relation="OwnedElement">
+        <COMPID name="Master Controller Device" mc="Package" uid="1b543cd6-e304-4948-82e3-c4a7aa5ea5bc"/>
+        <COMPID name="Render Node Device" mc="Package" uid="8cf452ac-0bad-47c4-a899-97a23e971e84"/>
+        <COMPID name="RenderTask" mc="Class" uid="07610b10-2ed4-4871-a5e5-b011a40cafbc"/>
+        <COMPID name="CameraConfig" mc="Class" uid="38952c98-ac20-4f9f-b34a-bfa46136044e"/>
+        <COMPID name="Frame" mc="Class" uid="c8b4c272-88fe-469b-a8c3-2ce723e8c34e"/>
+        <COMPID name="RenderObject" mc="Class" uid="10f73d73-545a-474d-a786-a6bbdf8207bb"/>
+        <COMPID name="Bitmap" mc="DataType" uid="bcbb82a8-e86b-49b3-b7ca-ad1dbe432410"/>
+        <COMPID name="NodeController" mc="Class" uid="cdd1f0cd-9941-4208-a6ef-d887d815a508"/>
+        <COMPID name="EngineUser" mc="Actor" uid="1a8da90f-83e9-4321-b531-503a2cea7a10"/>
+        <COMPID name="Renderer" mc="Class" uid="125c61f8-ce05-48cf-bb42-1660419dedb0"/>
+      </COMP>
+      <COMP relation="Product">
+        <COMPID name="Envy Major Classes" mc="ClassDiagram" uid="74e9116a-af28-407b-aa99-bc74a254a51c"/>
+        <COMPID name="Envy Use Case diagram" mc="UseCaseDiagram" uid="5896dbe1-52f7-40d7-8ad1-67d98974dca2"/>
+      </COMP>
+    </DEPENDENCIES>
+  </OBJECT>
+</EXT>

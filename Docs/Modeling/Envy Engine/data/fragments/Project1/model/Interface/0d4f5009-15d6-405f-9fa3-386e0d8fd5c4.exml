@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="addFrame()" version="3">
+  <DEPS>
+    <ID name="addFrame()" mc="Interface" uid="0d4f5009-15d6-405f-9fa3-386e0d8fd5c4"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="addFrame()" mc="Interface" uid="0d4f5009-15d6-405f-9fa3-386e0d8fd5c4"/>
+    <PID name="FrameList" mc="Class" uid="f68cd1ac-6bde-470a-ab53-6f32c5a03e9a"/>
+    <ATTRIBUTES>
+      <ATT name="IsElementary">false</ATT>
+      <ATT name="IsAbstract">true</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[addFrame()]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES></DEPENDENCIES>
+  </OBJECT>
+</EXT>

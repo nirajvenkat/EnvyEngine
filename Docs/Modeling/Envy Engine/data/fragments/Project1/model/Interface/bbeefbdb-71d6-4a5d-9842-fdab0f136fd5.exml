@@ -1,0 +1,20 @@
+<?xml version="1.0" ?>
+<!--GENERATED FILE, PLEASE DO NOT EDIT!!!--><EXT object="addTask()" version="3">
+  <DEPS>
+    <ID name="addTask()" mc="Interface" uid="bbeefbdb-71d6-4a5d-9842-fdab0f136fd5"/>
+  </DEPS>
+  <OBJECT>
+    <ID name="addTask()" mc="Interface" uid="bbeefbdb-71d6-4a5d-9842-fdab0f136fd5"/>
+    <PID name="TaskList" mc="Class" uid="bb4c568a-15b2-4932-a2b3-00b3736b8c01"/>
+    <ATTRIBUTES>
+      <ATT name="IsElementary">false</ATT>
+      <ATT name="IsAbstract">true</ATT>
+      <ATT name="IsLeaf">false</ATT>
+      <ATT name="IsRoot">false</ATT>
+      <ATT name="Visibility">Public</ATT>
+      <ATT name="Name"><![CDATA[addTask()]]></ATT>
+      <ATT name="status">1970354901745664</ATT>
+    </ATTRIBUTES>
+    <DEPENDENCIES></DEPENDENCIES>
+  </OBJECT>
+</EXT>
