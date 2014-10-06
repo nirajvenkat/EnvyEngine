@@ -8,14 +8,26 @@
 
 #include <queue>
 #include "frame.h"
+#include "windows.h"
 
 class MasterController
 {
 public:
 	MasterController();
 	virtual ~MasterController();
+	void init();
+	void run();
+
+	// Threading
+	void lock();
+	void unlock();
+	void addFrame(Frame *newFrame);
+
 private:
-	std::priority_queue<Frame, std::vector<Frame>> frameQueue;
+	std::priority_queue<Frame*, std::vector<Frame*>> frameQueue;
+
+	// Threading
+	CRITICAL_SECTION tcrit;
 };
 
 #endif
