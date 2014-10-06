@@ -9,7 +9,7 @@ unsigned long Frame::idMax = 1;
 
 Frame::Frame()
 {
-	this->timestamp = 0; // Temp
+	this->modelTime = 0; // Temp
 	this->id = idMax++;
 }
 
@@ -20,4 +20,19 @@ Frame::~Frame() {
 unsigned long Frame::getMaxId()
 {
 	return idMax;
+}
+
+inline unsigned long Frame::getModelTime()
+{
+	return modelTime;
+}
+
+bool operator<(Frame& lhs, Frame& rhs)
+{
+	return lhs.getModelTime() < rhs.getModelTime();
+}
+
+bool operator>(Frame& lhs, Frame& rhs)
+{
+	return lhs.getModelTime() > rhs.getModelTime();
 }

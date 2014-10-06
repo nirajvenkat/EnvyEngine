@@ -11,15 +11,17 @@ public:
 	Frame();
 	virtual ~Frame();
 
-	unsigned long timestamp;
-	unsigned long id;
-
 	unsigned long getMaxId();
+	inline unsigned long getModelTime();
 
 private:
+
 	static unsigned long idMax;
 
-	// Gonna need a place for our bitmap
+	unsigned long modelTime;
+	unsigned long id;
+
+	// Going to need a place for our bitmap
 };
 
 #endif
