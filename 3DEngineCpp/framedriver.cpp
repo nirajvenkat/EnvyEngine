@@ -5,8 +5,8 @@
 
 #include "framedriver.h"
 
-FrameDriver::FrameDriver() {
-
+FrameDriver::FrameDriver(MasterController *mc) {
+	this->mc = mc; // MasterController to feed frames to
 }
 
 FrameDriver::~FrameDriver(){}

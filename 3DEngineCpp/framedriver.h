@@ -6,12 +6,18 @@
 #ifndef FRAMEDRIVER_H
 #define FRAMEDRIVER_H
 
+#include "frame.h"
+#include <queue>
+
 class FrameDriver {
 public:
-	FrameDriver();
+	FrameDriver(class MasterController *mc);
 	virtual ~FrameDriver();
+	void tick();
 
 private:
+	class MasterController		*mc;
+	std::queue<class Frame*>	frameHolder;
 };
 
 #endif

@@ -6,7 +6,6 @@
 #ifndef MASTERCONTROLLER_H
 #define MASTERCONTROLLER_H
 
-#include "windows.h"
 #include <queue>
 
 class Frame;
@@ -36,7 +35,7 @@ private:
 	// Threading
 	struct SDL_Thread	  *mThread;
 	struct SDL_semaphore  *mStartSem;	// Wait on this while we load up.
-	CRITICAL_SECTION       mTCrit;		// The MC runs on windows, so this should be okay.
+	struct SDL_mutex      *mTCrit;
 };
 
 #endif

@@ -3,6 +3,7 @@
 #include "freeLook.h"
 #include "freeMove.h"
 #include "renderer.h"
+#include "mastercontroller.h"
 
 class TestGame : public Game
 {
@@ -69,6 +70,10 @@ void TestGame::Init()
 
 int main()
 {
+	MasterController *mc = new MasterController(60); // New MC, 60FPS target rate
+	mc->init();
+	mc->run();
+
 	TestGame game;
 	CoreEngine engine(1366, 720, 60, &game);
 	engine.CreateWindow("EnvyEngine");

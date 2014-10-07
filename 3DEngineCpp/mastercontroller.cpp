@@ -25,17 +25,24 @@ MasterController::MasterController(int frameRateMax) {
 // Destroy the master controller in a thread-safe manner.
 MasterController::~MasterController() {
 
-	EnterCriticalSection(&mTCrit);
+	SDL_LockMutex(mTCrit);
 
 	if (mInitialized) {
 		SDL_DestroySemaphore(mStartSem);
 	}
 	
-	DeleteCriticalSection(&mTCrit); // DELETE
+	SDL_DestroyMutex(mTCrit); // DESTROY
 }
 
 // Set up thread, put it in a waiting state.
 void MasterController::init() {
+
+	// Create critical section
+	mTCrit = SDL_CreateMutex();
+	if (mTCrit == NULL) {
+		fprintf(stderr, "Could not create SDL_Mutex: %s\n", SDL_GetError());
+		return;
+	}
 
 	// Create the start semaphore
 	mStartSem = SDL_CreateSemaphore(0);
@@ -64,7 +71,8 @@ void MasterController::run() {
 
 // Do not call this externally
 void MasterController::_execute() {
-	fprintf(stderr, "Master Controller Running.\n");
+	SDL_SemWait(mStartSem);
+	fprintf(stderr, "Master controller out of wait state.\n");
 }
 
 // Add a frame to the frame queue (thread-safe).
@@ -76,9 +84,9 @@ void MasterController::addFrame(Frame *newFrame) {
 
 // Threading utility functions
 void MasterController::lock() {
-	EnterCriticalSection(&mTCrit);
+	SDL_LockMutex(mTCrit);
 }
 
 void MasterController::unlock() {
-	LeaveCriticalSection(&mTCrit);
+	SDL_UnlockMutex(mTCrit);
 }
