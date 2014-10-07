@@ -8,7 +8,7 @@
 
 class Frame {
 public:
-	Frame();
+	Frame(unsigned long modelTime);
 	virtual ~Frame();
 
 	unsigned long getMaxId();
@@ -18,6 +18,7 @@ private:
 
 	static unsigned long idMax;
 
+	class SDL_Surface *surface;
 	unsigned long modelTime;
 	unsigned long id;
 

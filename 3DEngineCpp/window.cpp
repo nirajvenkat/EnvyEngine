@@ -34,6 +34,27 @@ void Window::Create(int width, int height, const std::string& title)
 
 void Window::Render()
 {
+
+	size_t bufSize = 4 * 1366 * 720;
+	GLubyte *frameBufData = (GLubyte*)malloc(bufSize);
+	memset(frameBufData, 0, bufSize);
+		
+
+	// Create a surface
+	SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(frameBufData, 1366, 720, 32, 1366*4, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+	if (!surface) {
+		fprintf(stderr, "Error creating surface: %s\n", SDL_GetError());
+	}
+
+	if (frameBufData && surface) {
+		glReadPixels(0, 0, 1366, 720, GL_RGBA, GL_UNSIGNED_BYTE, frameBufData);
+	}
+
+	if (SDL_SaveBMP(surface, "D:\\test.bmp")) {
+		fprintf(stderr, "Error saving BMP: %s\n", SDL_GetError());
+	}
+	free(frameBufData);
+
 	SDLSwapBuffers();
 }
 

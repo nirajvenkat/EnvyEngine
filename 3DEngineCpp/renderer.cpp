@@ -4,9 +4,9 @@
 // it exists to handle the "software monitor" features used by the master controller.
 
 #include "renderer.h"
+#include <SDL2/SDL.h>
 
 Renderer::Renderer() {}
-
 Renderer::~Renderer() {}
 
 void Renderer::initOutputWindow(int width, int height, const char *title) 

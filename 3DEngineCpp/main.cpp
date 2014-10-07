@@ -1,6 +1,8 @@
+#include "renderer.h"
 #include "3DEngine.h"
 #include "freeLook.h"
 #include "freeMove.h"
+#include "renderer.h"
 
 class TestGame : public Game
 {

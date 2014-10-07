@@ -8,7 +8,7 @@
 using namespace std;
 
 MasterController::MasterController() {
-
+	
 }
 
 MasterController::~MasterController() {

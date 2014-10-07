@@ -7,14 +7,16 @@
 
 unsigned long Frame::idMax = 1;
 
-Frame::Frame()
+Frame::Frame(unsigned long modeltime)
 {
-	this->modelTime = 0; // Temp
+	this->surface = nullptr;
+	this->modelTime = modeltime;
 	this->id = idMax++;
 }
 
 Frame::~Frame() {
-
+	if (this->surface)
+		delete(this->surface);
 }
 
 unsigned long Frame::getMaxId()

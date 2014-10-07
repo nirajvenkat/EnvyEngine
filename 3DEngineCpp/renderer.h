@@ -6,7 +6,6 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include <SDL2/SDL.h>
 #include "frame.h"
 
 #define RENDERER_OUTPUT_WINDOW_DEFAULT_TITLE "Envy Engine Output"
@@ -21,8 +20,8 @@ public:
 	void displayFrame(Frame *f);
 
 private:
-	SDL_Window *sdlRenderWindow;
-	SDL_Renderer *sdlRenderer;
+	class SDL_Window *sdlRenderWindow;
+	class SDL_Renderer *sdlRenderer;
 };
 
 #endif
