@@ -6,28 +6,37 @@
 #ifndef MASTERCONTROLLER_H
 #define MASTERCONTROLLER_H
 
-#include <queue>
-#include "frame.h"
 #include "windows.h"
+#include <queue>
+
+class Frame;
 
 class MasterController
 {
 public:
-	MasterController();
+	MasterController(int frameRateMax);
 	virtual ~MasterController();
 	void init();
 	void run();
+	void addFrame(Frame *newFrame);
 
 	// Threading
 	void lock();
 	void unlock();
-	void addFrame(Frame *newFrame);
+
+	static int MasterController::_startMCThread(void* mc);
 
 private:
-	std::priority_queue<Frame*, std::vector<Frame*>> frameQueue;
+	bool mInitialized;
+	std::priority_queue<Frame*, std::vector<Frame*>> mFrameQueue;
+	int mFrameRateMax;
+
+	void _execute();
 
 	// Threading
-	CRITICAL_SECTION tcrit;
+	struct SDL_Thread	  *mThread;
+	struct SDL_semaphore  *mStartSem;	// Wait on this while we load up.
+	CRITICAL_SECTION       mTCrit;		// The MC runs on windows, so this should be okay.
 };
 
 #endif
