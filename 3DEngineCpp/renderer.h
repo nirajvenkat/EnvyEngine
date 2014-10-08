@@ -20,8 +20,8 @@ public:
 	void displayFrame(Frame *f);
 
 private:
-	class SDL_Window *sdlRenderWindow;
-	class SDL_Renderer *sdlRenderer;
+	class SDL_Window *mSDLRenderWindow;
+	class SDL_Renderer *mSDLRenderer;
 };
 
 #endif

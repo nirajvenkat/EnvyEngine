@@ -4,6 +4,7 @@
 // of the distributed portion of Envy.
 
 #include "mastercontroller.h"
+#include "renderer.h"
 #include "windows.h"
 #include <queue>
 #include <SDL2/SDL.h>
@@ -58,6 +59,10 @@ void MasterController::init() {
 		return;
 	}
 
+	// Create renderer
+	mRenderer = new Renderer();
+	mRenderer->initOutputWindow(640, 480, "Envy Master Controller");
+
 	// Init successful
 	fprintf(stderr, "Master Controller Initialized...\n");
 	mInitialized = true;
@@ -73,6 +78,8 @@ void MasterController::run() {
 void MasterController::_execute() {
 	SDL_SemWait(mStartSem);
 	fprintf(stderr, "Master controller out of wait state.\n");
+
+
 }
 
 // Add a frame to the frame queue (thread-safe).

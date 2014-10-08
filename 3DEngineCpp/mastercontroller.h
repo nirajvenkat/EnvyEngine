@@ -27,6 +27,7 @@ public:
 
 private:
 	bool mInitialized;
+	class Renderer *mRenderer;
 	std::priority_queue<Frame*, std::vector<Frame*>> mFrameQueue;
 	int mFrameRateMax;
 

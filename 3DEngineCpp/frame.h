@@ -13,12 +13,13 @@ public:
 
 	unsigned long getMaxId();
 	inline unsigned long getModelTime();
+	void setSurface(class SDL_Surface *surf);
 
 private:
 
 	static unsigned long idMax;
 
-	class SDL_Surface *surface;
+	class SDL_Surface *mSurface;
 	unsigned long modelTime;
 	unsigned long id;
 

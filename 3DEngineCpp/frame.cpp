@@ -4,19 +4,24 @@
 // controller.
 
 #include "frame.h"
+#include <SDL2/SDL.h>
 
 unsigned long Frame::idMax = 1;
 
 Frame::Frame(unsigned long modeltime)
 {
-	this->surface = nullptr;
+	mSurface = NULL;
 	this->modelTime = modeltime;
 	this->id = idMax++;
 }
 
 Frame::~Frame() {
-	if (this->surface)
-		delete(this->surface);
+	if (mSurface)
+		SDL_FreeSurface(mSurface); // Free the surface
+}
+
+void Frame::setSurface(SDL_Surface *surf) {
+	mSurface = surf;
 }
 
 unsigned long Frame::getMaxId()

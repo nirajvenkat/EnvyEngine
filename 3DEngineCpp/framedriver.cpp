@@ -3,10 +3,14 @@
 // This is a development driver for the Envy Engine frame queue to test the queue's performance and
 // functionality without needing networked render nodes.
 
-#define FRAME_DIR "res\\testframes"
+#define FRAME_DIR L"..\\3DEngineCpp\\res\\testframes"
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <GL/glew.h>
+#include <tchar.h>
+#include <stdio.h>
+#include <iostream>
 #include "framedriver.h"
 #include "windows.h" // For windows file I/O mainly
 
@@ -17,9 +21,20 @@ FrameDriver::FrameDriver(MasterController *mc) {
 
 }
 
+// For sorting wstrings
+bool _wstringptr_sort(std::wstring *i, std::wstring *j) {
+	return (*i < *j); // This is strcmp for dummies
+}
+
 void FrameDriver::loadFrames() {
 	
-	wchar_t pathBuf[MAX_PATH];
+	HANDLE hFind;
+	WIN32_FIND_DATA findData;
+	SDL_Surface *curSurf;
+	TCHAR imgPath[MAX_PATH];
+	char aImgPath[MAX_PATH];
+	TCHAR pathBuf[MAX_PATH];
+	std::vector<std::wstring*> dirList;
 	std::wstring str;
 	size_t pos;
 
@@ -27,13 +42,49 @@ void FrameDriver::loadFrames() {
 	GetModuleFileNameW(NULL, pathBuf, MAX_PATH);
 	
 	// Snip executable name.
+	str = pathBuf;
 	pos = str.find_last_of(L"\\", std::wstring::npos);
 	if (pos < MAX_PATH - 1) {
 		pathBuf[pos + 1] = 0;
 	}
+	lstrcatW(pathBuf, FRAME_DIR);
+	mFrameDir = pathBuf; // Set frame directory
+
+	lstrcpy(imgPath, pathBuf);
+	lstrcat(imgPath, L"\\*.png"); // Search for PNG graphics
 
 	// Load all test frames out of frame directory
+	dirList.clear();
+
 	// Anything that has a .png extension. Sort in alpha order.
+	hFind = FindFirstFileW(imgPath, &findData);
+	dirList.push_back(new std::wstring(findData.cFileName));
+
+	while (FindNextFileW(hFind, &findData))
+		dirList.push_back(new std::wstring(findData.cFileName));
+
+	std::sort(dirList.begin(), dirList.end(), _wstringptr_sort);
+
+	// Load textures
+	fprintf(stderr, "FrameDriver loading %d surfaces...\n", dirList.size());
+	mSurfaceHolder.clear();
+	for (std::vector<std::wstring*>::iterator it = dirList.begin(); it != dirList.end(); it++) {
+
+		lstrcpy(imgPath, pathBuf);
+		lstrcat(imgPath, L"\\");
+		lstrcat(imgPath, (*it)->c_str());
+
+		wcstombs(aImgPath, imgPath, MAX_PATH);
+
+		curSurf = IMG_Load(aImgPath);
+
+		if (!curSurf) {
+			fprintf(stderr, "Error loading surface: %s\n", SDL_GetError());
+		}
+		else {
+			mSurfaceHolder.push_back(curSurf);
+		}
+	}
 }
 
 void FrameDriver::_tick() {

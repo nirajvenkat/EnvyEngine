@@ -18,8 +18,9 @@ public:
 	void loadFrames();
 
 private:
-	class MasterController		*mc;
-	std::queue<class Frame*>	frameHolder;
+	class MasterController			*mc;
+	std::vector<class SDL_Surface*>	mSurfaceHolder;
+	std::wstring					mFrameDir;
 };
 
 #endif

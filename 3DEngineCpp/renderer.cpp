@@ -6,7 +6,10 @@
 #include "renderer.h"
 #include <SDL2/SDL.h>
 
-Renderer::Renderer() {}
+Renderer::Renderer() {
+	mSDLRenderWindow = NULL;
+	mSDLRenderer = NULL;
+}
 Renderer::~Renderer() {}
 
 void Renderer::initOutputWindow(int width, int height, const char *title) 
@@ -16,10 +19,10 @@ void Renderer::initOutputWindow(int width, int height, const char *title)
 	}
 
 	// Create the SDL Window
-	this->sdlRenderWindow = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+	mSDLRenderWindow = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		width, height,
 		0);
 
 	// Create our renderer
-	this->sdlRenderer = SDL_CreateRenderer(this->sdlRenderWindow, -1, SDL_RENDERER_ACCELERATED);
+	mSDLRenderer = SDL_CreateRenderer(mSDLRenderWindow, -1, SDL_RENDERER_ACCELERATED);
 }
