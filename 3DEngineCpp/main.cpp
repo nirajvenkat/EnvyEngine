@@ -18,6 +18,7 @@ void TestGame::Init()
 {
 	GameObject* planeObject = new GameObject();
 	GameObject* rabbitObject = new GameObject();
+	GameObject* rabbitLightObject = new GameObject();
 	GameObject* pointLightObject = new GameObject();
 	GameObject* spotLightObject = new GameObject();
 	GameObject* directionalLightObject = new GameObject();
@@ -26,9 +27,12 @@ void TestGame::Init()
 	planeObject->GetTransform().SetPos(Vector3f(0, -1, 5));
 	planeObject->GetTransform().SetScale(4.0f);
 
-	rabbitObject->AddComponent(new MeshRenderer(new Mesh("./res/models/cube.obj"), new Material(new Texture("bricks.jpg"), 1, 8)));
-	rabbitObject->GetTransform().SetPos(Vector3f(0, 2, 5));
-	rabbitObject->GetTransform().SetScale(2.0f);
+	rabbitObject->AddComponent(new MeshRenderer(new Mesh("./res/models/robbierabbit01.obj"), new Material(new Texture("bricks2.jpg"), 1, 8)));
+	rabbitObject->GetTransform().SetPos(Vector3f(0, 6, 5));
+	rabbitObject->GetTransform().SetScale(1.0f);
+
+	rabbitLightObject->AddComponent(new SpotLight(Vector3f(0, 0, 10), 0.4f, Attenuation(0, 0, 0.1f), 0.7f));
+	rabbitLightObject->GetTransform().SetPos(Vector3f(0, 6, 1));
 	
 	pointLightObject->AddComponent(new PointLight(Vector3f(0,1,0),0.4f,Attenuation(0,0,1)));
 	pointLightObject->GetTransform().SetPos(Vector3f(7,0,7));
@@ -57,6 +61,8 @@ void TestGame::Init()
 	AddToScene(spotLightObject);
 	AddToScene(directionalLightObject);
 	AddToScene(testMesh1);
+	AddToScene(rabbitObject);
+	AddToScene(rabbitLightObject);
 	testMesh2->AddChild((new GameObject())
 		->AddComponent(new Camera(Matrix4f().InitPerspective(ToRadians(70.0f), Window::GetAspect(), 0.1f, 1000.0f)))
 		->AddComponent(new FreeLook())
