@@ -1,0 +1,3 @@
+Test frames for the frame driver should go here, while the Master Controller video rendering is being tested.
+
+The frame driver will read PNGs out of this folder and then alpha-sort them.

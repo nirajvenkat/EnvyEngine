@@ -14,6 +14,7 @@ public:
 	FrameDriver(class MasterController *mc);
 	virtual ~FrameDriver();
 	void tick();
+	void _tick();
 
 private:
 	class MasterController		*mc;
