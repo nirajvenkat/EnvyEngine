@@ -34,7 +34,7 @@ dlldata.c
 *_i.h
 *.ilk
 *.meta
-*.obj
+# *.obj //Models shouldnt be ignored
 *.pch
 *.pdb
 *.pgc
@@ -212,3 +212,5 @@ $RECYCLE.BIN/
 *.msi
 *.msm
 *.msp
+
+# Whitelist

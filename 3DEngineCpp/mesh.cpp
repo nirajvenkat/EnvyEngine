@@ -68,7 +68,7 @@ Mesh::Mesh(const std::string& fileName)
 			const aiVector3D* pPos = &(model->mVertices[i]);
 			const aiVector3D* pNormal = &(model->mNormals[i]);
 			const aiVector3D* pTexCoord = model->HasTextureCoords(0) ? &(model->mTextureCoords[0][i]) : &aiZeroVector;
-
+			
 			Vertex vert(Vector3f(pPos->x, pPos->y, pPos->z),
 					    Vector2f(pTexCoord->x, pTexCoord->y),
 					    Vector3f(pNormal->x, pNormal->y, pNormal->z));
