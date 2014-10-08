@@ -8,13 +8,32 @@
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 #include "framedriver.h"
+#include "windows.h" // For windows file I/O mainly
 
 FrameDriver::FrameDriver(MasterController *mc) {
 	this->mc = mc; // MasterController to feed frames to
 
-	// Load all test frames out of frame directory
-		// Anything that has a .png extension. Sort in alpha order.
 
+
+}
+
+void FrameDriver::loadFrames() {
+	
+	wchar_t pathBuf[MAX_PATH];
+	std::wstring str;
+	size_t pos;
+
+	// Path of executable
+	GetModuleFileNameW(NULL, pathBuf, MAX_PATH);
+	
+	// Snip executable name.
+	pos = str.find_last_of(L"\\", std::wstring::npos);
+	if (pos < MAX_PATH - 1) {
+		pathBuf[pos + 1] = 0;
+	}
+
+	// Load all test frames out of frame directory
+	// Anything that has a .png extension. Sort in alpha order.
 }
 
 void FrameDriver::_tick() {
