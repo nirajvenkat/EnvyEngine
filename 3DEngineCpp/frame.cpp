@@ -33,17 +33,8 @@ unsigned long Frame::getMaxId()
 	return idMax;
 }
 
-inline unsigned long Frame::getModelTime()
+unsigned long Frame::getModelTime()
 {
 	return modelTime;
 }
 
-bool operator<(Frame& lhs, Frame& rhs)
-{
-	return lhs.getModelTime() < rhs.getModelTime();
-}
-
-bool operator>(Frame& lhs, Frame& rhs)
-{
-	return lhs.getModelTime() > rhs.getModelTime();
-}

@@ -12,7 +12,7 @@ public:
 	virtual ~Frame();
 
 	unsigned long getMaxId();
-	inline unsigned long getModelTime();
+	unsigned long getModelTime();
 	void setSurface(class SDL_Surface *surf);
 	SDL_Surface *getSurface(void);
 
@@ -25,6 +25,14 @@ private:
 	unsigned long id;
 
 	// Going to need a place for our bitmap
+};
+
+class _FrameComparator {
+public:
+	bool operator() (Frame* lhs, Frame *rhs)
+	{
+		return lhs->getModelTime() > rhs->getModelTime();
+	}
 };
 
 #endif

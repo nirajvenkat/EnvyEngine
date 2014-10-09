@@ -7,6 +7,7 @@
 #define MASTERCONTROLLER_H
 
 #include <queue>
+#include "frame.h"
 
 class Frame;
 
@@ -28,7 +29,7 @@ public:
 private:
 	bool mInitialized;
 	class Renderer *mRenderer;
-	std::priority_queue<Frame*, std::vector<Frame*>> mFrameQueue;
+	std::priority_queue<Frame*, std::vector<Frame*>, class _FrameComparator> mFrameQueue;
 	int mFrameRateMax;
 
 	void _execute();

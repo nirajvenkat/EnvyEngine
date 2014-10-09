@@ -78,6 +78,7 @@ void MasterController::run() {
 void MasterController::_execute() {
 
 	unsigned long last = 0;
+	int pause = 1000 / mFrameRateMax;
 	Frame *curFrame;
 
 	SDL_SemWait(mStartSem);
@@ -91,12 +92,13 @@ void MasterController::_execute() {
 			curFrame = mFrameQueue.top();
 			mFrameQueue.pop();
 
+			fprintf(stderr, "MasterController: Rendering frame %d\n", curFrame->getModelTime());
 			mRenderer->renderFrame(curFrame);
 			delete(curFrame);
 		}
 		unlock();
 
-		Sleep(100);
+		Sleep(pause);
 	}
 }
 // Add a frame to the frame queue (thread-safe).
