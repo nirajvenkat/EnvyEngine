@@ -6,6 +6,8 @@
 #include "framedriver.h"
 #include "mastercontroller.h"
 
+FrameDriver *gFrameDriver;
+
 class TestGame : public Game
 {
 public:
@@ -76,8 +78,8 @@ int main()
 	mc->init();
 
 	// Framedriver
-	FrameDriver *fd = new FrameDriver(mc);
-	fd->loadFrames();
+	gFrameDriver = new FrameDriver(mc);
+	gFrameDriver->loadFrames();
 
 	mc->run();
 

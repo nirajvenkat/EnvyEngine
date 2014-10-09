@@ -24,6 +24,10 @@ void Frame::setSurface(SDL_Surface *surf) {
 	mSurface = surf;
 }
 
+SDL_Surface *Frame::getSurface() {
+	return mSurface;
+}
+
 unsigned long Frame::getMaxId()
 {
 	return idMax;

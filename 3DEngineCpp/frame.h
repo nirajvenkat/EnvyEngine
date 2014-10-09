@@ -14,6 +14,7 @@ public:
 	unsigned long getMaxId();
 	inline unsigned long getModelTime();
 	void setSurface(class SDL_Surface *surf);
+	SDL_Surface *getSurface(void);
 
 private:
 

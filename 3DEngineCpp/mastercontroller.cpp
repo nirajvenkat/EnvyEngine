@@ -61,7 +61,7 @@ void MasterController::init() {
 
 	// Create renderer
 	mRenderer = new Renderer();
-	mRenderer->initOutputWindow(640, 480, "Envy Master Controller");
+	mRenderer->initOutputWindow(640, 360, "Envy Master Controller");
 
 	// Init successful
 	fprintf(stderr, "Master Controller Initialized...\n");
@@ -76,12 +76,29 @@ void MasterController::run() {
 
 // Do not call this externally
 void MasterController::_execute() {
+
+	unsigned long last = 0;
+	Frame *curFrame;
+
 	SDL_SemWait(mStartSem);
 	fprintf(stderr, "Master controller out of wait state.\n");
 
+	// Inner loop
+	while (true) {
+		lock();
+		if (!mFrameQueue.empty()) {
 
+			curFrame = mFrameQueue.top();
+			mFrameQueue.pop();
+
+			mRenderer->renderFrame(curFrame);
+			delete(curFrame);
+		}
+		unlock();
+
+		Sleep(100);
+	}
 }
-
 // Add a frame to the frame queue (thread-safe).
 void MasterController::addFrame(Frame *newFrame) {
 	this->lock();

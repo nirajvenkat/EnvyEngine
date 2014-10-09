@@ -11,14 +11,16 @@
 #include <tchar.h>
 #include <stdio.h>
 #include <iostream>
+#include <vector>
+#include <queue>
+#include "frame.h"
 #include "framedriver.h"
+#include "mastercontroller.h"
 #include "windows.h" // For windows file I/O mainly
 
 FrameDriver::FrameDriver(MasterController *mc) {
 	this->mc = mc; // MasterController to feed frames to
-
-
-
+	mFrameIdx = 0;
 }
 
 // For sorting wstrings
@@ -34,7 +36,6 @@ void FrameDriver::loadFrames() {
 	TCHAR imgPath[MAX_PATH];
 	char aImgPath[MAX_PATH];
 	TCHAR pathBuf[MAX_PATH];
-	std::vector<std::wstring*> dirList;
 	std::wstring str;
 	size_t pos;
 
@@ -54,21 +55,22 @@ void FrameDriver::loadFrames() {
 	lstrcat(imgPath, L"\\*.png"); // Search for PNG graphics
 
 	// Load all test frames out of frame directory
-	dirList.clear();
+	mFrameFiles.clear();
 
 	// Anything that has a .png extension. Sort in alpha order.
 	hFind = FindFirstFileW(imgPath, &findData);
-	dirList.push_back(new std::wstring(findData.cFileName));
+	mFrameFiles.push_back(new std::wstring(findData.cFileName));
 
 	while (FindNextFileW(hFind, &findData))
-		dirList.push_back(new std::wstring(findData.cFileName));
+		mFrameFiles.push_back(new std::wstring(findData.cFileName));
 
-	std::sort(dirList.begin(), dirList.end(), _wstringptr_sort);
+	std::sort(mFrameFiles.begin(), mFrameFiles.end(), _wstringptr_sort);
 
 	// Load textures
-	fprintf(stderr, "FrameDriver loading %d surfaces...\n", dirList.size());
-	mSurfaceHolder.clear();
-	for (std::vector<std::wstring*>::iterator it = dirList.begin(); it != dirList.end(); it++) {
+	fprintf(stderr, "FrameDriver found %d surfaces for use.\n", mFrameFiles.size());
+
+	/*
+	for (std::vector<std::wstring*>::iterator it = mFrameFiles.begin(); it != mFrameFiles.end(); it++) {
 
 		lstrcpy(imgPath, pathBuf);
 		lstrcat(imgPath, L"\\");
@@ -84,7 +86,7 @@ void FrameDriver::loadFrames() {
 		else {
 			mSurfaceHolder.push_back(curSurf);
 		}
-	}
+	}*/
 }
 
 void FrameDriver::_tick() {
@@ -112,9 +114,32 @@ void FrameDriver::_tick() {
 }
 
 void FrameDriver::tick() {
+
+	static unsigned int idx = 0;
+
+	Frame *curFrame = new Frame(idx++); 
+	SDL_Surface *curSurf;
+	char imgPath[MAX_PATH];
+	char imgName[MAX_PATH];
+
 	// Check time since last tick
 	// Over target rate?
-		// Add frame to master controller's queue.
+
+	// Add frame to master controller's queue.
+	wcstombs(imgPath, mFrameDir.data(), MAX_PATH);
+	wcstombs(imgName, mFrameFiles[mFrameIdx++]->data(), MAX_PATH);
+
+	strcat(imgPath, "\\");
+	strcat(imgPath, imgName);
+
+	curSurf = IMG_Load(imgPath);
+	if (curSurf) {
+		curFrame->setSurface(curSurf);
+		mc->addFrame(curFrame);
+	}
+
+	if (mFrameIdx >= mFrameFiles.size())
+		mFrameIdx = 0;
 }
 
 FrameDriver::~FrameDriver(){}

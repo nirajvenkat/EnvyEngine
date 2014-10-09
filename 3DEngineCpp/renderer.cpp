@@ -4,6 +4,7 @@
 // it exists to handle the "software monitor" features used by the master controller.
 
 #include "renderer.h"
+#include "frame.h"
 #include <SDL2/SDL.h>
 
 Renderer::Renderer() {
@@ -25,4 +26,22 @@ void Renderer::initOutputWindow(int width, int height, const char *title)
 
 	// Create our renderer
 	mSDLRenderer = SDL_CreateRenderer(mSDLRenderWindow, -1, SDL_RENDERER_ACCELERATED);
+}
+
+void Renderer::renderFrame(Frame *frame) {
+
+	SDL_Rect destRect;
+
+	SDL_Surface *surf = frame->getSurface();
+	SDL_Texture *tex = SDL_CreateTextureFromSurface(mSDLRenderer, surf);
+
+	// Use surface's width and height
+	destRect.h = surf->h;
+	destRect.w = surf->w;
+	destRect.x = 100; //TODO: Change
+	destRect.y = 100; //TODO: Change
+
+	SDL_RenderCopy(mSDLRenderer, tex, NULL, NULL);
+	SDL_RenderPresent(mSDLRenderer);
+	SDL_DestroyTexture(tex);
 }

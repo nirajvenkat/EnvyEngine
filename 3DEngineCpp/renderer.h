@@ -14,6 +14,7 @@ class Renderer {
 public:
 	Renderer();
 	virtual ~Renderer();
+	void renderFrame(class Frame *frame);
 
 	// Video monitor for master controller tasks
 	void initOutputWindow(int width, int height, const char *title);
