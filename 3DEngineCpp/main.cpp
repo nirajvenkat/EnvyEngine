@@ -19,6 +19,8 @@ void TestGame::Init()
 	GameObject* planeObject = new GameObject();
 	GameObject* rabbitObject = new GameObject();
 	GameObject* rabbitLightObject = new GameObject();
+	GameObject* rabbitLightObject2 = new GameObject();
+	GameObject* rabbitLightObject3 = new GameObject();
 	GameObject* pointLightObject = new GameObject();
 	GameObject* spotLightObject = new GameObject();
 	GameObject* directionalLightObject = new GameObject();
@@ -32,7 +34,14 @@ void TestGame::Init()
 	rabbitObject->GetTransform().SetScale(1.0f);
 
 	rabbitLightObject->AddComponent(new SpotLight(Vector3f(0, 0, 10), 0.4f, Attenuation(0, 0, 0.1f), 0.7f));
-	rabbitLightObject->GetTransform().SetPos(Vector3f(0, 6, 1));
+	rabbitLightObject->GetTransform().SetPos(Vector3f(0, 8, 1));
+
+	rabbitLightObject2->AddComponent(new PointLight(Vector3f(10, 10, 0), 0.4f, Attenuation(0, 0, 0.1f)));
+	rabbitLightObject2->GetTransform().SetPos(Vector3f(0, 16, 10));
+
+	rabbitLightObject3->AddComponent(new DirectionalLight(Vector3f(1, 0, 0), 0.2f));
+	rabbitLightObject3->GetTransform().SetPos(Vector3f(0, 20, 0));
+	rabbitLightObject3->GetTransform().SetRot(Quaternion(Vector3f(0, 1, 0), ToRadians(180.0f)));
 	
 	pointLightObject->AddComponent(new PointLight(Vector3f(0,1,0),0.4f,Attenuation(0,0,1)));
 	pointLightObject->GetTransform().SetPos(Vector3f(7,0,7));
@@ -63,6 +72,8 @@ void TestGame::Init()
 	AddToScene(testMesh1);
 	AddToScene(rabbitObject);
 	AddToScene(rabbitLightObject);
+	AddToScene(rabbitLightObject2);
+	AddToScene(rabbitLightObject3);
 	testMesh2->AddChild((new GameObject())
 		->AddComponent(new Camera(Matrix4f().InitPerspective(ToRadians(70.0f), Window::GetAspect(), 0.1f, 1000.0f)))
 		->AddComponent(new FreeLook())

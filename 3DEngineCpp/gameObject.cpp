@@ -1,6 +1,7 @@
 #include "gameObject.h"
 #include "gameComponent.h"
 #include "coreEngine.h"
+#include <math.h>
 
 GameObject::~GameObject()
 {
