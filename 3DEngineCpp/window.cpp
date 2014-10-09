@@ -38,7 +38,8 @@ void Window::Create(int width, int height, const std::string& title)
 void Window::Render()
 {
 	// TODO: call framedriver tick
-	gFrameDriver->tick();
+	if (gFrameDriver)
+		gFrameDriver->tick();
 
 	SDLSwapBuffers();
 }

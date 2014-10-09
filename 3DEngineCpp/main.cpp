@@ -6,7 +6,9 @@
 #include "framedriver.h"
 #include "mastercontroller.h"
 
-FrameDriver *gFrameDriver;
+#define TEST_MC
+
+FrameDriver *gFrameDriver = NULL;
 
 class TestGame : public Game
 {
@@ -76,12 +78,18 @@ int main()
 	// Master controller
 	MasterController *mc = new MasterController(60); // New MC, 60FPS target rate
 	mc->init();
-
+	
+#ifdef TEST_MC
 	// Framedriver
 	gFrameDriver = new FrameDriver(mc);
 	gFrameDriver->loadFrames();
-
+	
 	mc->run();
+	while (1) {
+		_sleep(50);
+		gFrameDriver->tick();
+	}
+#endif
 
 	// Game / Envy Rendering
 	TestGame game;
