@@ -3,6 +3,8 @@
 #include "coreEngine.h"
 #include <math.h>
 
+float deltaSum;
+
 GameObject::~GameObject()
 {
 	for(unsigned int i = 0; i < m_components.size(); i++)
@@ -65,6 +67,24 @@ void GameObject::Update(float delta)
 {
 	for(unsigned int i = 0; i < m_components.size(); i++)
 		m_components[i]->Update(delta);
+
+	deltaSum += delta;
+
+	if (m_children.size() >= 7){
+		float firstX = m_children[6]->GetTransform().GetPos().GetX();
+		float firstY = m_children[6]->GetTransform().GetPos().GetY();
+		float firstZ = m_children[6]->GetTransform().GetPos().GetZ();
+
+		m_children[6]->GetTransform().SetPos(Vector3f(firstX, firstY + (sin(deltaSum) *0.5), firstZ));
+
+		firstX = m_children[7]->GetTransform().GetPos().GetX();
+		firstY = m_children[7]->GetTransform().GetPos().GetY();
+		firstZ = m_children[7]->GetTransform().GetPos().GetZ();
+
+		m_children[7]->GetTransform().SetPos(Vector3f(firstX, firstY + (sin(deltaSum) *0.5), firstZ));
+
+		//printf("%f\n", m_children[6]->GetTransform().GetPos().GetY());
+	}
 }
 
 void GameObject::Render(Shader* shader, RenderingEngine* renderingEngine)
