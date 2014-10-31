@@ -70,7 +70,7 @@ void GameObject::Update(float delta)
 
 	deltaSum += delta;
 
-	if (m_children.size() >= 7){
+	if (m_children.size() >= 10){
 		float firstX = m_children[6]->GetTransform().GetPos().GetX();
 		float firstY = m_children[6]->GetTransform().GetPos().GetY();
 		float firstZ = m_children[6]->GetTransform().GetPos().GetZ();
@@ -82,6 +82,9 @@ void GameObject::Update(float delta)
 		firstZ = m_children[7]->GetTransform().GetPos().GetZ();
 
 		m_children[7]->GetTransform().SetPos(Vector3f(firstX, firstY + (sin(deltaSum) *0.5), firstZ));
+
+		m_children[10]->GetTransform().SetPos(Vector3f(10 * cos(deltaSum), firstY, 30 + 10 * sin(deltaSum)));
+		//m_children[10]->GetTransform().SetRot(Quaternion(Vector3f(0, 1, 0), ToRadians(180.0f)));
 
 		//printf("%f\n", m_children[6]->GetTransform().GetPos().GetY());
 	}

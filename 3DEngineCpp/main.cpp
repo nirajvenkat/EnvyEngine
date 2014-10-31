@@ -16,15 +16,21 @@ private:
 
 void TestGame::Init()
 {
+	GameObject* cameraObject = new GameObject();
 	GameObject* planeObject = new GameObject();
 	GameObject* spotLightObject = new GameObject();
 	GameObject* pointLightObject = new GameObject();
 	GameObject* directionalLightObject = new GameObject();
 
+	//Demo objects
 	GameObject* rabbitObject = new GameObject();
 	GameObject* rabbitLightObject = new GameObject();
 	GameObject* rabbitLightObject2 = new GameObject();
 	GameObject* rabbitLightObject3 = new GameObject();
+
+	GameObject* monkeyObject = new GameObject();
+	GameObject* monkeyLightObject = new GameObject();
+
 
 	planeObject->AddComponent(new MeshRenderer(new Mesh("./res/models/plane3.obj"), new Material(new Texture("bricks2.jpg"), 1, 8)));
 	planeObject->GetTransform().SetPos(Vector3f(0, -1, 5));
@@ -53,31 +59,44 @@ void TestGame::Init()
 	rabbitLightObject3->GetTransform().SetPos(Vector3f(0, 20, 0));
 	rabbitLightObject3->GetTransform().SetRot(Quaternion(Vector3f(0, 1, 0), ToRadians(180.0f)));
 
+	monkeyObject->AddComponent(new MeshRenderer(new Mesh("./res/models/monkey3.obj"), new Material(new Texture("brickcity.jpg"), 1, 8)));
+	monkeyObject->GetTransform().SetPos(Vector3f(0, 15, 30));
+	monkeyObject->GetTransform().SetRot(Quaternion(Vector3f(0, 1, 0), ToRadians(180.0f)));
+	monkeyObject->GetTransform().SetScale(5.0);
+
+	monkeyLightObject->AddComponent(new PointLight(Vector3f(0, 10, 10), 0.4f, Attenuation(0, 0, 0.1f)));
+	monkeyLightObject->GetTransform().SetPos(Vector3f(0, 15, 40));
+
 	
-	GameObject* testMesh1 = new GameObject();
-	GameObject* testMesh2 = new GameObject();
+	//GameObject* testMesh1 = new GameObject();
+	//GameObject* testMesh2 = new GameObject();
+	//
+	//testMesh1->AddComponent(new MeshRenderer(new Mesh("./res/models/plane3.obj"), new Material(new Texture("bricks2.jpg"), 1, 8)));
+	//testMesh2->AddComponent(new MeshRenderer(new Mesh("./res/models/plane3.obj"), new Material(new Texture("bricks2.jpg"), 1, 8)));
+	//
+	//testMesh1->GetTransform().SetPos(Vector3f(0, 2, 0));
+	//testMesh1->GetTransform().SetRot(Quaternion(Vector3f(0,1,0), 0.4f));
+	//testMesh1->GetTransform().SetScale(1.0f);
+	//
+	//testMesh2->GetTransform().SetPos(Vector3f(0, 0, 25));
+	//
+	//testMesh1->AddChild(testMesh2);
 	
-	testMesh1->AddComponent(new MeshRenderer(new Mesh("./res/models/plane3.obj"), new Material(new Texture("bricks2.jpg"), 1, 8)));
-	testMesh2->AddComponent(new MeshRenderer(new Mesh("./res/models/plane3.obj"), new Material(new Texture("bricks2.jpg"), 1, 8)));
-	
-	testMesh1->GetTransform().SetPos(Vector3f(0, 2, 0));
-	testMesh1->GetTransform().SetRot(Quaternion(Vector3f(0,1,0), 0.4f));
-	testMesh1->GetTransform().SetScale(1.0f);
-	
-	testMesh2->GetTransform().SetPos(Vector3f(0, 0, 25));
-	
-	testMesh1->AddChild(testMesh2);
-	
+	AddToScene(cameraObject);
 	AddToScene(planeObject);
 	AddToScene(pointLightObject);
 	AddToScene(spotLightObject);
 	AddToScene(directionalLightObject);
-	AddToScene(testMesh1);
+	//AddToScene(testMesh1);
 	AddToScene(rabbitObject);
 	AddToScene(rabbitLightObject);
 	AddToScene(rabbitLightObject2);
 	AddToScene(rabbitLightObject3);
-	testMesh2->AddChild((new GameObject())
+	AddToScene(monkeyObject);
+	AddToScene(monkeyLightObject);
+
+	cameraObject->GetTransform().SetPos(Vector3f(15, 10, 15));
+	cameraObject->AddChild((new GameObject())
 		->AddComponent(new Camera(Matrix4f().InitPerspective(ToRadians(70.0f), Window::GetAspect(), 0.1f, 1000.0f)))
 		->AddComponent(new FreeLook())
 		->AddComponent(new FreeMove()));
