@@ -9,28 +9,34 @@
 class RenderNode {
 public:
 	RenderNode(int number);
+	virtual ~RenderNode();
+
+	enum Status { // Need more of these for when we implement world-loading.
+		READY,
+		BUSY,
+		FAILURE,
+		RECEIVED_DATA
+	};
 
 	void assignTask(class RenderTask *task);
+	void clearTask();
+	void receiveResponse();
+
 	int getNumber();
 	void refreshRates();
 
 private:
 
 	int number;
+	class RenderTask *currentTask;
+
+	// TODO: NETWORK RELATED ATTRIBUTES
+
+	// Node stats
 	int commandRate;
 	int responseRate;
-	unsigned long lastCommandTime;
-	unsigned long lastResponseTime;
+	double lastAssignTime;
+	double lastLatency;
 };
-
-
-
-
-
-
-
-
-
-
 
 #endif

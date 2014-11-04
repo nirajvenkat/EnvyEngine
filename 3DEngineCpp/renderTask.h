@@ -14,6 +14,7 @@ class RenderTask {
 public:
 
 	RenderTask(unsigned long seqNo);
+	virtual ~RenderTask();
 
 	unsigned long getSeqNo();
 	RenderTaskPayload *getPayload();

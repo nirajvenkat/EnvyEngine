@@ -12,11 +12,17 @@ RenderTask::RenderTask(unsigned long seqNo) {
 	this->seqNo = seqNo;
 }
 
+RenderTask::~RenderTask() {
+	if (payload != NULL)
+		free(payload);
+}
+
 void RenderTask::setPayload(int taskType, size_t payloadDataSize, void *payloadData) {
 	RenderTaskPayload *payload;
 
 	payload = (RenderTaskPayload*)malloc(RENDERTASKPAYLOAD_HEADER_SIZE + payloadDataSize);
 	if (payload) {
+		memset(payload, 0, sizeof(payload));
 		payload->type = taskType;
 		payload->totalSize = RENDERTASKPAYLOAD_HEADER_SIZE + payloadDataSize;
 		payload->dataSize = payloadDataSize;
