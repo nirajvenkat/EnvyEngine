@@ -5,7 +5,7 @@
 #ifndef RENDERTASKPAYLOAD_H
 #define RENDERTASKPAYLOAD_H
 
-#define RENDERTASK_HEADER_SIZE	(sizeof(char) + sizeof(size_t))
+#define RENDERTASKPAYLOAD_HEADER_SIZE	(sizeof(char) + sizeof(size_t))
 
 // RENDER TASK TYPES
 //
@@ -13,7 +13,8 @@
 
 typedef struct RenderTaskPayload {
 	char	type;		// Task type. Make larger if we later find we need more than 256 tasks (unlikely)
-	size_t	taskSize;	// Total size of task data plus header size.
+	size_t	totalSize;	// Total size of task data plus header size.
+	size_t  dataSize;   // Should be equal to totalSize - RENDERTASKPAYLOAD_HEADER_SIZE
 	char	taskData[]; // Task data of variable length
 } RenderTaskPayload;
 

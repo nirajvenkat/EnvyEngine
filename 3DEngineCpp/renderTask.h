@@ -7,12 +7,22 @@
 #ifndef RENDERTASK_H
 #define RENDERTASK_H
 
-#include "taskPayload.h"
+#include "renderTaskPayload.h"
 
 class RenderTask {
 
-	unsigned long seqNo; // Task sequence number
-	
+public:
+
+	RenderTask(unsigned long seqNo);
+
+	unsigned long getSeqNo();
+	RenderTaskPayload *getPayload();
+	void setPayload(int taskType, size_t payloadSize, void *payloadData);
+	void clearPayload();
+
+private:
+	unsigned long seqNo;		// Task sequence number
+	RenderTaskPayload *payload; // Actual task payload to be sent over the net.
 };
 
 #endif
