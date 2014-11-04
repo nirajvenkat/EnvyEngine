@@ -73,7 +73,7 @@ void TestGame::Init()
 
 int main()
 {
-	// Master controller
+	/* Master controller -- Uncomment for MC test. Commented for master branch.
 	MasterController *mc = new MasterController(60); // New MC, 60FPS target rate
 	mc->init();
 
@@ -82,6 +82,7 @@ int main()
 	gFrameDriver->loadFrames();
 
 	mc->run();
+	*/
 
 	// Game / Envy Rendering
 	TestGame game;
