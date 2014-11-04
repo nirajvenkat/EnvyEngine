@@ -2,10 +2,13 @@
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 #include "sdl_backend.h"
+#include "framedriver.h"
 
 int Window::s_width = 0;
 int Window::s_height = 0;
 std::string Window::s_title = "Title";
+
+extern FrameDriver *gFrameDriver;
 
 void Window::Create(int width, int height, const std::string& title)
 {
@@ -34,6 +37,9 @@ void Window::Create(int width, int height, const std::string& title)
 
 void Window::Render()
 {
+	// Call framedriver tick in MC Mode. Commented out for master branch (for now)
+	// gFrameDriver->tick();
+
 	SDLSwapBuffers();
 }
 

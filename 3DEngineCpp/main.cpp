@@ -1,6 +1,14 @@
+#include "renderer.h"
 #include "3DEngine.h"
 #include "freeLook.h"
 #include "freeMove.h"
+#include "renderer.h"
+#include "framedriver.h"
+#include "mastercontroller.h"
+
+// #define TEST_MC
+
+FrameDriver *gFrameDriver = NULL;
 
 class TestGame : public Game
 {
@@ -106,6 +114,23 @@ void TestGame::Init()
 
 int main()
 {
+#ifdef TEST_MC
+	MasterController *mc = new MasterController(60); // New MC, 60FPS target rate
+	mc->init();
+
+	// Framedriver
+	gFrameDriver = new FrameDriver(mc);
+	gFrameDriver->loadFrames();
+	
+	mc->run();
+
+	while (1) {
+		_sleep(50);
+		gFrameDriver->tick();
+	}
+#endif
+
+	// Game / Envy Rendering
 	TestGame game;
 	CoreEngine engine(1366, 720, 60, &game);
 	engine.CreateWindow("EnvyEngine");
