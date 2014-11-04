@@ -6,7 +6,9 @@
 #include "framedriver.h"
 #include "mastercontroller.h"
 
-FrameDriver *gFrameDriver;
+// #define TEST_MC
+
+FrameDriver *gFrameDriver = NULL;
 
 class TestGame : public Game
 {
@@ -73,16 +75,21 @@ void TestGame::Init()
 
 int main()
 {
-	/* Master controller -- Uncomment for MC test. Commented for master branch.
+#ifdef TEST_MC
 	MasterController *mc = new MasterController(60); // New MC, 60FPS target rate
 	mc->init();
 
 	// Framedriver
 	gFrameDriver = new FrameDriver(mc);
 	gFrameDriver->loadFrames();
-
+	
 	mc->run();
-	*/
+
+	while (1) {
+		_sleep(50);
+		gFrameDriver->tick();
+	}
+#endif
 
 	// Game / Envy Rendering
 	TestGame game;
