@@ -7,6 +7,7 @@
 #define MASTERCONTROLLER_H
 
 #include <queue>
+#include <map>
 #include "frame.h"
 
 class Frame;
@@ -31,6 +32,7 @@ private:
 	bool mInitialized;
 	class Renderer *mRenderer;
 	std::priority_queue<Frame*, std::vector<Frame*>, class _FrameComparator> mFrameQueue;
+	std::map<unsigned int, class RenderNode*> mNodes;
 
 	int mFrameRateMax;
 
@@ -40,7 +42,7 @@ private:
 	struct SDL_mutex      *mTCrit;
 
 	// Render nodes
-	unsigned long mMaxNodeId;
+	unsigned long mMaxNodeNumber;
 
 	void _execute();
 };

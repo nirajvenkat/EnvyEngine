@@ -10,7 +10,7 @@
 
 class RenderNode {
 public:
-	RenderNode(int number);
+	RenderNode(unsigned int number);
 	virtual ~RenderNode();
 
 	enum Status { // Need more of these for when we implement world-loading.

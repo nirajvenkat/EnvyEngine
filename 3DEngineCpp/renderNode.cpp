@@ -8,7 +8,7 @@
 #include "renderTask.h"
 #include "time.h"
 
-RenderNode::RenderNode(int number) 
+RenderNode::RenderNode(unsigned int number) 
 {
 	mNumber = number;
 	mLastLatency = -1; // Latency uninitialized until first response received.

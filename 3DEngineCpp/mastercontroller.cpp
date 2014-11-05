@@ -17,7 +17,9 @@ using namespace std;
 
 MasterController::MasterController(int frameRateMax) {
 	mFrameRateMax = frameRateMax;
+	mMaxNodeId = 0;
 	mStartSem = NULL;
+	mNodes.clear();
 }
 
 // Destroy the master controller in a thread-safe manner.
