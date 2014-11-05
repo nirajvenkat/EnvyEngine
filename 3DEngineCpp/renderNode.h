@@ -30,6 +30,8 @@ public:
 
 private:
 
+	void updateResponseTime();
+
 	int mNumber;
 	class RenderTask *mCurrentTask;
 
@@ -38,9 +40,11 @@ private:
 	// Node stats
 	float mCommandRate;
 	float mResponseRate;
-	float mLastAssignTime;
+	double mLastAssignTime;
 	float mLastLatency;
-	float *mLatencies;
+	int mCurSample;
+	float *mLatencySamples;
+
 };
 
 #endif

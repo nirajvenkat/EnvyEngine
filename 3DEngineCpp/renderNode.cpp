@@ -12,11 +12,11 @@ RenderNode::RenderNode(int number)
 {
 	mNumber = number;
 	mLastLatency = -1; // Latency uninitialized until first response received.
-	mLatencies = (float*)malloc(sizeof(float)*NODE_LATENCY_WINDOW);
+	mLatencySamples = (float*)malloc(sizeof(float)*NODE_LATENCY_WINDOW);
 }
 
 RenderNode::~RenderNode() {
-	free(mLatencies);
+	free(mLatencySamples);
 }
 
 void RenderNode::assignTask(class RenderTask *task) {
@@ -35,8 +35,7 @@ void RenderNode::receiveResponse() {
 	// TODO: Receive response from the network
 	// This will be called by a callback (or similar) for when a response is received from a hardware node on the network.
 
-	// Update response time
-	mLastLatency = Time::GetTime() - mLastAssignTime;
+	updateResponseTime(); // Update average response time.
 }
 
 void RenderNode::clearTask() {
@@ -47,4 +46,19 @@ int RenderNode::getNumber() {
 	return mNumber;
 }
 
-void refreshRates();
+
+// Computes a moving average of response times with window size equal to NODE_LATENCY_WINDOW.
+// Change NODE_LATENCY_WINDOW to a larger value for added smoothness.
+
+void RenderNode::updateResponseTime() {
+	// Update response time
+	mLastLatency = (float)(Time::GetTime() - mLastAssignTime);
+	mLatencySamples[mCurSample++] = mLastLatency;
+
+	// Point to sample slated for removal.
+	if (mCurSample >= NODE_LATENCY_WINDOW)
+		mCurSample = 0;
+
+	// Recompute moving average
+	mResponseRate += mLastLatency / (float)NODE_LATENCY_WINDOW - mLatencySamples[mCurSample] / (float)NODE_LATENCY_WINDOW;
+}
