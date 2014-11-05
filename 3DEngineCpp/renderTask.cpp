@@ -13,8 +13,7 @@ RenderTask::RenderTask(unsigned long seqNo) {
 }
 
 RenderTask::~RenderTask() {
-	if (payload != NULL)
-		free(payload);
+	clearPayload();
 }
 
 void RenderTask::setPayload(int taskType, size_t payloadDataSize, void *payloadData) {
@@ -27,16 +26,18 @@ void RenderTask::setPayload(int taskType, size_t payloadDataSize, void *payloadD
 		payload->totalSize = RENDERTASKPAYLOAD_HEADER_SIZE + payloadDataSize;
 		payload->dataSize = payloadDataSize;
 		memcpy(&payload->taskData, payloadData, payloadDataSize); // Load actual task data
+
+		mPayload = payload;
 	}
 }
 
 RenderTaskPayload *RenderTask::getPayload() {
-	return this->payload;
+	return this->mPayload;
 }
 
 void RenderTask::clearPayload() {
-	if (payload != NULL) {
-		free(payload);
-		payload = NULL;
+	if (mPayload != NULL) {
+		free(mPayload);
+		mPayload = NULL;
 	}
 }

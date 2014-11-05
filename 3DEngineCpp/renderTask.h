@@ -21,9 +21,20 @@ public:
 	void setPayload(int taskType, size_t payloadSize, void *payloadData);
 	void clearPayload();
 
+	enum TaskType {
+		RT_CAMERA
+	};
+
+	// Data types for render tasks
+	typedef double SimpleMat4[4][4]; // Simple 4x4 matrix for task type 0
+	typedef struct CameraTaskData {
+		SimpleMat4	view;
+		SimpleMat4	projection;
+	} CameraTaskData;
+
 private:
 	unsigned long seqNo;		// Task sequence number
-	RenderTaskPayload *payload; // Actual task payload to be sent over the net.
+	RenderTaskPayload *mPayload; // Actual task payload to be sent over the net.
 };
 
 #endif
