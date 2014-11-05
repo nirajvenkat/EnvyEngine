@@ -38,12 +38,12 @@ private:
 	// TODO: NETWORK RELATED ATTRIBUTES
 
 	// Node stats
-	float mCommandRate;
-	float mResponseRate;
-	double mLastAssignTime;
-	float mLastLatency;
-	int mCurSample;
-	float *mLatencySamples;
+	float mCommandRate;		// Commands per second given by Master Controller to this node.
+	float mResponseRate;    // Average response rate. This should be similar to mCommandRate for a healthy node.
+	double mLastAssignTime; // Last assigned command time (using the Time::GetTime() function which wraps to QueryPerformanceFrequency.
+	float mLastLatency;		// The last (individual) response rate.
+	int mCurSample;			// The current sample in the mLatencySamples array, used for computing a moving average.
+	float *mLatencySamples;	// Array of response times, used for computing a moving average.
 
 };
 
