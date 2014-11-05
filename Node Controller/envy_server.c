@@ -1,22 +1,16 @@
-#include "ENVY_TYPES.h"
-#include "ENVY_CONSTANTS.h"
-#include "ENVY_PACKET.h"
+#include "envy_network.h"
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <pthread.h>
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
 #include <unistd.h>
 #include <time.h>
 
-void htonPacket(struct mgmt_pkt packet, char buffer[sizeof(struct mgmt_pkt)]);
+void htonPacket(struct pkt packet, char buffer[sizeof(struct pkt)]);
 void *TCPHandler(void* arg);
 
 int didACK = 0;
+int NODE_ID = 0;
 pthread_mutex_t lock;
 
 int main(int argc, char** argv)
@@ -48,15 +42,17 @@ int main(int argc, char** argv)
 	bcast.sin_port = htons(UDP_PORT);
 	bcast.sin_family = PF_INET;
 
-	struct mgmt_pkt packet;
-	packet.hdr.pkt_type = PKT_TYPE_STATUS;
-	packet.hdr.node_id = 0;
-	packet.hdr.status = STATUS_BOOT_OK;
-	packet.hdr.timestamp = 0;
-	char buffer[sizeof(struct mgmt_pkt)];
+	struct pkt packet;
+	packet.header.pkt_type = PKT_TYPE_STATUS;
+	//packet.header.node_id = 0;
+	packet.header.status = STATUS_BOOT_OK;
+	packet.header.p_length = 0;
+	packet.header.timestamp = 0;
+	char buffer[sizeof(struct pkt)];
 	htonPacket(packet, buffer);
 	
 	pthread_mutex_lock(&lock);
+	fprintf(stdout, "Beginning broadcast on port %d...\n", UDP_PORT);
 	while(!didACK)
 	{
 		udp_status = sendto(udp_sock, buffer, sizeof(buffer), 0, (struct sockaddr *) &bcast, udp_socklen);
@@ -65,12 +61,15 @@ int main(int argc, char** argv)
 		pthread_mutex_lock(&lock);
 	}
 
-	close(udp_sock);	
+	close(udp_sock);
+	pthread_join(server_thread, NULL);
 }
 
 //Set up TCP socket to listen for incoming TCP connection from master controller
 void *TCPHandler(void *args)
 {
+	fprintf(stdout, "TCP listener thread running! Waiting for connection on port %d.\n", TCP_PORT);
+
 	int fd;
 	struct sockaddr_in serv_addr, cli_addr;
 	int yes = 1;
@@ -99,7 +98,8 @@ void *TCPHandler(void *args)
 	}
 
 	listen(fd, 1);
-	int client = accept(fd, (struct sockaddr*) &cli_addr, sizeof(cli_addr));
+	socklen_t clilen = sizeof(cli_addr);
+	int client = accept(fd, (struct sockaddr*) &cli_addr, &clilen);
 
 	if(client < 0)
 	{
@@ -111,31 +111,54 @@ void *TCPHandler(void *args)
 		pthread_mutex_lock(&lock);
 		didACK = 1;
 		pthread_mutex_unlock(&lock);
-		printf("ACCEPTED CONNECTION FROM CLIENT\n");
+		
+		char buffer[sizeof(struct pkt)];
+		recvfrom(client, buffer, sizeof(buffer), 0, (struct sockaddr*)&cli_addr, &clilen);
+		struct pkt recv_packet = ntohPacket(buffer);
+		int tmp;
+		memcpy(&tmp, recv_packet.payload.data, sizeof(tmp));
+		NODE_ID = ntohl(tmp);
+		fprintf(stdout, "Received acknowledgement from master controller! My node ID is %" PRIu16 "!\n", NODE_ID);
+
+		int finished = 0;
+		struct pkt send_packet;
+		
+		while(!finished) //Loop until we receive a stop command from master
+		{
+			recvfrom(client, buffer, sizeof(buffer), 0, (struct sockaddr*)&cli_addr, &clilen);
+			recv_packet = ntohPacket(buffer);
+
+			//Handle each type of packet differently
+			if(recv_packet.header.pkt_type == PKT_TYPE_TASK)
+			{
+				//We got a task from MC....	
+			}
+			else if(recv_packet.header.pkt_type == PKT_TYPE_CMD)
+			{
+				//We got a command to do something...
+				memcpy(&tmp, recv_packet.payload.data, sizeof(tmp)); //Data for command will be in the payload
+
+				switch(ntohl(tmp))
+				{
+					case CMD_PING:
+						send_packet.header.pkt_type = PKT_TYPE_STATUS;
+						send_packet.header.status = STATUS_OK;
+						send_packet.header.p_length = sizeof(STATUS_KEEP_ALIVE);
+						send_packet.header.timestamp = 0;
+						tmp = STATUS_KEEP_ALIVE;
+						tmp = htonl(tmp);
+						memcpy(send_packet.payload.data, &tmp, sizeof(tmp));
+						htonPacket(send_packet, buffer);
+						sendto(client,buffer,sizeof(buffer),0,(struct sockaddr *)&cli_addr,&clilen);
+						break;
+				}
+			}
+			else if(recv_packet.header.pkt_type == PKT_TYPE_STATUS)
+			{
+				//We got a status update or statistic...
+			}
+
+		}
 	}
 
-}
-
-//Convert fields in mgmt_pkt struct to network order and fill buffer
-void htonPacket(struct mgmt_pkt packet, char buffer[sizeof(struct mgmt_pkt)])
-{
-	int offset = 0;
-
-	uint16_t pkt_type = htons(packet.hdr.pkt_type);
-	memcpy(buffer+offset, &pkt_type, sizeof(pkt_type));
-	offset+= sizeof(pkt_type);
-
-	uint16_t node_id = htons(packet.hdr.node_id);
-	memcpy(buffer+offset, &node_id, sizeof(node_id));
-	offset+= sizeof(node_id);
-
-	uint16_t status = htons(packet.hdr.status);
-	memcpy(buffer+offset, &status, sizeof(status));
-	offset+= sizeof(status);
-
-	uint32_t timestamp = htonl(packet.hdr.timestamp);
-	memcpy(buffer+offset, &timestamp, sizeof(timestamp));
-	offset+= sizeof(timestamp);
-
-	memcpy(buffer+offset, &packet.payload.data, sizeof(packet.payload.data));
 }
