@@ -6,6 +6,8 @@
 #ifndef RENDERNODE_H
 #define RENDERNODE_H
 
+#define NODE_LATENCY_WINDOW	15
+
 class RenderNode {
 public:
 	RenderNode(int number);
@@ -23,20 +25,22 @@ public:
 	void receiveResponse();
 
 	int getNumber();
+	double getLastLatency();
 	void refreshRates();
 
 private:
 
-	int number;
-	class RenderTask *currentTask;
+	int mNumber;
+	class RenderTask *mCurrentTask;
 
 	// TODO: NETWORK RELATED ATTRIBUTES
 
 	// Node stats
-	int commandRate;
-	int responseRate;
-	double lastAssignTime;
-	double lastLatency;
+	float mCommandRate;
+	float mResponseRate;
+	float mLastAssignTime;
+	float mLastLatency;
+	float *mLatencies;
 };
 
 #endif

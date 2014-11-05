@@ -5,6 +5,7 @@
 
 #include "mastercontroller.h"
 #include "renderer.h"
+#include "renderNode.h"
 #include "windows.h"
 #include <queue>
 #include <SDL2/SDL.h>
@@ -12,11 +13,7 @@
 
 using namespace std;
 
-// Entry point for a new MC thread.
-int MasterController::_startMCThread(void* mc) {
-	((MasterController*)mc)->_execute();
-	return 0;
-}
+// TODO: Network code to wait for incoming real hardware node connections.
 
 MasterController::MasterController(int frameRateMax) {
 	mFrameRateMax = frameRateMax;
@@ -31,8 +28,14 @@ MasterController::~MasterController() {
 	if (mInitialized) {
 		SDL_DestroySemaphore(mStartSem);
 	}
-	
+
 	SDL_DestroyMutex(mTCrit); // DESTROY
+}
+
+// Entry point for a new MC thread.
+int MasterController::_startMCThread(void* mc) {
+	((MasterController*)mc)->_execute();
+	return 0;
 }
 
 // Set up thread, put it in a waiting state.
@@ -106,6 +109,11 @@ void MasterController::addFrame(Frame *newFrame) {
 	this->lock();
 	mFrameQueue.push(newFrame);
 	this->unlock();
+}
+
+// Add a render node
+void MasterController::addNode() {
+	// Insert node into node mapping. Give it an ID.
 }
 
 // Threading utility functions
