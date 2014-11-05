@@ -35,6 +35,8 @@ void RenderNode::receiveResponse() {
 	// TODO: Receive response from the network
 	// This will be called by a callback (or similar) for when a response is received from a hardware node on the network.
 
+	//this is now called when a pack of a jobtask is received
+
 	// Update response time
 	mLastLatency = Time::GetTime() - mLastAssignTime;
 }

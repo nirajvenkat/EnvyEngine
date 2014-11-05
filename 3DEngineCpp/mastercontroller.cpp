@@ -6,10 +6,15 @@
 #include "mastercontroller.h"
 #include "renderer.h"
 #include "renderNode.h"
+#include "envy_network.h"
 #include "windows.h"
+#include <set>
+#include <map>
 #include <queue>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_thread.h>
+
+#pragma comment(lib,"ws2_32.lib")
 
 using namespace std;
 
@@ -28,6 +33,8 @@ MasterController::~MasterController() {
 	if (mInitialized) {
 		SDL_DestroySemaphore(mStartSem);
 	}
+
+	disableRegistration();
 
 	SDL_DestroyMutex(mTCrit); // DESTROY
 }
@@ -65,6 +72,8 @@ void MasterController::init() {
 	// Create renderer
 	mRenderer = new Renderer();
 	mRenderer->initOutputWindow(640, 360, "Envy Master Controller");
+
+	enableRegstration();
 
 	// Init successful
 	fprintf(stderr, "Master Controller Initialized...\n");
@@ -123,4 +132,135 @@ void MasterController::lock() {
 
 void MasterController::unlock() {
 	SDL_UnlockMutex(mTCrit);
+}
+
+void MasterController:enableRegistration(){//creates thread to respond to registration broadcasts
+	WSADATA wsa;
+	WSAStartup(MAKEWORD(2, 2), &wsa);
+	broadCastListenerHandle = CreateThread(0, 0, registerThread, NULL, 0, &broadCastListenerID);
+}
+
+void MasterController::disableRegistration(){//cleans up thread space and closes socket
+	CloseHandle(broadCastListenerHandle);
+	closesocket(broadCastSocket);
+	int n = 0;
+	//destroy threads
+	for (std::set<HANDLE>::iterator i = threads.begin(); i != threads.end(); i++){
+		CloseHandle(*i);
+		++n;
+	}
+	printf("destroyed %d threads\n", n);
+	n = 0;
+	//close all sockets
+	for (std::set<SOCKET>::iterator i = socks.begin(); i != socks.end(); i++){
+		closesocket(*i);
+		++n;
+	}
+	printf("closed %d sockets\n", n);
+	WSACleanup();
+}
+
+DWORD WINAPI MasterController::registerThread(LPVOID param){
+	struct sockaddr_in mc, node;
+	int slen;
+	SOCKET temp;
+	tSock = socket(AF_UNSPEC, SOCK_STREAM, IPPROTO_TCP);
+	broadCastSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+
+	slen = sizeof(mc);
+
+	mc.sin_family = AF_INET;
+	mc.sin_addr.s_addr = INADDR_ANY;
+	mc.sin_port = htons(UDP_PORT);
+
+	bind(broadCastSocket, (struct sockaddr*)&mc, slen);
+	bind(tSock, (const struct sockaddr*)&mc, sizeof(mc));
+	listen(tSock, 1);//1 : 1 , thread : node
+
+	pkt p;
+	p.header.pkt_type = PKT_TYPE_STATUS;
+	p.header.status = STATUS_BOOT_OK;
+	p.header.p_length = 0;
+	p.header.timestamp = 0;
+	char buffer[sizeof(pkt)];
+	//htonPacket(p, buffer);
+
+
+	while (true){
+		printf("starting loop\n");
+		recvfrom(broadCastSocket, buffer, sizeof(pkt), 0, (struct sockaddr*)&node, &slen);//assumes all broadcasts are seeking registration
+		printf("assigning ID: %d\n", nextID);
+		printf("to %s : %d\n\n", inet_ntoa(node.sin_addr), ntohs(node.sin_port));
+
+		//assign ID to node
+		*(p.payload.data) = nextID++;
+
+		sendto(broadCastSocket, buffer, sizeof(pkt), 0, (struct sockaddr*)&node, slen);
+
+		//create new connection
+		temp = accept(tSock, NULL, NULL);
+
+		//create new thread
+		DWORD id;
+		HANDLE thread = CreateThread(0, 0, responseFunnel, &temp, 0, &id);
+
+		//add stuff to sets
+		socks.insert(temp);
+		threads.insert(thread);
+		rNodes.insert(std::pair<HANDLE, RenderNode*>(thread, new RenderNode(nextID - 1)));
+	}
+
+}
+
+DWORD WINAPI MasterController::responseFunnel(LPVOID param){//create tcp connection and listen for responses
+		SOCKET nodeStream = *(SOCKET*)param;
+		int node = rNodes.at(GetCurrentThread())->getNumber();
+		pkt p;
+		char buffer[sizeof(pkt)];
+		while (true){
+			recv(nodeStream, buffer, sizeof(pkt), 0);
+			p = ntohPacket(buffer);
+			if (p.header.pkt_type == PKT_TYPE_STATUS){
+				if (p.header.status == STATUS_OK){
+					printf("Received STATUS_OK from node: %d", node);
+				}
+				else if (p.header.status == STATUS_BOOT_OK){
+					printf("Received STATUS_BOOT_OK from node: %d", node);
+				}
+				else if (p.header.status == STATUS_SHUTTING_DOWN){
+					printf("Received STATUS_SHUTTING_DOWN from node: %d", node);
+				}
+				else if (p.header.status == STATUS_KEEP_ALIVE){
+					printf("Received STATUS_KEEP_ALIVE from node: %d", node);
+				}
+				else if (p.header.status == STATUS_STATISTIC){
+					printf("Received STATUS_STATISTIC from node: %d", node);
+				}
+				else{
+					printf("Invalid Status %d\n", p.header.status);
+				}
+
+			}
+			else if (p.header.pkt_type == PKT_TYPE_CMD){//probably wont get any of these
+				if (*(int*)p.payload.data == CMD_PING){
+					printf("Received PING from node: %d", node);
+				}
+				else if (*(int*)p.payload.data == CMD_UNREGISTER){
+					printf("Received UNREGISTER from node: %d", node);
+				}
+				else if (*(int*)p.payload.data == CMD_RESTART){
+					printf("Received RESTART from node: %d", node);
+				}
+				else if (*(int*)p.payload.data == CMD_SHUTDOWN){
+					printf("Received SHUTDOWN from node: %d", node);
+				}
+			}
+			else if (p.header.pkt_type == PKT_TYPE_TASK){//responses
+				rNodes.at(GetCurrentThread())->receiveResponse();
+				printf("Received TASK from socket: %d", nodeStream);
+				//change status
+				//do stuff with the RenderTask
+			}
+		}
+	}
 }

@@ -11,6 +11,9 @@
 
 class Frame;
 
+#define pkt struct pkt
+
+
 class MasterController
 {
 public:
@@ -31,18 +34,30 @@ private:
 	bool mInitialized;
 	class Renderer *mRenderer;
 	std::priority_queue<Frame*, std::vector<Frame*>, class _FrameComparator> mFrameQueue;
-
+	std::set<HANDLE> threads;//set of handles for thread
+	std::set<SOCKET> socks;//sockets
+	std::map<HANDLE, RenderNode*> rNodes;//mapps from handles to RenderNodes
+	
+	SOCKET broadCastSocket, tSock;
+	
+	int nextID = 1;//used to assign IDs' to threads
 	int mFrameRateMax;
 
 	// Threading
 	struct SDL_Thread	  *mThread;
 	struct SDL_semaphore  *mStartSem;	// Wait on this while we load up.
 	struct SDL_mutex      *mTCrit;
+	HANDLE broadCastListenerHandle;
+	DWORD broadCastListenerID;
 
 	// Render nodes
 	unsigned long mMaxNodeId;
 
 	void _execute();
+	void enableRegistration();
+	void disableRegistration();
+	DWORD WINAPI registerThread(LPVOID);
+
 };
 
 #endif

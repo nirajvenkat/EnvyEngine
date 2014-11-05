@@ -34,6 +34,7 @@ private:
 	class RenderTask *mCurrentTask;
 
 	// TODO: NETWORK RELATED ATTRIBUTES
+	SOCK nodeStream;
 
 	// Node stats
 	float mCommandRate;
