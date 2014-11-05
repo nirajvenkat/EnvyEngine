@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <time.h>
+#include <linux/reboot.h>
 
 void htonPacket(struct pkt packet, char buffer[sizeof(struct pkt)]);
 void *TCPHandler(void* arg);
@@ -18,7 +19,6 @@ int main(int argc, char** argv)
 	//Create TCP thread and mutex
 	pthread_mutex_init(&lock, NULL);
 	pthread_t server_thread;
-	pthread_create(&server_thread, NULL, &TCPHandler, NULL);
 	
 
 	/*Set up UDP socket for broadcast until we can establish a reliable
@@ -51,18 +51,26 @@ int main(int argc, char** argv)
 	char buffer[sizeof(struct pkt)];
 	htonPacket(packet, buffer);
 	
-	pthread_mutex_lock(&lock);
-	fprintf(stdout, "Beginning broadcast on port %d...\n", UDP_PORT);
-	while(!didACK)
+
+	while(1)
 	{
-		udp_status = sendto(udp_sock, buffer, sizeof(buffer), 0, (struct sockaddr *) &bcast, udp_socklen);
-		pthread_mutex_unlock(&lock);
-		sleep(BCAST_SLEEP);
+		fprintf(stdout, "Beginning broadcast on port %d...\n", UDP_PORT);
+		pthread_create(&server_thread, NULL, &TCPHandler, NULL);
 		pthread_mutex_lock(&lock);
+
+		while(!didACK)
+		{
+			udp_status = sendto(udp_sock, buffer, sizeof(buffer), 0, (struct sockaddr *) &bcast, udp_socklen);
+			pthread_mutex_unlock(&lock);
+			sleep(BCAST_SLEEP);
+			pthread_mutex_lock(&lock);
+		}
+
+		pthread_join(server_thread, NULL);
+		didACK = 0;
 	}
 
 	close(udp_sock);
-	pthread_join(server_thread, NULL);
 }
 
 //Set up TCP socket to listen for incoming TCP connection from master controller
@@ -142,14 +150,51 @@ void *TCPHandler(void *args)
 				{
 					case CMD_PING:
 						send_packet.header.pkt_type = PKT_TYPE_STATUS;
-						send_packet.header.status = STATUS_OK;
-						send_packet.header.p_length = sizeof(STATUS_KEEP_ALIVE);
+						send_packet.header.status = STATUS_KEEP_ALIVE;
+						send_packet.header.p_length = 0;
 						send_packet.header.timestamp = 0;
-						tmp = STATUS_KEEP_ALIVE;
+						/*tmp = STATUS_KEEP_ALIVE;
 						tmp = htonl(tmp);
-						memcpy(send_packet.payload.data, &tmp, sizeof(tmp));
+						memcpy(send_packet.payload.data, &tmp, sizeof(tmp));*/
 						htonPacket(send_packet, buffer);
 						sendto(client,buffer,sizeof(buffer),0,(struct sockaddr *)&cli_addr,&clilen);
+						fprintf(stdout, "Received PING from Master; sending back KEEP_ALIVE\n");
+						break;
+					case CMD_UNREGISTER:
+						send_packet.header.pkt_type = PKT_TYPE_STATUS;
+						send_packet.header.status = STATUS_OK;
+						send_packet.header.p_length = 0;
+						send_packet.header.timestamp = 0;
+						htonPacket(send_packet, buffer);
+						sendto(client,buffer,sizeof(buffer),0,(struct sockaddr *)&cli_addr,&clilen);
+						fprintf(stdout, "Received UNREGISTER from Master. Terminating thread.\n");
+						finished = 1;
+						NODE_ID = 0;
+						close(fd);
+						break;
+					case CMD_RESTART:
+						send_packet.header.pkt_type = PKT_TYPE_STATUS;
+						send_packet.header.status = STATUS_SHUTTING_DOWN;
+						send_packet.header.p_length = 0;
+						send_packet.header.timestamp = 0;
+						htonPacket(send_packet, buffer);
+						sendto(client,buffer,sizeof(buffer),0,(struct sockaddr *)&cli_addr,&clilen);
+						fprintf(stdout, "Received RESTART from Master; Rebooting machine.\n");
+						finished = 1;
+						close(fd);
+						reboot(LINUX_REBOOT_CMD_RESTART);
+						break;
+					case CMD_SHUTDOWN:
+						send_packet.header.pkt_type = PKT_TYPE_STATUS;
+						send_packet.header.status = STATUS_SHUTTING_DOWN;
+						send_packet.header.p_length = 0;
+						send_packet.header.timestamp = 0;
+						htonPacket(send_packet, buffer);
+						sendto(client,buffer,sizeof(buffer),0,(struct sockaddr *)&cli_addr,&clilen);
+						fprintf(stdout, "Received SHUTDOWN from Master; Powering off machine.\n");
+						finished = 1;
+						close(fd);
+						reboot(LINUX_REBOOT_CMD_POWER_OFF);
 						break;
 				}
 			}
