@@ -20,3 +20,4 @@ class RenderTask *RenderTaskFactory::createCameraTask(unsigned int seqNo, const 
 
 	return rt;
 }
+

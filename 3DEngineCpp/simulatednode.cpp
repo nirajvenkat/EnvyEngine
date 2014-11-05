@@ -12,6 +12,10 @@ int SimulatedNode::bitmapWidth;
 int SimulatedNode::bitmapHeight;
 std::map<unsigned int, char*> SimulatedNode::framePool;
 
+SimulatedNode::SimulatedNode(int parentId) {
+
+}
+
 void SimulatedNode::initSimNodes(int width, int height) {
 	bitmapWidth = width;
 	bitmapHeight = height;
@@ -19,8 +23,12 @@ void SimulatedNode::initSimNodes(int width, int height) {
 }
 
 void SimulatedNode::acceptTask(RenderTask *rt) {
+
 	// Accept render task
+
+
 	// Start timer
+
 }
 
 // Threading utility functions
@@ -33,7 +41,7 @@ void SimulatedNode::unlock() {
 }
 
 // Callbacks
-void taskTimeout() {
+Uint32 taskTimeout() {
 	// Grab the contents of the OpenGL framebuffer. The frames don't need to be in order to start with.
 	// Store the contents in the response
 	// Call the response callback
