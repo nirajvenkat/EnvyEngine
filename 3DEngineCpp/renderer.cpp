@@ -15,7 +15,7 @@ Renderer::~Renderer() {}
 
 void Renderer::initOutputWindow(int width, int height, const char *title) 
 {
-	if (SDL_Init(SDL_INIT_VIDEO)) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER)) { // Timer for SimNodes
 		// Failed to init
 	}
 
