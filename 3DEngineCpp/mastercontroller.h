@@ -21,6 +21,7 @@ public:
 	void run();
 	void addFrame(Frame *newFrame);
 	void addNode();
+	void refreshNodeTimeshares();
 
 	// Threading
 	void lock();
@@ -33,8 +34,8 @@ private:
 	class Renderer *mRenderer;
 	std::priority_queue<Frame*, std::vector<Frame*>, class _FrameComparator> mFrameQueue;
 	std::map<unsigned int, class RenderNode*> mNodes;
-
 	int mFrameRateMax;
+	unsigned int mMaxNodeId;
 
 	// Threading
 	struct SDL_Thread	  *mThread;
@@ -42,6 +43,7 @@ private:
 	struct SDL_mutex      *mTCrit;
 
 	// Render nodes
+	float *mNodeTimeshare;
 	unsigned long mMaxNodeNumber;
 
 	void _execute();

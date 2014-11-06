@@ -46,6 +46,9 @@ int RenderNode::getNumber() {
 	return mNumber;
 }
 
+float RenderNode::getAvgLatency() {
+	return mResponseRate;
+}
 
 // Computes a moving average of response times with window size equal to NODE_LATENCY_WINDOW.
 // Change NODE_LATENCY_WINDOW to a larger value for added smoothness.

@@ -115,7 +115,47 @@ void MasterController::addFrame(Frame *newFrame) {
 
 // Add a render node
 void MasterController::addNode() {
-	// Insert node into node mapping. Give it an ID.
+
+	RenderNode	 *rn;
+	unsigned int nodeId = mMaxNodeId++;
+
+	// TODO: Set up and allocate the new node
+
+
+	mNodes[nodeId] = rn;
+
+	// Reset timeshare array
+	if (mNodeTimeshare)
+		delete[] mNodeTimeshare;
+	if (!mNodes.empty())
+		mNodeTimeshare = new float[mNodes.size()];
+	else mNodeTimeshare = NULL;
+}
+
+// Referesh timeshares for each node based on performance.
+// Each entry in mNodeTimeshare will gain a timeshare percentage.
+void MasterController::refreshNodeTimeshares() {
+	
+	int i, n;
+	RenderNode *cn;
+	float invLatency = 0.0f;
+
+	// Thread safe
+	lock();
+
+	n = mNodes.size();
+	for (i = 0; i < n; i++)
+	{
+		cn = mNodes[i];
+		invLatency += 1 / cn->getAvgLatency();
+	}
+	invLatency = 1 / invLatency;
+	for (i = 0; i < n; i++)
+	{
+		cn = mNodes[i];
+		mNodeTimeshare[i] = invLatency * (1 / cn->getAvgLatency());
+	}
+	unlock();
 }
 
 // Threading utility functions

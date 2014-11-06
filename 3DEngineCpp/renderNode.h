@@ -26,6 +26,7 @@ public:
 
 	int getNumber();
 	double getLastLatency();
+	float getAvgLatency();
 	void refreshRates();
 
 private:
