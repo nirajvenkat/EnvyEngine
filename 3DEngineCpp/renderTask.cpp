@@ -41,3 +41,7 @@ void RenderTask::clearPayload() {
 		mPayload = NULL;
 	}
 }
+
+unsigned long RenderTask::getSeqNo() {
+	return seqNo;
+}

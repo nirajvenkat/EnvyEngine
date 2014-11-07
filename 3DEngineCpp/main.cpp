@@ -6,7 +6,11 @@
 #include "framedriver.h"
 #include "mastercontroller.h"
 
-// #define TEST_MC
+// TEMP
+#include "renderTask.h"
+#include "renderTaskFactory.h"
+
+#define TEST_MC
 
 FrameDriver *gFrameDriver = NULL;
 
@@ -120,15 +124,24 @@ int main()
 
 	// Framedriver
 	gFrameDriver = new FrameDriver(mc);
-	gFrameDriver->loadFrames();
+	// gFrameDriver->loadFrames();
 	
 	mc->run();
 
-	while (1) {
-		_sleep(50);
-		gFrameDriver->tick();
-	}
+	//while (1) {
+	//	_sleep(50);
+	//	gFrameDriver->tick();
+	//}
 #endif
+
+	/* Unit test for rendertask
+	RenderTask::SimpleMat4 view;
+	RenderTask::SimpleMat4 proj;
+
+	memset(&view, 0, sizeof(view));
+	memset(&proj, 0, sizeof(proj));
+	RenderTask *rt = RenderTaskFactory::createCameraTask(0, view, proj);
+	*/
 
 	// Game / Envy Rendering
 	TestGame game;

@@ -7,6 +7,8 @@
 #include "renderer.h"
 #include "renderNode.h"
 #include "windows.h"
+#include "framedriver.h"
+#include "simnodetests.h"
 #include <queue>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_thread.h>
@@ -19,6 +21,7 @@ MasterController::MasterController(int frameRateMax) {
 	mFrameRateMax = frameRateMax;
 	mMaxNodeId = 0;
 	mStartSem = NULL;
+	mNodeTimeshare = NULL;
 	mNodes.clear();
 }
 
@@ -66,7 +69,7 @@ void MasterController::init() {
 
 	// Create renderer
 	mRenderer = new Renderer();
-	mRenderer->initOutputWindow(640, 360, "Envy Master Controller");
+	mRenderer->initOutputWindow(1366, 720, "Envy Master Controller");
 
 	// Init successful
 	fprintf(stderr, "Master Controller Initialized...\n");
@@ -83,25 +86,66 @@ void MasterController::run() {
 void MasterController::_execute() {
 
 	unsigned long last = 0;
+	static unsigned long tempTime = 0;
 	int pause = 1000 / mFrameRateMax;
+	int statTimer = 0;
 	Frame *curFrame;
 
 	SDL_SemWait(mStartSem);
 	fprintf(stderr, "Master controller out of wait state.\n");
 
+#ifdef SIMULATE
+	fprintf(stderr, "Loading node simulation.\n");
+		RunSimNodeTest(SIMULATE, this);
+#endif
+
 	// Inner loop
 	while (true) {
+		
+		std::map<unsigned int, RenderNode*>::iterator it;
+		
 		lock();
-		if (!mFrameQueue.empty()) {
 
+		// Assign tasks - Simple round-robin (may move to RSS later)
+		for (it = mNodes.begin(); it != mNodes.end(); ++it) { // iterate over nodes
+			RenderNode *cn = it->second;
+			switch (cn->getStatus()) {
+				case RenderNode::READY:
+					cn->assignTask(NULL);
+				break;
+				case RenderNode::RECEIVED_DATA:
+					mFrameQueue.push(cn->unloadFinishedFrame());
+				break;
+			}
+		}
+
+		// Render available finished frames
+		if (!mFrameQueue.empty())
+		{
 			curFrame = mFrameQueue.top();
 			mFrameQueue.pop();
-
-			fprintf(stderr, "MasterController: Rendering frame %d\n", curFrame->getModelTime());
+			//fprintf(stderr, "MasterController: Rendering frame %d\n", curFrame->getModelTime());
 			mRenderer->renderFrame(curFrame);
 			delete(curFrame);
 		}
+
+		/*
+		if (gFrameDriver->hasFrames()) {
+
+			curFrame = gFrameDriver->nextFrame();
+			curFrame->setSurface(curFrame->getSurface());
+			mRenderer->renderFrame(curFrame);
+			delete(curFrame);
+		}
+		*/
 		unlock();
+
+		statTimer++;
+		if (statTimer > 30) {
+			statTimer = 0;
+			refreshNodeTimeshares();
+			debugNodeStatistics();
+		}
 
 		Sleep(pause);
 	}
@@ -114,13 +158,9 @@ void MasterController::addFrame(Frame *newFrame) {
 }
 
 // Add a render node
-void MasterController::addNode() {
+void MasterController::addNode(RenderNode *rn) {
 
-	RenderNode	 *rn;
-	unsigned int nodeId = mMaxNodeId++;
-
-	// TODO: Set up and allocate the new node
-
+	unsigned int nodeId = rn->getNodeId();
 
 	mNodes[nodeId] = rn;
 
@@ -130,6 +170,23 @@ void MasterController::addNode() {
 	if (!mNodes.empty())
 		mNodeTimeshare = new float[mNodes.size()];
 	else mNodeTimeshare = NULL;
+}
+
+void MasterController::dropNode(unsigned int nodeId) {
+
+	lock();
+
+	RenderNode *rn = mNodes[nodeId];
+	mNodes.erase(nodeId);
+
+	// Reset timeshare array
+	if (mNodeTimeshare)
+		delete[] mNodeTimeshare;
+	if (!mNodes.empty())
+		mNodeTimeshare = new float[mNodes.size()];
+	else mNodeTimeshare = NULL;
+
+	unlock();
 }
 
 // Referesh timeshares for each node based on performance.
@@ -144,16 +201,16 @@ void MasterController::refreshNodeTimeshares() {
 	lock();
 
 	n = mNodes.size();
-	for (i = 0; i < n; i++)
-	{
-		cn = mNodes[i];
-		invLatency += 1 / cn->getAvgLatency();
+	std::map<unsigned int, RenderNode*>::iterator it;
+	i = 0;
+	for (it = mNodes.begin(); it != mNodes.end(); ++it) {
+		cn = it->second;
+		invLatency += 1.0f / cn->getAvgLatency();
 	}
 	invLatency = 1 / invLatency;
-	for (i = 0; i < n; i++)
-	{
-		cn = mNodes[i];
-		mNodeTimeshare[i] = invLatency * (1 / cn->getAvgLatency());
+	for (it = mNodes.begin(); it != mNodes.end(); ++it) {
+		cn = it->second;
+		mNodeTimeshare[i++] = invLatency * (1.0f / cn->getAvgLatency());
 	}
 	unlock();
 }
@@ -165,4 +222,21 @@ void MasterController::lock() {
 
 void MasterController::unlock() {
 	SDL_UnlockMutex(mTCrit);
+}
+
+// Debug functions
+void MasterController::debugNodeStatistics() {
+	std::map<unsigned int, RenderNode*>::iterator it;
+	fprintf(stderr, "Node Statistics: Latency( ");
+	for (it = mNodes.begin(); it != mNodes.end(); ++it) { // iterate over nodes
+		RenderNode *curNode = it->second;
+		fprintf(stderr, "%.1fms ", curNode->getAvgLatency());
+	}
+	fprintf(stderr, ") Timeshares( ");
+	int i = 0;
+	for (it = mNodes.begin(); it != mNodes.end(); ++it) { // iterate over nodes
+		unsigned int id = it->first;
+		fprintf(stderr, "%.2f%% ", mNodeTimeshare[i++]*100.0f);
+	}
+	fprintf(stderr, ")\n");
 }

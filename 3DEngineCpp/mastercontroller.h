@@ -19,20 +19,25 @@ public:
 	virtual ~MasterController();
 	void init();
 	void run();
-	void addFrame(Frame *newFrame);
-	void addNode();
+	void addFrame(class Frame *newFrame);
+	void addNode(class RenderNode *rn);
+	void dropNode(unsigned int nodeId);
 	void refreshNodeTimeshares();
 
 	// Threading
 	void lock();
 	void unlock();
 
+	void debugNodeStatistics();
+
 	static int MasterController::_startMCThread(void* mc);
 
 private:
 	bool mInitialized;
 	class Renderer *mRenderer;
-	std::priority_queue<Frame*, std::vector<Frame*>, class _FrameComparator> mFrameQueue;
+	std::priority_queue<Frame*, std::vector<Frame*>, class _FrameComparator> mFrameQueue;	// Finished frames.
+	std::queue<class RenderTask*> mWaitingTaskQueue;	// Tasks waiting to be assigned.
+	std::queue<class RenderTask*> mWorkingTaskQueue;	// Tasks being worked on by active nodes.
 	std::map<unsigned int, class RenderNode*> mNodes;
 	int mFrameRateMax;
 	unsigned int mMaxNodeId;

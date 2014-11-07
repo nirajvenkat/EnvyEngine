@@ -6,20 +6,51 @@
 #include <stdlib.h>
 #include "renderNode.h"
 #include "renderTask.h"
+#include "frame.h"
+#include "simulatednode.h"
 #include "time.h"
 
 RenderNode::RenderNode(unsigned int number) 
 {
-	mNumber = number;
-	mLastLatency = -1; // Latency uninitialized until first response received.
+	mId = number;
+	mCurSample = 0;
+	mLastLatency = 1;
+	mCommandRate = 1;
+	mResponseRate = 1;
 	mLatencySamples = (float*)malloc(sizeof(float)*NODE_LATENCY_WINDOW);
+	memset(mLatencySamples, 0, sizeof(float)*NODE_LATENCY_WINDOW);
+	mStatus = Status::READY;
+#ifdef SIMULATE
+	mSimNode = NULL;
+#endif
 }
 
 RenderNode::~RenderNode() {
 	free(mLatencySamples);
+#ifdef SIMULATE
+	if (mSimNode)
+		delete(mSimNode);
+#endif
 }
 
+#ifdef SIMULATE // Simulated nodes
+void RenderNode::setupSimNode(int minLatency, int maxLatency, int dropTime)
+{
+	mSimNode = new SimulatedNode(this, minLatency, maxLatency, dropTime);
+}
+void RenderNode::receiveSimData(Frame *newFrame) {
+	mFinishedFrame = newFrame;
+}
+
+void RenderNode::simNullResponse() {
+	updateResponseTime();
+	mStatus = Status::READY;
+}
+#endif
+
 void RenderNode::assignTask(class RenderTask *task) {
+
+	mStatus = Status::BUSY;
 
 	// Clear current task
 	clearTask();
@@ -28,22 +59,45 @@ void RenderNode::assignTask(class RenderTask *task) {
 	// Set task start time
 	mLastAssignTime = Time::GetTime();
 
+#ifdef SIMULATE
+	mSimNode->acceptTask(task);
+#endif
+
 	// TODO: Send task payload over the network
 }
 
 void RenderNode::receiveResponse() {
 	// TODO: Receive response from the network
 	// This will be called by a callback (or similar) for when a response is received from a hardware node on the network.
-
 	updateResponseTime(); // Update average response time.
+	mStatus = Status::RECEIVED_DATA;
 }
 
 void RenderNode::clearTask() {
-	delete(mCurrentTask);
+	if (mCurrentTask) {
+		mCurrentTask = NULL;
+		delete(mCurrentTask);
+	}
 }
 
-int RenderNode::getNumber() {
-	return mNumber;
+int RenderNode::getNodeId() {
+	return mId;
+}
+
+Frame *RenderNode::unloadFinishedFrame()
+{
+	Frame *ff = mFinishedFrame;
+	mFinishedFrame = NULL;
+
+	clearTask();
+
+	mStatus = Status::READY;
+
+	return ff;
+}
+
+RenderNode::Status RenderNode::getStatus() {
+	return mStatus;
 }
 
 float RenderNode::getAvgLatency() {
@@ -52,10 +106,9 @@ float RenderNode::getAvgLatency() {
 
 // Computes a moving average of response times with window size equal to NODE_LATENCY_WINDOW.
 // Change NODE_LATENCY_WINDOW to a larger value for added smoothness.
-
 void RenderNode::updateResponseTime() {
 	// Update response time
-	mLastLatency = (float)(Time::GetTime() - mLastAssignTime);
+	mLastLatency = (float)(Time::GetTime() - mLastAssignTime) * 1000;
 	mLatencySamples[mCurSample++] = mLastLatency;
 
 	// Point to sample slated for removal.

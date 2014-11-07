@@ -3,6 +3,9 @@
 // The Master Controller-side representation of a hardware rendering node. The hardware rendering node is responsible
 // for rendering specific requests made by the master controller.
 
+#define SIMULATE testSimNodes4Drop
+//#define SIMULATE testSimNodes4Bad1
+
 #ifndef RENDERNODE_H
 #define RENDERNODE_H
 
@@ -23,18 +26,32 @@ public:
 	void assignTask(class RenderTask *task);
 	void clearTask();
 	void receiveResponse();
+	RenderNode::Status getStatus();
+	class Frame *unloadFinishedFrame();
 
-	int getNumber();
+	int getNodeId();
 	double getLastLatency();
 	float getAvgLatency();
 	void refreshRates();
+
+#ifdef SIMULATE
+	void setupSimNode(int minLatency, int maxLatency, int dropTime);
+	void receiveSimData(class Frame *newFrame);
+	void simNullResponse();
+#endif
 
 private:
 
 	void updateResponseTime();
 
-	int mNumber;
+	int mId;
 	class RenderTask *mCurrentTask;
+	Status mStatus;
+	class Frame *mFinishedFrame;
+
+#ifdef SIMULATE
+	class SimulatedNode *mSimNode;
+#endif
 
 	// TODO: NETWORK RELATED ATTRIBUTES
 

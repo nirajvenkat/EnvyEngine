@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="10.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -14,6 +14,8 @@
     <ClInclude Include="3DEngine.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="coreEngine.h" />
+    <ClInclude Include="frame.h" />
+    <ClInclude Include="framedriver.h" />
     <ClInclude Include="freeLook.h" />
     <ClInclude Include="freeMove.h" />
     <ClInclude Include="game.h" />
@@ -22,16 +24,25 @@
     <ClInclude Include="input.h" />
     <ClInclude Include="lighting.h" />
     <ClInclude Include="mappedValues.h" />
+    <ClInclude Include="mastercontroller.h" />
     <ClInclude Include="material.h" />
     <ClInclude Include="math3d.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="meshRenderer.h" />
     <ClInclude Include="referenceCounter.h" />
+    <ClInclude Include="renderer.h" />
     <ClInclude Include="renderingEngine.h" />
+    <ClInclude Include="renderNode.h" />
+    <ClInclude Include="renderTask.h" />
+    <ClInclude Include="renderTaskFactory.h" />
+    <ClInclude Include="renderTaskPayload.h" />
     <ClInclude Include="renderUtil.h" />
     <ClInclude Include="sdl_backend.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="simnodetests.h" />
+    <ClInclude Include="simulatednode.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="taskPayload.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="time.h" />
     <ClInclude Include="transform.h" />
@@ -42,6 +53,8 @@
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="coreEngine.cpp" />
+    <ClCompile Include="frame.cpp" />
+    <ClCompile Include="framedriver.cpp" />
     <ClCompile Include="freeLook.cpp" />
     <ClCompile Include="freeMove.cpp" />
     <ClCompile Include="game.cpp" />
@@ -49,12 +62,19 @@
     <ClCompile Include="input.cpp" />
     <ClCompile Include="lighting.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mastercontroller.cpp" />
     <ClCompile Include="math3d.cpp" />
     <ClCompile Include="mesh.cpp" />
+    <ClCompile Include="renderer.cpp" />
     <ClCompile Include="renderingEngine.cpp" />
+    <ClCompile Include="renderNode.cpp" />
+    <ClCompile Include="renderTask.cpp" />
+    <ClCompile Include="renderTaskFactory.cpp" />
     <ClCompile Include="renderUtil.cpp" />
     <ClCompile Include="sdl_backend.cpp" />
     <ClCompile Include="shader.cpp" />
+    <ClCompile Include="simnodetests.cpp" />
+    <ClCompile Include="simulatednode.cpp" />
     <ClCompile Include="stb_image.c" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="time.cpp" />
@@ -94,6 +114,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>D:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;$(LibraryPath);D:\EnvyEngine\3DEngineCpp\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -111,7 +132,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>.\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glu32.lib;glew32.lib;glew32mx.lib;glew32mxs.lib;glew32s.lib;assimp.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glu32.lib;glew32.lib;glew32mx.lib;glew32mxs.lib;glew32s.lib;assimp.lib;SDL2_image.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

@@ -15,7 +15,7 @@ public:
 	unsigned long getModelTime();
 	void setSurface(class SDL_Surface *surf);
 	SDL_Surface *getSurface(void);
-
+	unsigned long getTaskId();
 private:
 
 	static unsigned long idMax;
@@ -23,6 +23,7 @@ private:
 	class SDL_Surface *mSurface;
 	unsigned long modelTime;
 	unsigned long id;
+	unsigned long mTaskId;
 
 	// Going to need a place for our bitmap
 };

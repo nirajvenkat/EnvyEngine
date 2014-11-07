@@ -8,20 +8,33 @@
 
 #include "frame.h"
 #include <vector>
+#include <queue>
 
 class FrameDriver {
 public:
+
 	FrameDriver(class MasterController *mc);
 	virtual ~FrameDriver();
 	void tick();
 	void _tick();
 	void loadFrames();
-
+	bool hasFrames();
+	Frame *nextFrame();
+	
 private:
-	int							  mFrameIdx;
-	class MasterController		  *mc;
-	std::wstring				  mFrameDir;
-	std::vector<std::wstring*>    mFrameFiles;
+
+	// Threading
+	void lock();
+	void unlock();
+
+	int							   mFrameIdx;
+	class MasterController		   *mc;
+	std::wstring				   mFrameDir;
+	std::vector<std::wstring*>     mFrameFiles;
+	std::queue<class Frame*>	   mFrameQueue;
+
+	// Threading
+	struct SDL_mutex      *mTCrit;
 };
 
 #endif

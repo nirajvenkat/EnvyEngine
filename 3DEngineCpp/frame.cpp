@@ -16,6 +16,8 @@ Frame::Frame(unsigned long modeltime)
 }
 
 Frame::~Frame() {
+	if (mSurface && mSurface->pixels)
+		free(mSurface->pixels); // In SDL, if we're responsible for creating the surface from our own bitmap, so we have to dispose of it.
 	if (mSurface)
 		SDL_FreeSurface(mSurface); // Free the surface
 }
@@ -38,3 +40,6 @@ unsigned long Frame::getModelTime()
 	return modelTime;
 }
 
+unsigned long Frame::getTaskId() {
+	return mTaskId;
+}

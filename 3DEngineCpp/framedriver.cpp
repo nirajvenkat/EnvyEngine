@@ -21,6 +21,16 @@
 FrameDriver::FrameDriver(MasterController *mc) {
 	this->mc = mc; // MasterController to feed frames to
 	mFrameIdx = 0;
+
+	mTCrit = SDL_CreateMutex();
+	if (mTCrit == NULL) {
+		fprintf(stderr, "Could not create SDL_Mutex: %s\n", SDL_GetError());
+		return;
+	}
+}
+
+FrameDriver::~FrameDriver() {
+	SDL_DestroyMutex(mTCrit);
 }
 
 // For sorting wstrings
@@ -91,11 +101,17 @@ void FrameDriver::loadFrames() {
 
 void FrameDriver::_tick() {
 
-	// Note: Currently unused
 	size_t bufSize = 4 * 1366 * 720;
+
+	lock();
+
+	if (mFrameQueue.size() > 256) {
+		unlock();
+		return;
+	}
+
 	GLubyte *frameBufData = (GLubyte*)malloc(bufSize);
 	memset(frameBufData, 0, bufSize);
-
 
 	// Create a surface
 	SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(frameBufData, 1366, 720, 32, 1366*4, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
@@ -104,13 +120,31 @@ void FrameDriver::_tick() {
 	}
 
 	if (frameBufData && surface) {
-	glReadPixels(0, 0, 1366, 720, GL_RGBA, GL_UNSIGNED_BYTE, frameBufData);
+		glReadPixels(0, 0, 1366, 720, GL_RGBA, GL_UNSIGNED_BYTE, frameBufData);
 	}
 
-	if (SDL_SaveBMP(surface, "D:\\test.bmp")) {
-	fprintf(stderr, "Error saving BMP: %s\n", SDL_GetError());
-	}
-	free(frameBufData);
+	Frame *nFrame = new Frame(mFrameIdx++);
+	nFrame->setSurface(surface);
+	mFrameQueue.push(nFrame);
+
+	unlock();
+}
+
+bool FrameDriver::hasFrames() 
+{
+	lock();
+	int queueSize = mFrameQueue.size();
+	unlock();
+	return (queueSize > 0);
+}
+
+Frame *FrameDriver::nextFrame()
+{
+	lock();
+	Frame *outFrame = mFrameQueue.front();
+	mFrameQueue.pop();
+	unlock();
+	return outFrame;
 }
 
 void FrameDriver::tick() {
@@ -142,4 +176,12 @@ void FrameDriver::tick() {
 		mFrameIdx = 0;
 }
 
-FrameDriver::~FrameDriver(){}
+// Threading
+void FrameDriver::lock()
+{
+	SDL_LockMutex(mTCrit);
+}
+void FrameDriver::unlock()
+{
+	SDL_UnlockMutex(mTCrit);
+}

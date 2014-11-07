@@ -4,16 +4,32 @@
 
 #include "simulatednode.h"
 #include "renderTask.h"
+#include "renderNode.h"
+#include "framedriver.h"
 #include <SDL2/SDL_thread.h>
 #include <map>
+#include <cstdlib>
+#include <ctime>
+
+extern FrameDriver *gFrameDriver;
 
 // Statics
 int SimulatedNode::bitmapWidth;
 int SimulatedNode::bitmapHeight;
 std::map<unsigned int, char*> SimulatedNode::framePool;
 
-SimulatedNode::SimulatedNode(int parentId) {
+// Callbacks
+Uint32 taskTimeout(Uint32 interval, void *vself);
 
+SimulatedNode::SimulatedNode(RenderNode *parent, int minLatency, int maxLatency, int dropTime) {
+	mMinLatency = minLatency;
+	mMaxLatency = maxLatency;
+	mDropTime = dropTime;
+	mParent = parent;
+	mTasksDone = 0;
+
+	// Seed random number generator
+	srand(static_cast <unsigned> (time(0)));
 }
 
 void SimulatedNode::initSimNodes(int width, int height) {
@@ -24,11 +40,45 @@ void SimulatedNode::initSimNodes(int width, int height) {
 
 void SimulatedNode::acceptTask(RenderTask *rt) {
 
-	// Accept render task
+	SDL_TimerID tid;
+	Uint32 waitTime;
 
+	// Accept render task
+	// fprintf(stderr, "SimNode %d accepted render task\n", mParent->getNodeId());
+
+	// Randomly generate a rough wait time in ms
+	if (mMaxLatency > mMinLatency)
+		waitTime = mMinLatency + rand() / (RAND_MAX / (mMaxLatency - mMinLatency));
+	else
+		waitTime = mMinLatency;
+
+	if (mTasksDone > mDropTime && mDropTime > 0) {
+		mMinLatency = 500;
+		mMaxLatency = 550;
+	}
 
 	// Start timer
+	mTid = SDL_AddTimer(waitTime, taskTimeout, (void*)this);
+}
 
+void SimulatedNode::finishTask() {
+
+	SDL_RemoveTimer(mTid); // Wait time over.
+
+	// Grab the next available created frame.
+	if (gFrameDriver->hasFrames()) {
+		mParent->receiveSimData(gFrameDriver->nextFrame());
+		mParent->receiveResponse();
+	}
+	else {
+		mParent->simNullResponse();
+	}
+
+	mTasksDone++;
+}
+
+int SimulatedNode::getId() {
+	return mParentId;
 }
 
 // Threading utility functions
@@ -41,8 +91,8 @@ void SimulatedNode::unlock() {
 }
 
 // Callbacks
-Uint32 taskTimeout() {
-	// Grab the contents of the OpenGL framebuffer. The frames don't need to be in order to start with.
-	// Store the contents in the response
-	// Call the response callback
+Uint32 taskTimeout(Uint32 interval, void *vself) { // This executes in its own thread, so be careful to ensure all ops are threadsafe.
+	SimulatedNode *self = (SimulatedNode*)vself;
+	self->finishTask();
+	return interval;
 }
