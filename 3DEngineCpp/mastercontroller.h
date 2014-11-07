@@ -10,6 +10,8 @@
 #include <map>
 #include "frame.h"
 
+#define MC_MAX_LATENCY 300 // In ms
+
 class Frame;
 
 class MasterController

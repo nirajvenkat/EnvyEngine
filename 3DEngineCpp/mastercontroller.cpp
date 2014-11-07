@@ -10,6 +10,7 @@
 #include "framedriver.h"
 #include "simnodetests.h"
 #include <queue>
+#include <stack>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_thread.h>
 
@@ -90,6 +91,7 @@ void MasterController::_execute() {
 	int pause = 1000 / mFrameRateMax;
 	int statTimer = 0;
 	Frame *curFrame;
+	std::stack<unsigned int> markedNodes;
 
 	SDL_SemWait(mStartSem);
 	fprintf(stderr, "Master controller out of wait state.\n");
@@ -105,6 +107,22 @@ void MasterController::_execute() {
 		std::map<unsigned int, RenderNode*>::iterator it;
 		
 		lock();
+
+		// Gather problem nodes
+		for (it = mNodes.begin(); it != mNodes.end(); ++it) { // iterate over nodes
+			RenderNode *cn = it->second;
+			if (cn->getAvgLatency() > MC_MAX_LATENCY) {
+				fprintf(stderr, "WARNING: Node %d exceeded max latency. Dropping node.\n");
+				markedNodes.push(it->first);
+			}
+		}
+
+		// Drop all marked nodes.
+		unsigned int markedId;
+		while (markedNodes.size() > 0) {
+			dropNode(markedNodes.top());
+			markedNodes.pop();
+		}
 
 		// Assign tasks - Simple round-robin (may move to RSS later)
 		for (it = mNodes.begin(); it != mNodes.end(); ++it) { // iterate over nodes
@@ -178,6 +196,7 @@ void MasterController::dropNode(unsigned int nodeId) {
 
 	RenderNode *rn = mNodes[nodeId];
 	mNodes.erase(nodeId);
+	delete(rn);
 
 	// Reset timeshare array
 	if (mNodeTimeshare)
