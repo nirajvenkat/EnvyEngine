@@ -12,7 +12,7 @@ struct pkt_hdr //Packet header
 
 struct pkt_payload //Packet payload
 {
-	char data[PAYLOAD_SIZE]; //Data buffer
+	unsigned char data[PAYLOAD_SIZE]; //Data buffer
 };
 
 struct pkt //Packet

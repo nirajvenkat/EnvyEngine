@@ -10,6 +10,7 @@
 #include <netdb.h>
 #include <inttypes.h>
 
+#define MIN(x,y) (x < y) ? x : y
 void htonPacket(struct pkt packet, char buffer[sizeof(struct pkt)]);
 struct pkt ntohPacket(char buffer[sizeof(struct pkt)]);
 
@@ -23,15 +24,11 @@ void htonPacket(struct pkt packet, char buffer[sizeof(struct pkt)])
 	memcpy(buffer+offset, &pkt_type, sizeof(pkt_type));
 	offset+= sizeof(pkt_type);
 
-	/*uint16_t node_id = htons(packet.header.node_id);
-	memcpy(buffer+offset, &node_id, sizeof(node_id));
-	offset+= sizeof(node_id);*/
-
 	uint16_t status = htons(packet.header.status);
 	memcpy(buffer+offset, &status, sizeof(status));
 	offset+= sizeof(status);
 
-	uint32_t p_length = htons(packet.header.p_length);
+	uint32_t p_length = htonl(packet.header.p_length);
 	memcpy(buffer+offset, &p_length, sizeof(p_length));
 	offset+= sizeof(p_length);
 
@@ -39,7 +36,10 @@ void htonPacket(struct pkt packet, char buffer[sizeof(struct pkt)])
 	memcpy(buffer+offset, &timestamp, sizeof(timestamp));
 	offset+= sizeof(timestamp);
 
-	memcpy(buffer+offset, packet.payload.data, packet.header.p_length);
+	if(packet.header.p_length > 0)
+	{
+		memcpy(buffer+offset, packet.payload.data, MIN(packet.header.p_length, p_length));
+	}
 }
 
 //Convert buffer containing pkt data to struct
@@ -53,11 +53,6 @@ struct pkt ntohPacket(char buffer[sizeof(struct pkt)])
 	packet.header.pkt_type = ntohs(pkt_type);
 	offset += sizeof(pkt_type);
 
-	/*uint16_t node_id;
-	memcpy(&node_id, buffer+offset, sizeof(node_id));
-	packet.header.node_id = ntohs(node_id);
-	offset += sizeof(node_id);*/
-
 	uint16_t status;
 	memcpy(&status, buffer+offset, sizeof(status));
 	packet.header.status = ntohs(status);
@@ -65,7 +60,7 @@ struct pkt ntohPacket(char buffer[sizeof(struct pkt)])
 
 	uint32_t p_length;
 	memcpy(&p_length, buffer+offset, sizeof(p_length));
-	packet.header.p_length = ntohs(p_length);
+	packet.header.p_length = ntohl(p_length);
 	offset += sizeof(p_length);
 
 	uint32_t timestamp;
@@ -73,6 +68,10 @@ struct pkt ntohPacket(char buffer[sizeof(struct pkt)])
 	packet.header.timestamp = ntohl(timestamp);
 	offset += sizeof(timestamp);
 
-	memcpy(packet.payload.data, buffer+offset, packet.header.p_length);
+	if(packet.header.p_length > 0)
+	{
+		memcpy(packet.payload.data, buffer+offset, MIN(packet.header.p_length, p_length));
+	}
+
 	return packet;
 }

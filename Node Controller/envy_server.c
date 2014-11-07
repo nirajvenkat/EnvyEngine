@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <linux/reboot.h>
+#include <sys/utsname.h>
 
 void htonPacket(struct pkt packet, char buffer[sizeof(struct pkt)]);
 void *TCPHandler(void* arg);
@@ -67,6 +68,7 @@ int main(int argc, char** argv)
 		}
 
 		pthread_join(server_thread, NULL);
+		fprintf(stdout, "TCP thread exited. Begin rebroadcast...\n");
 		didACK = 0;
 	}
 
@@ -129,12 +131,15 @@ void *TCPHandler(void *args)
 		fprintf(stdout, "Received acknowledgement from master controller! My node ID is %" PRIu16 "!\n", NODE_ID);
 
 		int finished = 0;
+		int status;
 		struct pkt send_packet;
 		
 		while(!finished) //Loop until we receive a stop command from master
 		{
 			recvfrom(client, buffer, sizeof(buffer), 0, (struct sockaddr*)&cli_addr, &clilen);
 			recv_packet = ntohPacket(buffer);
+			status = -1;
+			memset(&send_packet, 0, sizeof(send_packet));
 
 			//Handle each type of packet differently
 			if(recv_packet.header.pkt_type == PKT_TYPE_TASK)
@@ -152,33 +157,34 @@ void *TCPHandler(void *args)
 						send_packet.header.pkt_type = PKT_TYPE_STATUS;
 						send_packet.header.status = STATUS_KEEP_ALIVE;
 						send_packet.header.p_length = 0;
-						send_packet.header.timestamp = 0;
-						/*tmp = STATUS_KEEP_ALIVE;
+						send_packet.header.timestamp = recv_packet.header.timestamp;
+						/*tmp = 0;
 						tmp = htonl(tmp);
 						memcpy(send_packet.payload.data, &tmp, sizeof(tmp));*/
 						htonPacket(send_packet, buffer);
-						sendto(client,buffer,sizeof(buffer),0,(struct sockaddr *)&cli_addr,&clilen);
-						fprintf(stdout, "Received PING from Master; sending back KEEP_ALIVE\n");
+						status = sendto(client,buffer,sizeof(buffer),0,(struct sockaddr *)&cli_addr, sizeof(cli_addr));
+						fprintf(stdout, "Received PING from Master; sending back KEEP_ALIVE.\n");
 						break;
 					case CMD_UNREGISTER:
 						send_packet.header.pkt_type = PKT_TYPE_STATUS;
 						send_packet.header.status = STATUS_OK;
 						send_packet.header.p_length = 0;
-						send_packet.header.timestamp = 0;
+						send_packet.header.timestamp = recv_packet.header.timestamp;
 						htonPacket(send_packet, buffer);
-						sendto(client,buffer,sizeof(buffer),0,(struct sockaddr *)&cli_addr,&clilen);
+						status = sendto(client,buffer,sizeof(buffer),0,(struct sockaddr *)&cli_addr, sizeof(cli_addr));
 						fprintf(stdout, "Received UNREGISTER from Master. Terminating thread.\n");
 						finished = 1;
 						NODE_ID = 0;
+						didACK = 0;
 						close(fd);
 						break;
 					case CMD_RESTART:
 						send_packet.header.pkt_type = PKT_TYPE_STATUS;
 						send_packet.header.status = STATUS_SHUTTING_DOWN;
 						send_packet.header.p_length = 0;
-						send_packet.header.timestamp = 0;
+						send_packet.header.timestamp = recv_packet.header.timestamp;
 						htonPacket(send_packet, buffer);
-						sendto(client,buffer,sizeof(buffer),0,(struct sockaddr *)&cli_addr,&clilen);
+						status = sendto(client,buffer,sizeof(buffer),0,(struct sockaddr *)&cli_addr, sizeof(cli_addr));
 						fprintf(stdout, "Received RESTART from Master; Rebooting machine.\n");
 						finished = 1;
 						close(fd);
@@ -188,13 +194,36 @@ void *TCPHandler(void *args)
 						send_packet.header.pkt_type = PKT_TYPE_STATUS;
 						send_packet.header.status = STATUS_SHUTTING_DOWN;
 						send_packet.header.p_length = 0;
-						send_packet.header.timestamp = 0;
+						send_packet.header.timestamp = recv_packet.header.timestamp;
 						htonPacket(send_packet, buffer);
-						sendto(client,buffer,sizeof(buffer),0,(struct sockaddr *)&cli_addr,&clilen);
+						status = sendto(client,buffer,sizeof(buffer),0,(struct sockaddr *)&cli_addr, sizeof(cli_addr));
 						fprintf(stdout, "Received SHUTDOWN from Master; Powering off machine.\n");
 						finished = 1;
 						close(fd);
 						reboot(LINUX_REBOOT_CMD_POWER_OFF);
+						break;
+					case CMD_UNAME:
+						send_packet.header.pkt_type = PKT_TYPE_STATUS;
+						send_packet.header.status = STATUS_OK;
+						struct utsname utsnameData;
+						uname(&utsnameData);
+
+						memcpy(send_packet.payload.data, utsnameData.sysname, strlen(utsnameData.sysname));
+						strcat(send_packet.payload.data, " ");
+						send_packet.header.p_length = strlen(utsnameData.sysname)+3;
+
+						strcat(send_packet.payload.data, utsnameData.release);
+						strcat(send_packet.payload.data, " ");
+						send_packet.header.p_length += strlen(utsnameData.release)+3;
+
+						strcat(send_packet.payload.data, utsnameData.machine);
+						strcat(send_packet.payload.data, " ");
+						send_packet.header.p_length += strlen(utsnameData.machine)+3;
+
+						send_packet.header.timestamp = recv_packet.header.timestamp;
+						htonPacket(send_packet, buffer);
+						status = sendto(client,buffer,sizeof(buffer),0,(struct sockaddr *)&cli_addr, sizeof(cli_addr));
+						fprintf(stdout, "Received UNAME from Master; Sending back response.\n");
 						break;
 				}
 			}
