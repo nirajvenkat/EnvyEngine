@@ -112,7 +112,7 @@ void MasterController::_execute() {
 		for (it = mNodes.begin(); it != mNodes.end(); ++it) { // iterate over nodes
 			RenderNode *cn = it->second;
 			if (cn->getAvgLatency() > MC_MAX_LATENCY) {
-				fprintf(stderr, "WARNING: Node %d exceeded max latency. Dropping node.\n");
+				fprintf(stderr, "WARNING: Node %d exceeded max latency. Dropping node.\n", it->first);
 				markedNodes.push(it->first);
 			}
 		}
