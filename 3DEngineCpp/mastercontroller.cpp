@@ -70,7 +70,7 @@ void MasterController::init() {
 
 	// Create renderer
 	mRenderer = new Renderer();
-	mRenderer->initOutputWindow(1366, 720, "Envy Master Controller");
+	mRenderer->initOutputWindow(640, 480, "Envy Master Controller");
 
 	// Init successful
 	fprintf(stderr, "Master Controller Initialized...\n");

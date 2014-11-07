@@ -10,7 +10,7 @@
 #include "renderTask.h"
 #include "renderTaskFactory.h"
 
-// #define TEST_MC
+#define TEST_MC
 
 FrameDriver *gFrameDriver = NULL;
 
@@ -145,7 +145,7 @@ int main()
 
 	// Game / Envy Rendering
 	TestGame game;
-	CoreEngine engine(1366, 720, 60, &game);
+	CoreEngine engine(640, 480, 60, &game);
 	engine.CreateWindow("EnvyEngine");
 	engine.Start();
 	
