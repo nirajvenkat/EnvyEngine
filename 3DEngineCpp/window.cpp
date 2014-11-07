@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include "sdl_backend.h"
 #include "framedriver.h"
+#include "simulatednode.h"
 
 int Window::s_width = 0;
 int Window::s_height = 0;
@@ -38,7 +39,7 @@ void Window::Create(int width, int height, const std::string& title)
 void Window::Render()
 {
 	// Call framedriver tick in MC Mode. Commented out for master branch (for now)
-	// gFrameDriver->tick();
+	gFrameDriver->_tick();
 
 	SDLSwapBuffers();
 }

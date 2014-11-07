@@ -10,7 +10,7 @@
 #include "renderTask.h"
 #include "renderTaskFactory.h"
 
-#define TEST_MC
+// #define TEST_MC
 
 FrameDriver *gFrameDriver = NULL;
 
