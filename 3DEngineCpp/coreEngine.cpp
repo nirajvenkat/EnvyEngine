@@ -72,7 +72,7 @@ void CoreEngine::Run()
 
 		if(frameCounter >= 1.0)
 		{
-			//printf("%i\n",frames);
+			printf("%i\n",frames);
 			frames = 0;
 			frameCounter = 0;
 		}

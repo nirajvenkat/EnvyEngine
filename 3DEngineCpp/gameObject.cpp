@@ -81,7 +81,7 @@ void GameObject::Update(float delta)
 		firstY = m_children[7]->GetTransform().GetPos().GetY();
 		firstZ = m_children[7]->GetTransform().GetPos().GetZ();
 
-		m_children[7]->GetTransform().SetPos(Vector3f(firstX, firstY + (sin(deltaSum) *0.5), firstZ));
+		m_children[7]->GetTransform().SetPos(Vector3f(firstX, firstY + (cos(deltaSum) *0.5), firstZ));
 
 		m_children[10]->GetTransform().SetPos(Vector3f(10 * cos(deltaSum), firstY, 30 + 10 * sin(deltaSum)));
 		//m_children[10]->GetTransform().SetRot(Quaternion(Vector3f(0, 1, 0), ToRadians(180.0f)));
