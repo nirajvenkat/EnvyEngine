@@ -58,7 +58,8 @@ void TestGame::Init()
 	directionalLightObject->AddComponent(new DirectionalLight(Vector3f(1,1,1), 0.4f));
 
 	//Demo objects
-	rabbitObject->AddComponent(new MeshRenderer(new Mesh("./res/models/robbierabbit01.obj"), new Material(new Texture("bricks.jpg"), 1, 8)));
+	rabbitObject->AddComponent(new MeshRenderer(new Mesh("./res/models/robbierabbit01.obj"), new Material(new Texture("bricks.jpg"), 1, 8,
+																									new Texture("bricks_normal.jpg"))));
 	rabbitObject->GetTransform().SetPos(Vector3f(0, 6, 5));
 	rabbitObject->GetTransform().SetScale(1.0f);
 
