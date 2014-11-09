@@ -49,7 +49,8 @@ Mesh::Mesh(const std::string& fileName)
 		const aiScene* scene = importer.ReadFile(fileName.c_str(), 
 		                                         aiProcess_Triangulate |
 		                                         aiProcess_GenSmoothNormals | 
-		                                         aiProcess_FlipUVs);
+		                                         aiProcess_FlipUVs |
+												 aiProcess_CalcTangentSpace);
 		
 		if(!scene)
 		{
@@ -68,10 +69,12 @@ Mesh::Mesh(const std::string& fileName)
 			const aiVector3D* pPos = &(model->mVertices[i]);
 			const aiVector3D* pNormal = &(model->mNormals[i]);
 			const aiVector3D* pTexCoord = model->HasTextureCoords(0) ? &(model->mTextureCoords[0][i]) : &aiZeroVector;
+			const aiVector3D* pTangent = &(model->mTangents[i]);
 			
 			Vertex vert(Vector3f(pPos->x, pPos->y, pPos->z),
 					    Vector2f(pTexCoord->x, pTexCoord->y),
-					    Vector3f(pNormal->x, pNormal->y, pNormal->z));
+					    Vector3f(pNormal->x, pNormal->y, pNormal->z),
+						Vector3f(pTangent->x, pTangent->y, pTangent->z));
 			
 			vertices.push_back(vert);
 		}
