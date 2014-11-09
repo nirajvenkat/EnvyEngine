@@ -44,7 +44,8 @@ void TestGame::Init()
 	GameObject* monkeyLightObject = new GameObject();
 
 
-	planeObject->AddComponent(new MeshRenderer(new Mesh("./res/models/plane3.obj"), new Material(new Texture("bricks2.jpg"), 1, 8)));
+	planeObject->AddComponent(new MeshRenderer(new Mesh("./res/models/plane3.obj"), new Material(new Texture("bricks2.jpg"), 1, 8,
+																									new Texture("bricks2_normal.jpg"))));
 	planeObject->GetTransform().SetPos(Vector3f(0, -1, 5));
 	planeObject->GetTransform().SetScale(4.0f);
 	

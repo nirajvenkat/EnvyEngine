@@ -5,7 +5,7 @@ attribute vec3 tangent;
 
 varying vec2 texCoord0;
 varying vec3 worldPos0;
-varying vec3 axesInfoMatrix;
+varying mat3 axesInfoMatrix;
 
 uniform mat4 T_model;
 uniform mat4 T_MVP;
@@ -18,9 +18,10 @@ void main()
 
     vec3 norm = normalize((T_model * vec4(normal, 0.0)).xyz);
     vec3 tang = normalize((T_model * vec4(tangent, 0.0)).xyz);
-    tang = normalize(tang - dot(tang, norm) * n); //Gram-Schmidt re-orthoganalization
+    //TODO: rework this line
+    //tang = normalize((tang - dot(tang, norm)) * norm); //Gram-Schmidt re-orthoganalization
     vec3 biTangent = cross(tang, norm);
 
-    axesInfoMatrix = mat3(tang, biTangent, nor);
+    axesInfoMatrix = mat3(tang, biTangent, norm);
 
 }
