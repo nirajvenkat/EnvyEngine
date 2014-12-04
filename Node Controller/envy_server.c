@@ -48,7 +48,10 @@ int main(int argc, char** argv)
 	//packet.header.node_id = 0;
 	packet.header.status = STATUS_BOOT_OK;
 	packet.header.p_length = 0;
-	packet.header.timestamp = 0;
+	float timestamp = 0.00;
+	char timestamp_bytes[sizeof(float)];
+	htonFloat(timestamp_bytes, timestamp);
+	packet.header.timestamp = timestamp_bytes;
 	char buffer[sizeof(struct pkt)];
 	htonPacket(packet, buffer);
 	
@@ -145,6 +148,11 @@ void *TCPHandler(void *args)
 			if(recv_packet.header.pkt_type == PKT_TYPE_TASK)
 			{
 				//We got a task from MC....	
+				switch(recv_packet.header.status) //Data for task command will be in the status field
+				{
+					case TASK_LOAD_WORLD:
+						break;
+				}
 			}
 			else if(recv_packet.header.pkt_type == PKT_TYPE_CMD)
 			{
@@ -158,9 +166,6 @@ void *TCPHandler(void *args)
 						send_packet.header.status = STATUS_KEEP_ALIVE;
 						send_packet.header.p_length = 0;
 						send_packet.header.timestamp = recv_packet.header.timestamp;
-						/*tmp = 0;
-						tmp = htonl(tmp);
-						memcpy(send_packet.payload.data, &tmp, sizeof(tmp));*/
 						htonPacket(send_packet, buffer);
 						status = sendto(client,buffer,sizeof(buffer),0,(struct sockaddr *)&cli_addr, sizeof(cli_addr));
 						fprintf(stdout, "Received PING from Master; sending back KEEP_ALIVE.\n");

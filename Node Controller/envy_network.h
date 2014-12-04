@@ -11,8 +11,14 @@
 #include <inttypes.h>
 
 #define MIN(x,y) (x < y) ? x : y
+#define ORDER_LITTLE_ENDIAN 1
+#define ORDER_BIG_ENDIAN 2
+
 void htonPacket(struct pkt packet, char buffer[sizeof(struct pkt)]);
 struct pkt ntohPacket(char buffer[sizeof(struct pkt)]);
+void htonFloat(char *bytes, float f);
+float ntohFloat(char *bytes);
+int getSystemEndianness();
 
 
 //Convert fields in pkt struct to network order and fill buffer
@@ -32,9 +38,8 @@ void htonPacket(struct pkt packet, char buffer[sizeof(struct pkt)])
 	memcpy(buffer+offset, &p_length, sizeof(p_length));
 	offset+= sizeof(p_length);
 
-	uint32_t timestamp = htonl(packet.header.timestamp);
-	memcpy(buffer+offset, &timestamp, sizeof(timestamp));
-	offset+= sizeof(timestamp);
+	memcpy(buffer+offset, packet.header.timestamp, sizeof(packet.header.timestamp));
+	offset+= sizeof(packet.header.timestamp);
 
 	if(packet.header.p_length > 0)
 	{
@@ -63,10 +68,8 @@ struct pkt ntohPacket(char buffer[sizeof(struct pkt)])
 	packet.header.p_length = ntohl(p_length);
 	offset += sizeof(p_length);
 
-	uint32_t timestamp;
-	memcpy(&timestamp, buffer+offset, sizeof(timestamp));
-	packet.header.timestamp = ntohl(timestamp);
-	offset += sizeof(timestamp);
+	memcpy(packet.header.timestamp, buffer+offset, sizeof(packet.header.timestamp));
+	offset += sizeof(packet.header.timestamp);
 
 	if(packet.header.p_length > 0)
 	{
@@ -74,4 +77,57 @@ struct pkt ntohPacket(char buffer[sizeof(struct pkt)])
 	}
 
 	return packet;
+}
+
+//Convert float in host order to network ordered byte array
+void htonFloat(char *bytes, float f)
+{
+	memcpy(bytes, &f, sizeof(f));
+
+	if(getSystemEndianness() == ORDER_LITTLE_ENDIAN)
+	{
+		int i = 0;
+		int j = sizeof(bytes)-1;
+		while(i < j)
+		{
+			char tmp = bytes[i];
+			bytes[i] = bytes[j];
+			bytes[j] = tmp;
+			i++;
+			j--;
+		}
+	}
+}
+
+//Convert network ordered byte array to float
+float ntohFloat(char *bytes)
+{
+	if(getSystemEndianness() == ORDER_LITTLE_ENDIAN)
+	{
+		int i = 0;
+		int j = sizeof(bytes)-1;
+		while(i < j)
+		{
+			char tmp = bytes[i];
+			bytes[i] = bytes[j];
+			bytes[j] = tmp;
+			i++;
+			j--;
+		}
+	}
+
+	float *f = bytes;
+	return *f;
+}
+
+//Get the endianness of this system. Returns 1 if little endian and 0 if big endian
+int getSystemEndianness()
+{
+	short int test = 0x01;
+	if(*(char*)&test == 1)
+	{
+		return ORDER_LITTLE_ENDIAN;
+	}
+
+	return ORDER_BIG_ENDIAN;
 }

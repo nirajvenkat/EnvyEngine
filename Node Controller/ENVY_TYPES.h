@@ -15,3 +15,5 @@
 #define CMD_RESTART	0x02	//Restart node
 #define CMD_SHUTDOWN	0x03	//Power off node
 #define CMD_UNAME	0x04	//Get node's system information (uname -a)
+
+#define TASK_LOAD_WORLD	0x00	//Load initial world data
