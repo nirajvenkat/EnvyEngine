@@ -11,6 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Visual Studio 2013\Projects\envy_server_port\ConsoleApplication2\ENVY_CONSTANTS.h" />
+    <ClInclude Include="..\..\..\Visual Studio 2013\Projects\envy_server_port\ConsoleApplication2\envy_network.h" />
+    <ClInclude Include="..\..\..\Visual Studio 2013\Projects\envy_server_port\ConsoleApplication2\ENVY_PACKET.h" />
+    <ClInclude Include="..\..\..\Visual Studio 2013\Projects\envy_server_port\ConsoleApplication2\ENVY_TYPES.h" />
     <ClInclude Include="3DEngine.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="coreEngine.h" />
@@ -51,6 +55,8 @@
     <ClInclude Include="window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Visual Studio 2013\Projects\envy_server_port\ConsoleApplication2\envy_driver.cpp" />
+    <ClCompile Include="..\..\..\Visual Studio 2013\Projects\envy_server_port\ConsoleApplication2\envy_server.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="coreEngine.cpp" />
     <ClCompile Include="frame.cpp" />
