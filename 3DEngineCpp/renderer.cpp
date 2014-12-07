@@ -5,6 +5,7 @@
 
 #include "renderer.h"
 #include "frame.h"
+#include "overlay.h"
 #include <SDL2/SDL.h>
 
 Renderer::Renderer() {
@@ -23,6 +24,10 @@ void Renderer::initOutputWindow(int width, int height, const char *title)
 	mSDLRenderWindow = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		width, height,
 		0);
+
+	// Set up overlay	
+	Overlay::initializeOverlays();
+	mOverlay = new Overlay();
 
 	// Create our renderer
 	mSDLRenderer = SDL_CreateRenderer(mSDLRenderWindow, -1, SDL_RENDERER_ACCELERATED);

@@ -9,6 +9,7 @@
 #include "windows.h"
 #include "framedriver.h"
 #include "simnodetests.h"
+#include "overlay.h"
 #include <queue>
 #include <stack>
 #include <SDL2/SDL.h>
