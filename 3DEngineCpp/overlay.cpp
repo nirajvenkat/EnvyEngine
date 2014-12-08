@@ -2,21 +2,15 @@
 #include "overlay.h"
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_ttf.h"
+#include <assert.h>
 
 Overlay::Overlay() {
-	mContent.clear();
-	mColors.clear();
-	mFont = NULL;
+	_init();
+}
 
-	//mWindow = window;
-
-	mContent[0] = "Hello, world!";
-	mContent[1] = "Hello, world2!";
-
-	mFont = TTF_OpenFont(OVERLAY_FONT_PATH, 8);
-	if (mFont == NULL) {
-		fprintf(stderr, "Error loading font: %s\n", TTF_GetError());
-	}
+Overlay::Overlay(SDL_Renderer *renderer) {
+	_init();
+	setRenderer(renderer);
 }
 
 Overlay::~Overlay() {
@@ -24,8 +18,29 @@ Overlay::~Overlay() {
 		TTF_CloseFont(mFont);
 }
 
-void Overlay::setWindow(SDL_Window *window) {
-	this->mWindow = window;
+void Overlay::_init() {
+	mLines.clear();
+	mFont = NULL;
+
+	mFont = TTF_OpenFont(OVERLAY_FONT_PATH, OVERLAY_FONT_SIZE);
+	if (mFont == NULL) {
+		fprintf(stderr, "Error loading font: %s\n", TTF_GetError());
+	}
+
+	/* Test text
+	SDL_Color color = { 255, 255, 255 };
+	SDL_Surface *text = TTF_RenderText_Solid(mFont, "EnvyEngine 1.0 - It's happening!", color);
+
+	mTextSurf.
+	mTextSurf.push_back(text);
+	mColors.push_back(color);
+
+	assert(text != NULL);
+	*/
+}
+
+void Overlay::setRenderer(SDL_Renderer *renderer) {
+	this->mRenderer = renderer;
 }
 
 void Overlay::initializeOverlays() {
@@ -39,6 +54,18 @@ void Overlay::initializeOverlays() {
 			fprintf(stderr, "Error Initializing TTF: %s\n", TTF_GetError());
 		}
 	}
+}
+
+void Overlay::render() {
+	//SDL_Surface *text = mText[0];
+	//SDL_Texture *texture = SDL_CreateTextureFromSurface(mRenderer, text);
+	//SDL_RenderCopy(mRenderer, texture, &text->clip_rect, &text->clip_rect);
+	//SDL_DestroyTexture(texture);
+}
+
+
+void renderLine(_OverlayLine *line, int vPos) {
+	
 }
 
 // Abandoned in favor of OpenFont

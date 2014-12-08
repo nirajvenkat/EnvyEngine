@@ -21,6 +21,8 @@ public:
 	void displayFrame(Frame *f);
 
 private:
+	class SDL_Display *mDisplay;
+	class Overlay *mOverlay;
 	class SDL_Window *mSDLRenderWindow;
 	class SDL_Renderer *mSDLRenderer;
 };
