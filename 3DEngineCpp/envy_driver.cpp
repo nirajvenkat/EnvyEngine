@@ -1,18 +1,9 @@
 /*
 porting Sam's code
 
-recives broadcasts
+no longer used
 
-i increased MAXBUF because the datagrams received were larger than the buffer
-
-driver receives broadcasts and registers them
-
-TODO:
-	make sure ACK is being sent after bcast received
-	gurantee TCP connection is being made
-	send test requests
-	integrate into MC
-	PROFIT
+check envy_mc_driver.cpp
 */
 #include "envy_network.h"
 
@@ -324,12 +315,9 @@ DWORD WINAPI UDPHandler(void *args)
 	memset(buffer, 1, buflen);
 	while (1)
 	{
-		fprintf(stdout,"waiting for broadcasts %d\n",buflen);
+		fprintf(stdout,"waiting for broadcasts\n");
 		int s = sinlen;
 		while ((status = recvfrom(sock, buffer, buflen, 0, (struct sockaddr *)&sock_in, &s)) <= 0){ fprintf(stdout, "ERROR %d\n", WSAGetLastError()); }
-
-
-
 
 		fprintf(stdout, "RECEIVED PACKET and %d bytes\n",status);
 		
@@ -339,7 +327,9 @@ DWORD WINAPI UDPHandler(void *args)
 
 		if (packet.header.pkt_type == PKT_TYPE_STATUS && packet.header.status == STATUS_BOOT_OK)
 		{
+			fprintf(stdout,"PROCESSING PACKET\n");
 			char addr[INET_ADDRSTRLEN];
+
 			//inet_ntop(AF_INET, &sock_in.sin_addr, addr, sizeof(addr));
 			InetNtopW(AF_INET, &sock_in.sin_addr, (PWSTR)addr, sizeof(addr));
 
@@ -348,15 +338,15 @@ DWORD WINAPI UDPHandler(void *args)
 			int cli_sock;
 			struct sockaddr_in masteraddr, cliaddr;
 			cli_sock = socket(AF_INET, SOCK_STREAM, 0);
-			struct timeval tv;
-			tv.tv_usec = 0;
-			tv.tv_sec = RECV_TIMEOUT;
-			setsockopt(cli_sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof(struct timeval));
+			int tv = RECV_TIMEOUT;
+			setsockopt(cli_sock, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof(tv));
 			memset(&masteraddr, 0, sizeof(masteraddr));
 			memset(&cliaddr, 0, sizeof(cliaddr));
 			masteraddr.sin_family = AF_INET;
 			masteraddr.sin_addr.s_addr = inet_addr(addr);
 			masteraddr.sin_port = htons(TCP_PORT);
+
+
 			connect(cli_sock, (struct sockaddr*)&masteraddr, sizeof(masteraddr));
 			fprintf(stdout, "\t* Connected to new node on port %d\n", TCP_PORT);
 
@@ -370,8 +360,10 @@ DWORD WINAPI UDPHandler(void *args)
 			memcpy(packet.payload.data, &tmp, sizeof(tmp));
 			htonPacket(packet, buffer);
 			fprintf(stdout, "\t* Assigning new node ID %d. Sending response...\n", num_nodes);
-			sendto(cli_sock, buffer, sizeof(struct pkt), 0, (struct sockaddr*)&masteraddr, sizeof(masteraddr));
-
+			int sent=sendto(cli_sock, buffer, sizeof(struct pkt), 0, (struct sockaddr*)&masteraddr, sizeof(masteraddr));
+			if (sent <= 0){
+				fprintf(stdout, "ERROR %d\n", WSAGetLastError());
+			}
 			nodes[num_nodes - 1].sock = cli_sock;
 			nodes[num_nodes - 1].addr = masteraddr;
 

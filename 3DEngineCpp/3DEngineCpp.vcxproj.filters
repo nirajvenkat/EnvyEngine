@@ -129,17 +129,17 @@
     <ClInclude Include="simnodetests.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Visual Studio 2013\Projects\envy_server_port\ConsoleApplication2\ENVY_CONSTANTS.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="ENVY_PACKET.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Visual Studio 2013\Projects\envy_server_port\ConsoleApplication2\envy_network.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="ENVY_CONSTANTS.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Visual Studio 2013\Projects\envy_server_port\ConsoleApplication2\ENVY_PACKET.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="envy_network.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Visual Studio 2013\Projects\envy_server_port\ConsoleApplication2\ENVY_TYPES.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="ENVY_TYPES.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -231,12 +231,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="simnodetests.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Visual Studio 2013\Projects\envy_server_port\ConsoleApplication2\envy_driver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Visual Studio 2013\Projects\envy_server_port\ConsoleApplication2\envy_server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
