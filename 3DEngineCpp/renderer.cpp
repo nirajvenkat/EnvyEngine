@@ -5,13 +5,16 @@
 
 #include "renderer.h"
 #include "frame.h"
+#include "overlay.h"
 #include <SDL2/SDL.h>
 
 Renderer::Renderer() {
 	mSDLRenderWindow = NULL;
 	mSDLRenderer = NULL;
 }
-Renderer::~Renderer() {}
+Renderer::~Renderer() {
+	delete mOverlay;
+}
 
 void Renderer::initOutputWindow(int width, int height, const char *title) 
 {
@@ -26,6 +29,10 @@ void Renderer::initOutputWindow(int width, int height, const char *title)
 
 	// Create our renderer
 	mSDLRenderer = SDL_CreateRenderer(mSDLRenderWindow, -1, SDL_RENDERER_ACCELERATED);
+
+	// Set up overlay	
+	Overlay::initializeOverlays();
+	mOverlay = new Overlay(mSDLRenderer);
 }
 
 void Renderer::renderFrame(Frame *frame) {
@@ -41,7 +48,24 @@ void Renderer::renderFrame(Frame *frame) {
 	destRect.x = 100; //TODO: Change
 	destRect.y = 100; //TODO: Change
 
-	SDL_RenderCopy(mSDLRenderer, tex, NULL, NULL);
+	SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_NONE);
+	SDL_RenderCopyEx(mSDLRenderer, tex, NULL, NULL, 0.0, NULL, SDL_FLIP_VERTICAL);
+	mOverlay->render();
 	SDL_RenderPresent(mSDLRenderer);
 	SDL_DestroyTexture(tex);
+
+}
+
+// Overlay passthrough functions
+void Renderer::addNodeToOverlay(int nodeId) {
+	mOverlay->insertLine(nodeId);
+}
+
+void Renderer::removeNodeFromOverlay(int nodeId) {
+	mOverlay->removeLine(nodeId);
+}
+
+void Renderer::updateNodeOnOverlay(int nodeId, const char *text, float avg) {
+	mOverlay->updateText(nodeId, text);
+	mOverlay->updateAvg(nodeId, avg);
 }

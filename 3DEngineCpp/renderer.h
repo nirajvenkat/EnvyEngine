@@ -20,7 +20,14 @@ public:
 	void initOutputWindow(int width, int height, const char *title);
 	void displayFrame(Frame *f);
 
+	// Overlay passthrough
+	void addNodeToOverlay(int nodeId);
+	void removeNodeFromOverlay(int nodeId);
+	void updateNodeOnOverlay(int nodeId, const char *text, float avg);
+
 private:
+	class SDL_Display *mDisplay;
+	class Overlay *mOverlay;
 	class SDL_Window *mSDLRenderWindow;
 	class SDL_Renderer *mSDLRenderer;
 };

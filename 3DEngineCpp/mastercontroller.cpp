@@ -9,6 +9,7 @@
 #include "windows.h"
 #include "framedriver.h"
 #include "simnodetests.h"
+#include "overlay.h"
 #include <queue>
 #include <stack>
 #include <SDL2/SDL.h>
@@ -182,6 +183,9 @@ void MasterController::addNode(RenderNode *rn) {
 
 	mNodes[nodeId] = rn;
 
+	// Add it to the renderer's overlay
+	mRenderer->addNodeToOverlay(nodeId);
+
 	// Reset timeshare array
 	if (mNodeTimeshare)
 		delete[] mNodeTimeshare;
@@ -197,6 +201,9 @@ void MasterController::dropNode(unsigned int nodeId) {
 	RenderNode *rn = mNodes[nodeId];
 	mNodes.erase(nodeId);
 	delete(rn);
+
+	// Remove it from the Renderer's overlay
+	mRenderer->removeNodeFromOverlay(nodeId);
 
 	// Reset timeshare array
 	if (mNodeTimeshare)
@@ -246,13 +253,19 @@ void MasterController::unlock() {
 // Debug functions
 void MasterController::debugNodeStatistics() {
 	std::map<unsigned int, RenderNode*>::iterator it;
+	char latencyText[256];
 	fprintf(stderr, "Node Statistics: Latency( ");
+	int i = 0;
 	for (it = mNodes.begin(); it != mNodes.end(); ++it) { // iterate over nodes
 		RenderNode *curNode = it->second;
+		sprintf(latencyText, "Node %d Latency (%.1fms)",
+			it->first,
+			curNode->getAvgLatency());
+		mRenderer->updateNodeOnOverlay(it->first, latencyText, mNodeTimeshare[i++]);
 		fprintf(stderr, "%.1fms ", curNode->getAvgLatency());
 	}
 	fprintf(stderr, ") Timeshares( ");
-	int i = 0;
+	i = 0;
 	for (it = mNodes.begin(); it != mNodes.end(); ++it) { // iterate over nodes
 		unsigned int id = it->first;
 		fprintf(stderr, "%.2f%% ", mNodeTimeshare[i++]*100.0f);

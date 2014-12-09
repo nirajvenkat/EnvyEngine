@@ -33,6 +33,7 @@
     <ClInclude Include="math3d.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="meshRenderer.h" />
+    <ClInclude Include="overlay.h" />
     <ClInclude Include="referenceCounter.h" />
     <ClInclude Include="renderer.h" />
     <ClInclude Include="renderingEngine.h" />
@@ -69,6 +70,7 @@
     <ClCompile Include="mastercontroller.cpp" />
     <ClCompile Include="math3d.cpp" />
     <ClCompile Include="mesh.cpp" />
+    <ClCompile Include="overlay.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="renderingEngine.cpp" />
     <ClCompile Include="renderNode.cpp" />
@@ -136,7 +138,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>.\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2.lib;SDL2main.lib;opengl32.lib;glu32.lib;glew32.lib;glew32mx.lib;glew32mxs.lib;glew32s.lib;assimp.lib;SDL2_image.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2_ttf.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glu32.lib;glew32.lib;glew32mx.lib;glew32mxs.lib;glew32s.lib;assimp.lib;SDL2_image.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
