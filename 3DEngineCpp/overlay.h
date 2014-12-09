@@ -9,7 +9,7 @@
 #define OVERLAY_FONT_SIZE 16
 #define OVERLAY_LOADBLOCKSIZE	1024
 #define OVERLAY_TEXT_HEIGHT 9
-#define OVERLAY_TEXT_WIDTH	170
+#define OVERLAY_TEXT_WIDTH	150
 #define OVERLAY_LINE_HEIGHT	15
 #define OVERLAY_GRAPH_WIDTH 340 // Total line width = line width + graph width
 #define OVERLAY_V_MARGIN 1

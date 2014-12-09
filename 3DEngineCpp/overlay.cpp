@@ -68,7 +68,7 @@ void Overlay::insertLine(int nodeId) {
 		newLine->curGraphIdx = 0;
 		newLine->curAvg = 0.0f;
 		newLine->color = color;
-		*newLine->color = { thisColor[0], thisColor[1], thisColor[2] }; // TEMP
+		*newLine->color = { thisColor[0], thisColor[1], thisColor[2], 255 }; // TEMP
 		newLine->textChanged = false;
 		newLine->graphChanged = false;
 		newLine->text[0] = 0;
@@ -270,7 +270,7 @@ void Overlay::renderLine(_OverlayLine *line, int vPos) {
 	dstRect.h = srcRect.h;
 	dstRect.w = srcRect.w;
 
-	SDL_SetRenderDrawBlendMode(mRenderer, SDL_BLENDMODE_BLEND);
+	SDL_SetTextureBlendMode(line->texture, SDL_BLENDMODE_BLEND);
 	SDL_RenderCopy(mRenderer, line->texture, &srcRect, &dstRect); // Final blit
 }
 
