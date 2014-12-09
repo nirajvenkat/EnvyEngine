@@ -7,6 +7,9 @@
 #include "renderer.h"
 #include "renderNode.h"
 #include "windows.h"
+#include <objidl.h>
+#include <gdiplus.h>
+#include <GdiPlusImageCodec.h>
 #include "framedriver.h"
 #include "simnodetests.h"
 #include "overlay.h"
@@ -72,6 +75,11 @@ void MasterController::init() {
 	// Create renderer
 	mRenderer = new Renderer();
 	mRenderer->initOutputWindow(1366, 720, "Envy Master Controller");
+
+	// Initialize GdiPlus
+	Gdiplus::GdiplusStartupInput startupInput;
+	ULONG_PTR token;
+	GdiplusStartup(&token, &startupInput, NULL);
 
 	// Init successful
 	fprintf(stderr, "Master Controller Initialized...\n");
@@ -148,15 +156,6 @@ void MasterController::_execute() {
 			delete(curFrame);
 		}
 
-		/*
-		if (gFrameDriver->hasFrames()) {
-
-			curFrame = gFrameDriver->nextFrame();
-			curFrame->setSurface(curFrame->getSurface());
-			mRenderer->renderFrame(curFrame);
-			delete(curFrame);
-		}
-		*/
 		unlock();
 
 		statTimer++;

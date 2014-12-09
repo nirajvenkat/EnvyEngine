@@ -7,6 +7,10 @@
 #define RENDERER_H
 
 #include "frame.h"
+#include <windows.h>
+#include <objidl.h>
+#include <gdiplus.h>
+#include <GdiPlusImageCodec.h>
 
 #define RENDERER_OUTPUT_WINDOW_DEFAULT_TITLE "Envy Engine Output"
 
@@ -20,12 +24,19 @@ public:
 	void initOutputWindow(int width, int height, const char *title);
 	void displayFrame(Frame *f);
 
+	// Framebuffer extraction
+	Gdiplus::Bitmap *getFrameBuffer(void **pixels);
+
 	// Overlay passthrough
 	void addNodeToOverlay(int nodeId);
 	void removeNodeFromOverlay(int nodeId);
 	void updateNodeOnOverlay(int nodeId, const char *text, float avg);
 
 private:
+
+	int mRenderWidth;
+	int mRenderHeight;
+
 	class SDL_Display *mDisplay;
 	class Overlay *mOverlay;
 	class SDL_Window *mSDLRenderWindow;

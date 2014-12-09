@@ -129,6 +129,21 @@
     <ClInclude Include="simnodetests.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ENVY_CONSTANTS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="envy_network.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ENVY_PACKET.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ENVY_TYPES.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="overlay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp">
@@ -219,6 +234,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="simnodetests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="overlay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -4,6 +4,7 @@
 #include "sdl_backend.h"
 #include "framedriver.h"
 #include "simulatednode.h"
+#include "mastercontroller.h"
 
 int Window::s_width = 0;
 int Window::s_height = 0;
@@ -38,8 +39,10 @@ void Window::Create(int width, int height, const std::string& title)
 
 void Window::Render()
 {
-	// Call framedriver tick in MC Mode. Commented out for master branch (for now)
-
+	// Call framedriver tick in MC Mode.
+#ifdef TEST_MC
+	gFrameDriver->_tick();
+#endif
 	SDLSwapBuffers();
 }
 

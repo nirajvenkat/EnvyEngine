@@ -11,6 +11,7 @@
 #include "frame.h"
 
 #define MC_MAX_LATENCY 300 // In ms
+// #define TEST_MC // Uncomment for MC test mode
 
 class Frame;
 
