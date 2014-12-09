@@ -14,6 +14,10 @@
     <ClInclude Include="3DEngine.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="coreEngine.h" />
+    <ClInclude Include="ENVY_CONSTANTS.h" />
+    <ClInclude Include="envy_network.h" />
+    <ClInclude Include="ENVY_PACKET.h" />
+    <ClInclude Include="ENVY_TYPES.h" />
     <ClInclude Include="frame.h" />
     <ClInclude Include="framedriver.h" />
     <ClInclude Include="freeLook.h" />

@@ -2,10 +2,11 @@
 Sam's code ported
 
 broadcasts are received by the driver
+tcp connection is established
 
-im not sure if the ACK's are being sent properly yet.
-if they are then the TCP connection isnt being setup right
-
+TODO
+figure out why commands aren't being received
+spinlocks could be more efficient
 
 */
 
@@ -20,11 +21,11 @@ void htonPacket(struct pkt packet, char buffer[sizeof(struct pkt)]);
 DWORD WINAPI TCPHandler(void* arg);
 
 
-int didACK = 0;
+int didACK = false;
 int NODE_ID = 0;
 
 //pthread_mutex_t lock;
-HANDLE lock;
+volatile HANDLE lock;
 
 int main(int argc, char* argv[])
 {
@@ -76,7 +77,7 @@ int main(int argc, char* argv[])
 	htonPacket(packet, buffer);
 
 
-	while (1)
+	while (true)
 	{
 		fprintf(stdout, "Beginning broadcast on port %d...\n", UDP_PORT);
 		
@@ -84,11 +85,14 @@ int main(int argc, char* argv[])
 		server_thread = CreateThread(0, 0, TCPHandler, NULL,0, &server_thread_id);
 
 		//pthread_mutex_lock(&lock);
-		WaitForSingleObject(lock, INFINITE);// no timeout
+		// no timeout
+		while (WaitForSingleObject(lock, INFINITE) != WAIT_OBJECT_0);
+			//fprintf(stdout, "SPINNING\n");
+		//printf("%d %s\n", GetLastError(), GetLastError());
 
 		while (!didACK)
 		{
-			fprintf(stdout, "BROADCASTING %d\n",sizeof(buffer));
+			//fprintf(stdout, "BROADCASTING %d\n",sizeof(buffer));
 
 			udp_status = sendto(udp_sock, buffer, sizeof(buffer), 0, (struct sockaddr *) &bcast, udp_socklen);
 			if(udp_status <=0)
@@ -96,15 +100,18 @@ int main(int argc, char* argv[])
 			
 			//pthread_mutex_unlock(&lock);
 			ReleaseMutex(lock);
+			//printf("%d %s\n", GetLastError(), GetLastError());
 			
 			Sleep(BCAST_SLEEP);
 
 			//pthread_mutex_lock(&lock);
-			WaitForSingleObject(lock, INFINITE);
+			while (WaitForSingleObject(lock, INFINITE) != WAIT_OBJECT_0);
+				//fprintf(stdout, "SPINNING\n");
+			//printf("%d %s\n", GetLastError(), GetLastError());
 		}
 
 		//pthread_join(server_thread, NULL);
-		CloseHandle(server_thread);
+		WaitForSingleObject(server_thread,INFINITE);
 
 		fprintf(stdout, "TCP thread exited. Begin rebroadcast...\n");
 		didACK = false;
@@ -158,12 +165,18 @@ DWORD WINAPI TCPHandler(void *args)
 	}
 	else
 	{
-		//pthread_mutex_lock(&lock);
-		WaitForSingleObject(lock, INFINITE);
+		fprintf(stdout, "CONNECTION ACCEPTED\n");
 
-		didACK = 1;
+		//pthread_mutex_lock(&lock);
+		while (WaitForSingleObject(lock, INFINITE) != WAIT_OBJECT_0);
+			//fprintf(stdout, "SPINNING\n");
+		//printf("%d %s\n", GetLastError(), GetLastError());
+		//fprintf(stdout, "THREAD LOCK OBTAINED\n");
+
+		didACK = true;
 		//pthread_mutex_unlock(&lock);
 		ReleaseMutex(lock);
+		//printf("%d %s\n", GetLastError(), GetLastError());
 
 		char buffer[sizeof(struct pkt)];
 		recvfrom(client, buffer, sizeof(buffer), 0, (struct sockaddr*)&cli_addr, &clilen);
@@ -173,7 +186,7 @@ DWORD WINAPI TCPHandler(void *args)
 		NODE_ID = ntohl(tmp);
 		fprintf(stdout, "Received acknowledgement from master controller! My node ID is %d!\n", NODE_ID);
 
-		int finished = 0;
+		int finished = false;
 		int status;
 		struct pkt send_packet;
 
@@ -224,7 +237,7 @@ DWORD WINAPI TCPHandler(void *args)
 					htonPacket(send_packet, buffer);
 					status = sendto(client, buffer, sizeof(buffer), 0, (struct sockaddr *)&cli_addr, sizeof(cli_addr));
 					fprintf(stdout, "Received UNREGISTER from Master. Terminating thread.\n");
-					finished = 1;
+					finished = true;
 					NODE_ID = 0;
 					didACK = 0;
 					closesocket(fd);
@@ -240,7 +253,7 @@ DWORD WINAPI TCPHandler(void *args)
 					htonPacket(send_packet, buffer);
 					status = sendto(client, buffer, sizeof(buffer), 0, (struct sockaddr *)&cli_addr, sizeof(cli_addr));
 					fprintf(stdout, "Received RESTART from Master; Rebooting machine.\n");
-					finished = 1;
+					finished = true;
 					closesocket(fd);
 					//reboot(LINUX_REBOOT_CMD_RESTART);
 					break;
@@ -252,7 +265,7 @@ DWORD WINAPI TCPHandler(void *args)
 					htonPacket(send_packet, buffer);
 					status = sendto(client, buffer, sizeof(buffer), 0, (struct sockaddr *)&cli_addr, sizeof(cli_addr));
 					fprintf(stdout, "Received SHUTDOWN from Master; Powering off machine.\n");
-					finished = 1;
+					finished = true;
 					closesocket(fd);
 					//reboot(LINUX_REBOOT_CMD_POWER_OFF);
 					break;
@@ -290,4 +303,5 @@ DWORD WINAPI TCPHandler(void *args)
 
 		}
 	}
+	fprintf(stdout, "BADDDDDDDDD\n");
 }
