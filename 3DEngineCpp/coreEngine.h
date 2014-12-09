@@ -11,7 +11,7 @@ public:
 	CoreEngine(int width, int height, double frameRate, Game* game);
 	virtual ~CoreEngine();
 	
-	void CreateWindow(const std::string& title);
+	void CreateWindowCE(const std::string& title);
 	
 	void Start();
 	void Stop();

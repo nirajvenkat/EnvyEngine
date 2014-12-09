@@ -25,7 +25,7 @@ CoreEngine::~CoreEngine()
 	if(m_renderingEngine) delete m_renderingEngine;
 }
 
-void CoreEngine::CreateWindow(const std::string& title)
+void CoreEngine::CreateWindowCE(const std::string& title)
 {
 	Window::Create(m_width, m_height, title);
 	RenderUtil::InitGraphics();
