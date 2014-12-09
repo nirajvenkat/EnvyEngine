@@ -48,7 +48,8 @@ void Renderer::renderFrame(Frame *frame) {
 	destRect.x = 100; //TODO: Change
 	destRect.y = 100; //TODO: Change
 
-	SDL_RenderCopy(mSDLRenderer, tex, NULL, NULL);
+	SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_NONE);
+	SDL_RenderCopyEx(mSDLRenderer, tex, NULL, NULL, 0.0, NULL, SDL_FLIP_VERTICAL);
 	mOverlay->render();
 	SDL_RenderPresent(mSDLRenderer);
 	SDL_DestroyTexture(tex);
