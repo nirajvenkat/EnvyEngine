@@ -12,7 +12,9 @@ Renderer::Renderer() {
 	mSDLRenderWindow = NULL;
 	mSDLRenderer = NULL;
 }
-Renderer::~Renderer() {}
+Renderer::~Renderer() {
+	delete mOverlay;
+}
 
 void Renderer::initOutputWindow(int width, int height, const char *title) 
 {
@@ -51,4 +53,18 @@ void Renderer::renderFrame(Frame *frame) {
 	SDL_RenderPresent(mSDLRenderer);
 	SDL_DestroyTexture(tex);
 
+}
+
+// Overlay passthrough functions
+void Renderer::addNodeToOverlay(int nodeId) {
+	mOverlay->insertLine(nodeId);
+}
+
+void Renderer::removeNodeFromOverlay(int nodeId) {
+	mOverlay->removeLine(nodeId);
+}
+
+void Renderer::updateNodeOnOverlay(int nodeId, const char *text, float avg) {
+	mOverlay->updateText(nodeId, text);
+	mOverlay->updateAvg(nodeId, avg);
 }
