@@ -70,20 +70,25 @@ void GameObject::Update(float delta)
 
 	deltaSum += delta;
 
-	if (m_children.size() >= 10){
-		float firstX = m_children[6]->GetTransform().GetPos().GetX();
-		float firstY = m_children[6]->GetTransform().GetPos().GetY();
-		float firstZ = m_children[6]->GetTransform().GetPos().GetZ();
+	if (m_children.size() >= 11){
+		float firstX = m_children[7]->GetTransform().GetPos().GetX();
+		float firstY = m_children[7]->GetTransform().GetPos().GetY();
+		float firstZ = m_children[7]->GetTransform().GetPos().GetZ();
 
-		m_children[6]->GetTransform().SetPos(Vector3f(firstX, firstY + (sin(deltaSum) *0.5), firstZ));
+		m_children[7]->GetTransform().SetPos(Vector3f(firstX, firstY + (sin(deltaSum) * 0.5), firstZ));
 
-		firstX = m_children[7]->GetTransform().GetPos().GetX();
-		firstY = m_children[7]->GetTransform().GetPos().GetY();
-		firstZ = m_children[7]->GetTransform().GetPos().GetZ();
+		firstX = m_children[8]->GetTransform().GetPos().GetX();
+		firstY = m_children[8]->GetTransform().GetPos().GetY();
+		firstZ = m_children[8]->GetTransform().GetPos().GetZ();
 
-		m_children[7]->GetTransform().SetPos(Vector3f(firstX, firstY + (cos(deltaSum) *0.5), firstZ));
+		m_children[8]->GetTransform().SetPos(Vector3f(firstX, firstY + (cos(deltaSum) * 0.5), firstZ));
 
-		m_children[10]->GetTransform().SetPos(Vector3f(10 * cos(deltaSum), firstY, 30 + 10 * sin(deltaSum)));
+		//Vector<float, 4U> *vec = new Vector<float, 4U>();
+		
+		//m_children[9]->GetTransform().GetRot().Lerp(*vec, 1.0f);
+			//SetRot(Quaternion(Vector3f(0, 1, 0), ToRadians(-sin(deltaSum))));
+
+		m_children[11]->GetTransform().SetPos(Vector3f(10 * cos(deltaSum), firstY, 30 + 10 * sin(deltaSum)));
 		//m_children[10]->GetTransform().SetRot(Quaternion(Vector3f(0, 1, 0), ToRadians(180.0f)));
 
 		//printf("%f\n", m_children[6]->GetTransform().GetPos().GetY());

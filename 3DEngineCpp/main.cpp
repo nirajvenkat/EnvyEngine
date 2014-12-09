@@ -29,6 +29,7 @@ private:
 void TestGame::Init()
 {
 	GameObject* cameraObject = new GameObject();
+	GameObject* waterObject = new GameObject();
 	GameObject* planeObject = new GameObject();
 	GameObject* spotLightObject = new GameObject();
 	GameObject* pointLightObject = new GameObject();
@@ -43,11 +44,13 @@ void TestGame::Init()
 	GameObject* monkeyObject = new GameObject();
 	GameObject* monkeyLightObject = new GameObject();
 
-
-	planeObject->AddComponent(new MeshRenderer(new Mesh("./res/models/plane3.obj"), new Material(new Texture("bricks2.jpg"), 1, 8,
-																									new Texture("bricks2_normal.jpg"))));
-	planeObject->GetTransform().SetPos(Vector3f(0, -1, 5));
+	planeObject->AddComponent(new MeshRenderer(new Mesh("./res/models/plane3.obj"), new Material(new Texture("bricks2.jpg"), 1, 8, new Texture("bricks2_normal.jpg"))));
+	planeObject->GetTransform().SetPos(Vector3f(0, -4, 5));
 	planeObject->GetTransform().SetScale(4.0f);
+
+	waterObject->AddComponent(new MeshRenderer(new Mesh("./res/models/plane3.obj"), new Material(new Texture("white.png"), 1, 8, new Texture("water_normal.jpg"))));
+	waterObject->GetTransform().SetPos(Vector3f(0, -1, 5));
+	waterObject->GetTransform().SetScale(4.0f);
 	
 	pointLightObject->AddComponent(new PointLight(Vector3f(0,1,0),0.4f,Attenuation(0,0,1)));
 	pointLightObject->GetTransform().SetPos(Vector3f(7,0,7));
@@ -73,7 +76,8 @@ void TestGame::Init()
 	rabbitLightObject3->GetTransform().SetPos(Vector3f(0, 20, 0));
 	rabbitLightObject3->GetTransform().SetRot(Quaternion(Vector3f(0, 1, 0), ToRadians(180.0f)));
 
-	monkeyObject->AddComponent(new MeshRenderer(new Mesh("./res/models/monkey3.obj"), new Material(new Texture("brickcity.jpg"), 1, 8)));
+	monkeyObject->AddComponent(new MeshRenderer(new Mesh("./res/models/monkey3.obj"), new Material(new Texture("white.png"), 1, 8,
+																									new Texture("bricks_normal.jpg"))));
 	monkeyObject->GetTransform().SetPos(Vector3f(0, 15, 30));
 	monkeyObject->GetTransform().SetRot(Quaternion(Vector3f(0, 1, 0), ToRadians(180.0f)));
 	monkeyObject->GetTransform().SetScale(5.0);
@@ -97,6 +101,7 @@ void TestGame::Init()
 	//testMesh1->AddChild(testMesh2);
 	
 	AddToScene(cameraObject);
+	AddToScene(waterObject);
 	AddToScene(planeObject);
 	AddToScene(pointLightObject);
 	AddToScene(spotLightObject);

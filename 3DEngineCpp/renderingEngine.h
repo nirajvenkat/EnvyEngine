@@ -15,6 +15,7 @@ public:
 	RenderingEngine();
 	
 	void Render(GameObject* object);
+	void RenderWater(GameObject* object);
 	
 	inline Camera& GetMainCamera() { return *m_mainCamera; }
 	inline BaseLight* GetActiveLight() { return m_activeLight; }
