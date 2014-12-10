@@ -3,17 +3,42 @@
 // RenderTask tells the renderer what to render. The task payload is sent over the network to individual hardware nodes, which render frames
 // according to the parameters in the task payload. Render tasks are also used to direct nodes to do things like load world data and adjust overall
 // rendering parameters. The taskType attribute determines what kind of task is being sent.
+//
+// Note: Class is being repurposed, comment may be out of date.
 
 #include "renderTask.h"
 #include <string.h>
 #include <stdlib.h>
 
-RenderTask::RenderTask(unsigned long seqNo) {
+RenderTask::RenderTask(unsigned long seqNo, double timeStamp) {
+	this->mPayload = NULL;
 	this->seqNo = seqNo;
+	this->mTimeStamp = timeStamp;
+	this->mSliceIdx = 0;
 }
 
 RenderTask::~RenderTask() {
 	clearPayload();
+}
+
+void RenderTask::setProjectionMatrix(Matrix4<double> & matrix) {
+	mProjectionMatrix = matrix;
+}
+
+Matrix4<double> *RenderTask::getProjectionMatrix() {
+	return &mProjectionMatrix;
+}
+
+void RenderTask::setSliceIdx(int idx) {
+	mSliceIdx = idx;
+}
+
+int RenderTask::getSliceIndex() {
+	return mSliceIdx;
+}
+
+double RenderTask::getTimeStamp() {
+	return mTimeStamp;
 }
 
 void RenderTask::setPayload(int taskType, size_t payloadDataSize, void *payloadData) {

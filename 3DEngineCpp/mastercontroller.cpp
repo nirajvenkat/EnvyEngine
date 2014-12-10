@@ -6,6 +6,7 @@
 #include "mastercontroller.h"
 #include "renderer.h"
 #include "renderNode.h"
+#include "renderTask.h"
 #include "windows.h"
 #include <objidl.h>
 #include <gdiplus.h>
@@ -17,17 +18,23 @@
 #include <stack>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_thread.h>
+#include <assert.h>
+#include "time.h"
 
 using namespace std;
 
 // TODO: Network code to wait for incoming real hardware node connections.
 
 MasterController::MasterController(int frameRateMax) {
+	mFrameTime = Time::GetTime();
 	mFrameRateMax = frameRateMax;
 	mMaxNodeId = 0;
 	mStartSem = NULL;
 	mNodeTimeshare = NULL;
 	mNodes.clear();
+	mFramePeriod = 1000.0 / (double)frameRateMax; // Default to max frame period
+	mMinFramePeriod = mFramePeriod;
+	mLastTaskId = 0;
 }
 
 // Destroy the master controller in a thread-safe manner.
@@ -49,7 +56,7 @@ int MasterController::_startMCThread(void* mc) {
 }
 
 // Set up thread, put it in a waiting state.
-void MasterController::init() {
+void MasterController::init(int width, int height) {
 
 	// Create critical section
 	mTCrit = SDL_CreateMutex();
@@ -74,7 +81,7 @@ void MasterController::init() {
 
 	// Create renderer
 	mRenderer = new Renderer();
-	mRenderer->initOutputWindow(1366, 720, "Envy Master Controller");
+	mRenderer->initOutputWindow(width, height, "EnvyEngine Master Controller");
 
 	// Initialize GdiPlus
 	Gdiplus::GdiplusStartupInput startupInput;
@@ -114,8 +121,68 @@ void MasterController::_execute() {
 	while (true) {
 		
 		std::map<unsigned int, RenderNode*>::iterator it;
+		double curTime = Time::GetTime();
 		
 		lock();
+
+		// *** Work on frames ***
+
+		// This is the portion of the master controller that checks to see if all slices are present, then if they are,
+		// renders them *all* to the current viewport. The overlay is triggered later on, if overlay mode is on.
+		assert(mFrameQueue.size() <= mNodes.size());
+		
+		// FRAME RENDERING
+		if (mFrameQueue.size() == mNodes.size()      // We have N ready tasks.
+			&& curTime - mFrameTime >= mFramePeriod  // Correct period has elapsed.
+			) {
+			while (mFrameQueue.size()) {
+				Frame *curFrame = mFrameQueue.top();
+				mRenderer->renderFrame(curFrame);
+				mFrameQueue.pop();
+			}
+
+			// Update the wait time so that we know how long the whole operation took.
+			mWaitPeriod = Time::GetTime() - mFrameTime;
+		}
+
+		// TASK CREATION
+		if (mFrameQueue.size() == 0 &&
+			mWorkingTasks.size() == 0) { // We have nothing to do. Move to a new frame.
+
+			clearWaitingTasks();
+
+			// Set a new frame period. TODO: Implement moving average here for signal smoothing.
+			if (mWaitPeriod > mMinFramePeriod)
+				mFramePeriod = mWaitPeriod;
+			else
+				mFramePeriod = mMinFramePeriod;
+			
+			mFrameTime += mFramePeriod; // Update frametime
+
+			// Create a new set of tasks
+			for (int i = 0; i < mNodes.size(); i++) {
+				RenderTask *curTask = new RenderTask(mLastTaskId++, mFrameTime);
+
+				// Set the projection matrix from the Camera position on the master controller, NOT the nodes
+				// TODO *** curTask->setProjectionMatrix(matrix);
+
+				curTask->setSliceIdx(i);
+				mWaitingTasks.insert(curTask);
+			}
+		}
+
+		// TASK TO NODE ASSIGNMENT
+		if (!mWaitingTasks.empty()) {
+			// iterate over nodes to assign tasks
+			for (it = mNodes.begin(); it != mNodes.end() && !mWaitingTasks.empty(); ++it) {
+				RenderNode *cn = it->second;
+				if (cn->getStatus() == RenderNode::READY) {
+					assignTask(cn, nextWaitingTask());
+				}
+			}
+		}
+
+		// *** Work on nodes ***
 
 		// Gather problem nodes
 		for (it = mNodes.begin(); it != mNodes.end(); ++it) { // iterate over nodes
@@ -134,6 +201,7 @@ void MasterController::_execute() {
 		}
 
 		// Assign tasks - Simple round-robin (may move to RSS later)
+		/* SUPERCEDED
 		for (it = mNodes.begin(); it != mNodes.end(); ++it) { // iterate over nodes
 			RenderNode *cn = it->second;
 			switch (cn->getStatus()) {
@@ -144,9 +212,10 @@ void MasterController::_execute() {
 					mFrameQueue.push(cn->unloadFinishedFrame());
 				break;
 			}
-		}
+		}*/
 
 		// Render available finished frames
+		/* SUPERCEDED
 		if (!mFrameQueue.empty())
 		{
 			curFrame = mFrameQueue.top();
@@ -154,7 +223,7 @@ void MasterController::_execute() {
 			//fprintf(stderr, "MasterController: Rendering frame %d\n", curFrame->getModelTime());
 			mRenderer->renderFrame(curFrame);
 			delete(curFrame);
-		}
+		}*/
 
 		unlock();
 
@@ -197,8 +266,20 @@ void MasterController::dropNode(unsigned int nodeId) {
 
 	lock();
 
+	RenderTask *curTask;
 	RenderNode *rn = mNodes[nodeId];
 	mNodes.erase(nodeId);
+
+	// Unassign task from node
+	/*
+	curTask = mNodeTaskMap[nodeId];
+	if (curTask != NULL)
+		mWorkingTasks.erase(curTask);
+	mNodeTaskMap[nodeId] = NULL;
+
+	// Put the task back in the waitlist.
+	mWaitingTasks.insert(curTask);*/
+
 	delete(rn);
 
 	// Remove it from the Renderer's overlay
@@ -270,4 +351,76 @@ void MasterController::debugNodeStatistics() {
 		fprintf(stderr, "%.2f%% ", mNodeTimeshare[i++]*100.0f);
 	}
 	fprintf(stderr, ")\n");
+}
+
+// Assign a task to a node
+RenderTask *MasterController::nextWaitingTask() {
+	RenderTask *task = NULL;
+	if (!mWaitingTasks.empty())
+		task = *mWaitingTasks.begin();
+	return task;
+}
+
+void MasterController::assignTask(RenderNode *node, RenderTask *task) {
+	
+	node->assignTask(task);
+
+	lock();
+	mWaitingTasks.erase(task);
+	mWorkingTasks.insert(task);
+	unlock();
+}
+
+void MasterController::unassignTask(RenderNode *node, RenderTask *task) {
+	
+	lock();
+	mWorkingTasks.erase(task);
+	mNodeTaskMap[node->getNodeId()] = NULL;
+	unlock();
+
+	// Put the task back in the waitlist.
+	mWaitingTasks.insert(task);
+}
+
+void MasterController::resetWork() {
+
+	lock();
+
+	// Clear current task lists
+	clearWorkingTasks();
+	clearWaitingTasks();
+
+	// Dump frame queue. In the event of node addition or deletion, bitmap
+	// sizes will change.
+
+
+	unlock();
+}
+
+// Functions to clear tasks and/or frames
+void MasterController::clearWorkingTasks() {
+	mNodeTaskMap.clear();
+	for (std::set<RenderTask*>::iterator it = mWorkingTasks.begin(); 
+		                                 it != mWorkingTasks.end(); it++)
+	{
+		delete *it;
+	}
+	mWorkingTasks.clear();
+}
+
+void MasterController::clearWaitingTasks() {
+	for (std::set<RenderTask*>::iterator it = mWaitingTasks.begin();
+		it != mWaitingTasks.end(); it++)
+	{
+		delete *it;
+	}
+	mWaitingTasks.clear();
+}
+
+void MasterController::clearFrames() {
+	while (!mFrameQueue.empty()) {
+		Frame *f = mFrameQueue.top();
+		delete f;
+		mFrameQueue.pop();
+	}
 }

@@ -11,9 +11,12 @@ public:
 	
 	Matrix4f GetViewProjection() const;
 	virtual void AddToEngine(CoreEngine* engine);
+	void setSlice(int slices, int idx, float renderHeight); // Added
+
 protected:
 private:
 	Matrix4f m_projection;
+	Matrix4f m_slicedProjection;
 };
 
 #endif

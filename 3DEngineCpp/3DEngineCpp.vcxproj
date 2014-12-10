@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="3DEngine.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="compositeFrame.h" />
     <ClInclude Include="coreEngine.h" />
     <ClInclude Include="ENVY_CONSTANTS.h" />
     <ClInclude Include="envy_network.h" />
@@ -39,7 +40,6 @@
     <ClInclude Include="renderingEngine.h" />
     <ClInclude Include="renderNode.h" />
     <ClInclude Include="renderTask.h" />
-    <ClInclude Include="renderTaskFactory.h" />
     <ClInclude Include="renderTaskPayload.h" />
     <ClInclude Include="renderUtil.h" />
     <ClInclude Include="sdl_backend.h" />
@@ -75,12 +75,12 @@
     <ClCompile Include="renderingEngine.cpp" />
     <ClCompile Include="renderNode.cpp" />
     <ClCompile Include="renderTask.cpp" />
-    <ClCompile Include="renderTaskFactory.cpp" />
     <ClCompile Include="renderUtil.cpp" />
     <ClCompile Include="sdl_backend.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="simnodetests.cpp" />
     <ClCompile Include="simulatednode.cpp" />
+    <ClCompile Include="compositeFrame.cpp" />
     <ClCompile Include="stb_image.c" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="time.cpp" />

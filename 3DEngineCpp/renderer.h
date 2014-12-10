@@ -22,7 +22,6 @@ public:
 
 	// Video monitor for master controller tasks
 	void initOutputWindow(int width, int height, const char *title);
-	void displayFrame(Frame *f);
 
 	// Framebuffer extraction
 	Gdiplus::Bitmap *getFrameBuffer(void **pixels);

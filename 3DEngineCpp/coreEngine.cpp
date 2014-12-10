@@ -18,7 +18,7 @@ CoreEngine::CoreEngine(int width, int height, double frameRate, Game* game) :
 {
 	m_game->SetEngine(this);
 }
-	
+
 CoreEngine::~CoreEngine()
 {
 	Window::Dispose();

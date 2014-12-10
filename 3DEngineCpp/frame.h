@@ -8,24 +8,22 @@
 
 class Frame {
 public:
-	Frame(unsigned long modelTime);
+	Frame(struct SDL_Rect *rect, unsigned long modelTime);
 	virtual ~Frame();
 
 	unsigned long getMaxId();
 	unsigned long getModelTime();
-	void setSurface(class SDL_Surface *surf);
-	SDL_Surface *getSurface(void);
+	void setSurface(struct SDL_Surface *surf);
+	struct SDL_Surface *getSurface(void);
 	unsigned long getTaskId();
 private:
 
+	struct SDL_Rect *rect;
 	static unsigned long idMax;
-
-	class SDL_Surface *mSurface;
+	struct SDL_Surface *mSurface;
 	unsigned long modelTime;
 	unsigned long id;
 	unsigned long mTaskId;
-
-	// Going to need a place for our bitmap
 };
 
 class _FrameComparator {

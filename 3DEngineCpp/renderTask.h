@@ -8,12 +8,13 @@
 #define RENDERTASK_H
 
 #include "renderTaskPayload.h"
+#include "math3d.h"
 
 class RenderTask {
 
 public:
 
-	RenderTask(unsigned long seqNo);
+	RenderTask(unsigned long seqNo, double timeStamp);
 	virtual ~RenderTask();
 
 	unsigned long getSeqNo();
@@ -21,19 +22,30 @@ public:
 	void setPayload(int taskType, size_t payloadSize, void *payloadData);
 	void clearPayload();
 
+	// Accessors
+	void setSliceIdx(int idx);
+	void setProjectionMatrix(Matrix4<double> & matrix);
+	Matrix4<double> *getProjectionMatrix();
+	int getSliceIndex();
+	double getTimeStamp();
+
 	enum TaskType {
 		RT_CAMERA
 	};
 
+	Matrix4<double> mProjectionMatrix;
+
 	// Data types for render tasks
-	typedef double SimpleMat4[4][4]; // Simple 4x4 matrix for task type 0
-	typedef struct CameraTaskData {
-		SimpleMat4	view;
-		SimpleMat4	projection;
-	} CameraTaskData;
+	//typedef double SimpleMat4[4][4]; // Simple 4x4 matrix for task type 0
+	//typedef struct CameraTaskData {
+	//	SimpleMat4	view;
+	//	SimpleMat4	projection;
+	//} CameraTaskData;
 
 private:
-	unsigned long seqNo;		// Task sequence number
+	unsigned long seqNo;		 // Task sequence number
+	int mSliceIdx;
+	double mTimeStamp;			 // Timestamp
 	RenderTaskPayload *mPayload; // Actual task payload to be sent over the net.
 };
 
