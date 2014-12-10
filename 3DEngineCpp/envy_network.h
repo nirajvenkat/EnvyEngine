@@ -13,7 +13,7 @@ stopped, but so it may return later
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <inttypes.h>
+//#include <inttypes.h>
 
 //Windows
 #include <WinSock2.h>

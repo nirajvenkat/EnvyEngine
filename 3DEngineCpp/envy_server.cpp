@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
 		
 		//pthread_create(&server_thread, NULL, &TCPHandler, NULL);
 		server_thread = CreateThread(0, 0, TCPHandler, NULL,0, &server_thread_id);
-
+		
 		//pthread_mutex_lock(&lock);
 		// no timeout
 		while (WaitForSingleObject(lock, INFINITE) != WAIT_OBJECT_0);
@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
 
 		while (!didACK)
 		{
-			//fprintf(stdout, "BROADCASTING %d\n",sizeof(buffer));
+			fprintf(stdout, "BROADCASTING\n");
 
 			udp_status = sendto(udp_sock, buffer, sizeof(buffer), 0, (struct sockaddr *) &bcast, udp_socklen);
 			if(udp_status <=0)
@@ -100,21 +100,21 @@ int main(int argc, char* argv[])
 			
 			//pthread_mutex_unlock(&lock);
 			ReleaseMutex(lock);
-			//printf("%d %s\n", GetLastError(), GetLastError());
 			
-			Sleep(BCAST_SLEEP);
+			Sleep(BCAST_SLEEP*5);
 
 			//pthread_mutex_lock(&lock);
 			while (WaitForSingleObject(lock, INFINITE) != WAIT_OBJECT_0);
-				//fprintf(stdout, "SPINNING\n");
-			//printf("%d %s\n", GetLastError(), GetLastError());
 		}
 
 		//pthread_join(server_thread, NULL);
 		WaitForSingleObject(server_thread,INFINITE);
-
+		//while(didACK)
+			//printf("WINNER\n");
 		fprintf(stdout, "TCP thread exited. Begin rebroadcast...\n");
+		while (WaitForSingleObject(lock, INFINITE) != WAIT_OBJECT_0);
 		didACK = false;
+		ReleaseMutex(lock);
 	}
 
 	closesocket(udp_sock);
@@ -168,7 +168,7 @@ DWORD WINAPI TCPHandler(void *args)
 		fprintf(stdout, "CONNECTION ACCEPTED\n");
 
 		//pthread_mutex_lock(&lock);
-		while (WaitForSingleObject(lock, INFINITE) != WAIT_OBJECT_0);
+		while (WaitForSingleObject(lock, INFINITE) != WAIT_OBJECT_0){fprintf(stdout,"spinning\n");}
 			//fprintf(stdout, "SPINNING\n");
 		//printf("%d %s\n", GetLastError(), GetLastError());
 		//fprintf(stdout, "THREAD LOCK OBTAINED\n");
@@ -239,7 +239,9 @@ DWORD WINAPI TCPHandler(void *args)
 					fprintf(stdout, "Received UNREGISTER from Master. Terminating thread.\n");
 					finished = true;
 					NODE_ID = 0;
-					didACK = 0;
+					//while (WaitForSingleObject(lock, INFINITE) != WAIT_OBJECT_0);
+					//didACK = false;
+					//ReleaseMutex(lock);
 					closesocket(fd);
 					break;
 				case CMD_RESTART:
@@ -303,5 +305,4 @@ DWORD WINAPI TCPHandler(void *args)
 
 		}
 	}
-	fprintf(stdout, "BADDDDDDDDD\n");
 }

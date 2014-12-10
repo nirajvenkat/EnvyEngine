@@ -129,18 +129,6 @@
     <ClInclude Include="simnodetests.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ENVY_CONSTANTS.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="envy_network.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ENVY_PACKET.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ENVY_TYPES.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="overlay.h">
       <Filter>Header Files</Filter>
     </ClInclude>
