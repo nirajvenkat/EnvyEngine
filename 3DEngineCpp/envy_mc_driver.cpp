@@ -17,9 +17,14 @@ integrate with other classes
 #include "envy_mc_driver.h"
 #include <Windows.h>
 
+#include "mastercontroller.h"
+#include "renderNode.h"
+
 #include<set>
 #include<map>
 using namespace std;
+
+MasterController *gmc;
 
 //masterConroller networking fields
 std::set<HANDLE> threads;//set of handles for thread - disableReg
@@ -466,7 +471,13 @@ DWORD WINAPI registerThread(LPVOID param){
 		DWORD id;
 		HANDLE thread;
 		thread = CreateThread(0, 0, responseFunnel, &temp, 0, &id);
-		
+
+		RenderNode *newNode = new RenderNode(nextID-1);
+		newNode->setNodeInAddr(&(node.sin_addr));
+		gmc->addNode(newNode);
+		gmc->lock();
+		gmc->unlock();
+
 		//add stuff to sets
 		int addr=node.sin_addr.s_addr;
 		//printf("\naddr(int): %u\nid: %d\nsock: %d\n\n",a,nextID-1,*temp);

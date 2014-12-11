@@ -3,6 +3,7 @@
 // The Master Controller-side representation of a hardware rendering node. The hardware rendering node is responsible
 // for rendering specific requests made by the master controller.
 
+#include "envy_network.h"
 #include <stdlib.h>
 #include "renderNode.h"
 #include "renderTask.h"
@@ -24,10 +25,12 @@ RenderNode::RenderNode(unsigned int number)
 	mSimNode = NULL;
 #endif
 	mCurrentTask = NULL;
+	mAddr = (in_addr*)malloc(sizeof(in_addr));
 }
 
 RenderNode::~RenderNode() {
 	free(mLatencySamples);
+	free(mAddr);
 #ifdef SIMULATE
 	if (mSimNode)
 		delete(mSimNode);
@@ -127,4 +130,12 @@ void RenderNode::updateResponseTime() {
 
 	// Recompute moving average
 	mResponseRate += mLastLatency / (float)NODE_LATENCY_WINDOW - mLatencySamples[mCurSample] / (float)NODE_LATENCY_WINDOW;
+}
+
+void RenderNode::setNodeInAddr(in_addr *addr) {
+	memcpy(mAddr, addr, sizeof(in_addr));
+}
+
+void RenderNode::getNodeInAddr(in_addr *dest) {
+	memcpy(dest, mAddr, sizeof(in_addr));
 }

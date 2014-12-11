@@ -60,6 +60,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="coreEngine.cpp" />
     <ClCompile Include="envy_mc_driver.cpp" />
+    <ClCompile Include="envy_network.cpp" />
     <ClCompile Include="frame.cpp" />
     <ClCompile Include="framedriver.cpp" />
     <ClCompile Include="freeLook.cpp" />
@@ -140,7 +141,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>.\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Gdiplus.lib;SDL2_ttf.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glu32.lib;glew32.lib;glew32mx.lib;glew32mxs.lib;glew32s.lib;assimp.lib;SDL2_image.lib</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;Gdiplus.lib;SDL2_ttf.lib;SDL2.lib;SDL2main.lib;opengl32.lib;glu32.lib;glew32.lib;glew32mx.lib;glew32mxs.lib;glew32s.lib;assimp.lib;SDL2_image.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

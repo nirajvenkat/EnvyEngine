@@ -32,6 +32,8 @@ public:
 	class Frame *unloadFinishedFrame();
 
 	int getNodeId();
+	void setNodeInAddr(struct in_addr *addr);
+	void getNodeInAddr(struct in_addr *dest);
 	double getLastLatency();
 	float getAvgLatency();
 	void refreshRates();
@@ -56,6 +58,7 @@ private:
 #endif
 
 	// TODO: NETWORK RELATED ATTRIBUTES
+	struct in_addr *mAddr;
 
 	// Node stats
 	float mCommandRate;		// Commands per second given by Master Controller to this node.
