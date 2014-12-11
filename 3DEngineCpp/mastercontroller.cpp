@@ -42,7 +42,7 @@ MasterController::MasterController(int frameRateMax, Game *game) {
 	mStartSem = NULL;
 	mNodeTimeshare = NULL;
 	mNodes.clear();
-	mFramePeriod = 1000.0 / (double)frameRateMax; // Default to max frame period
+	mFramePeriod = 1.0 / (double)frameRateMax; // Default to max frame period
 	mMinFramePeriod = mFramePeriod;
 	mLastTaskId = 0;
 
@@ -157,17 +157,16 @@ void MasterController::_execute() {
 				Frame *curFrame = mFrameQueue.top();
 				mRenderer->renderFrame(curFrame);
 				mFrameQueue.pop();
+				delete curFrame; // Fixed memory leak here.
 			}
 
 			// Update the wait time so that we know how long the whole operation took.
-			mWaitPeriod = Time::GetTime() - mFrameTime;
+			//mWaitPeriod = Time::GetTime() - mFrameTime;
 		}
 
 		// TASK CREATION
 		if (mFrameQueue.size() == 0 &&
-			mWorkingTasks.size() == 0) { // We have nothing to do. Move to a new frame.
-
-			clearWaitingTasks();
+			mWaitingTasks.size() == 0) { // We have nothing to do. Move to a new frame.
 
 			// Set a new frame period. TODO: Implement moving average here for signal smoothing.
 			if (mWaitPeriod > mMinFramePeriod)
@@ -175,7 +174,7 @@ void MasterController::_execute() {
 			else
 				mFramePeriod = mMinFramePeriod;
 			
-			mFrameTime += mFramePeriod; // Update frametime
+			mFrameTime = curTime; // Update frametime
 
 			// Create a new set of tasks
 			for (int i = 0; i < mNodes.size(); i++) {
@@ -189,7 +188,7 @@ void MasterController::_execute() {
 			}
 		}
 
-		// TASK TO NODE ASSIGNMENT
+		// Render based on node state.
 		if (!mWaitingTasks.empty()) {
 			// iterate over nodes to assign tasks
 			for (it = mNodes.begin(); it != mNodes.end() && !mWaitingTasks.empty(); ++it) {
@@ -199,6 +198,14 @@ void MasterController::_execute() {
 				}
 			}
 		}
+		for (it = mNodes.begin(); it != mNodes.end(); ++it) {
+			RenderNode *cn = it->second;
+			if (cn->getStatus() == RenderNode::RECEIVED_DATA) {
+				mFrameQueue.push(cn->unloadFinishedFrame()); // Brings the node to READY status
+				mNodeTaskMap[cn->getNodeId()] = NULL;
+			}
+		}
+
 
 		// *** Work on nodes ***
 

@@ -66,6 +66,6 @@ void SDLSetMousePosition(int x, int y)
 // Window and glContexts must be valid!
 void SDLResizeWindow(int width, int height)
 {
-	//SDL_SetWindowSize(window, width, height); // Resize our window (seems to be unnecessary but check to make sure)
+	SDL_SetWindowSize(window, width, height); // Resize our window (seems to be unnecessary but check to make sure)
 	glViewport(0, 0, width, height);	      // Change the GL viewport
 }

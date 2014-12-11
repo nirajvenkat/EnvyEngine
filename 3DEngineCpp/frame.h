@@ -16,6 +16,7 @@ public:
 	void setSurface(struct SDL_Surface *surf);
 	struct SDL_Surface *getSurface(void);
 	unsigned long getTaskId();
+	struct SDL_Rect *getRect();
 private:
 
 	struct SDL_Rect *rect;

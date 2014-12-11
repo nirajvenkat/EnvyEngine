@@ -23,6 +23,7 @@ RenderNode::RenderNode(unsigned int number)
 #ifdef SIMULATE
 	mSimNode = NULL;
 #endif
+	mCurrentTask = NULL;
 }
 
 RenderNode::~RenderNode() {
@@ -78,8 +79,8 @@ void RenderNode::receiveResponse() {
 
 void RenderNode::clearTask() {
 	if (mCurrentTask) {
-		mCurrentTask = NULL;
 		delete(mCurrentTask);
+		mCurrentTask = NULL;
 	}
 }
 

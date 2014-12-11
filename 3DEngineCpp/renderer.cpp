@@ -52,9 +52,17 @@ void Renderer::renderFrame(Frame *frame) {
 	SDL_Surface *surf = frame->getSurface();
 	SDL_Texture *tex = SDL_CreateTextureFromSurface(mSDLRenderer, surf);
 
+	SDL_Rect srcRect;
+	SDL_Rect *destRect = frame->getRect();
+
+	srcRect.x = 0;
+	srcRect.y = 0;
+	srcRect.w = destRect->w;
+	srcRect.h = destRect->h;
+
 	// Frame should be identical in size to the current window
 	SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_NONE);
-	SDL_RenderCopyEx(mSDLRenderer, tex, NULL, NULL, 0.0, NULL, SDL_FLIP_VERTICAL);
+	SDL_RenderCopyEx(mSDLRenderer, tex, &srcRect, destRect, 0.0, NULL, SDL_FLIP_VERTICAL);
 	mOverlay->render();
 	SDL_RenderPresent(mSDLRenderer);
 	SDL_DestroyTexture(tex);
@@ -127,21 +135,37 @@ HRESULT GetEncoderClsid(__in LPCWSTR pwszFormat, __out GUID *pGUID)
 //
 // return value: A GdiPlus::Bitmap containing an ARGB (8 bit per pixel) image of the frame buffer.
 
-Gdiplus::Bitmap *Renderer::getFrameBuffer(void **pixels)
+Gdiplus::Bitmap *Renderer::getFrameBuffer(void **pixels, SDL_Rect *rect)
 {
-	size_t bufSize = 4 * mRenderWidth * mRenderHeight;
+	size_t bufSize;
 	Gdiplus::Bitmap *resultBitmap = NULL;
+	int width;
+	int height;
 
+	if (rect) {
+		width = rect->w;
+		height = rect->h;
+	}
+	else { 
+		width = mRenderWidth;
+		height = mRenderHeight;
+	}
+
+	//width = mRenderWidth;
+	//height = mRenderHeight;
+
+	bufSize = width * height * 4;
+	rect->y = 180 * 3;
 	GLubyte *frameBufBytes = (GLubyte*)malloc(bufSize);
 	if (frameBufBytes) // We may be out of memory otherwise
 	{
-		SDL_RenderReadPixels(mSDLRenderer, NULL, SDL_PIXELFORMAT_ARGB8888, frameBufBytes, 4*mRenderWidth);
-		resultBitmap = new Gdiplus::Bitmap(mRenderWidth, mRenderHeight, mRenderWidth * 4,
+		SDL_RenderReadPixels(mSDLRenderer, rect, SDL_PIXELFORMAT_ARGB8888, frameBufBytes, 4*width);
+		resultBitmap = new Gdiplus::Bitmap(width, height, width * 4,
 			PixelFormat32bppARGB, frameBufBytes);
 
 		CLSID pngClsid;
 		GetEncoderClsid(L"image/png", &pngClsid);
-		resultBitmap->Save(L"D:\\resultimage.png", &pngClsid, NULL);
+		resultBitmap->Save(L"C:\\Users\\Hanau\\Documents\\resultimage1.png", &pngClsid, NULL);
 
 		*pixels = frameBufBytes; // Return the pixel buffer
 	}
@@ -155,11 +179,17 @@ void Renderer::setCoreEngine(CoreEngine *engine) {
 void Renderer::renderTask(RenderTask *t) {
 	void *pixels;
 	Gdiplus::Bitmap *bitmap;
+	SDL_Rect rect;
+
+	rect.x = 0;
+	rect.y = 0;
+	rect.w = mRenderWidth;
+	rect.h = mRenderHeight / t->getSlices();
 
 	updateViewportForTask(t);
 	mEngine->GetRenderingEngine()->Render(&mGame->GetRoot());
 
-	bitmap = getFrameBuffer(&pixels);
+	bitmap = getFrameBuffer(&pixels, &rect);
 	t->setResultBitmap(bitmap, pixels);
 }
 
@@ -178,6 +208,41 @@ void Renderer::updateViewportForTask(RenderTask *t) {
 
 	// mCamera->setProjection(t->getProjectionMatrix());
 	Camera::setSlice(t->getSlices(), t->getSliceIndex(), mRenderHeight);
+}
+
+Frame *Renderer::convertFinishedTaskToFrame(RenderTask *task) {
+	void *pixels, *newBuf;
+	SDL_Surface *newSurf;
+	Gdiplus::Bitmap *bitmap;
+	int width;
+	int height;
+	Frame *result = NULL;
+
+	task->getResultBitmap(&bitmap, &pixels);
+	width = bitmap->GetWidth();
+	height = bitmap->GetHeight();
+
+	// The other buffer will be freed after the render task is destroyed.
+	newBuf = malloc(width* height * 4);
+	memcpy(newBuf, pixels, width*height * 4);
+
+	newSurf = SDL_CreateRGBSurfaceFrom(newBuf, width, height, 32, 4 * width, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+	if (!newSurf) {
+		fprintf(stderr, "Error: Could not create surface. %s", SDL_GetError());
+	}
+	else {
+		SDL_Rect frameRect;
+
+		frameRect.w = width;
+		frameRect.h = height;
+		frameRect.x = 0;
+		frameRect.y = height*task->getSliceIndex();
+
+		result = new Frame(&frameRect, task->getTimeStamp());
+		result->setSurface(newSurf);
+	}
+
+	return result;
 }
 
 // Accessors

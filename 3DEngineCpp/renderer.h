@@ -24,7 +24,7 @@ public:
 	void initOutputWindow(int width, int height, const char *title);
 
 	// Framebuffer extraction
-	Gdiplus::Bitmap *getFrameBuffer(void **pixels);
+	Gdiplus::Bitmap *getFrameBuffer(void **pixels, SDL_Rect *rect);
 
 	// Accessors
 	int getHeight();
@@ -41,8 +41,7 @@ public:
 	void renderTask(class RenderTask *task);
 
 	// Conversion
-	static Renderer::convertFinishedTaskToFrame(RenderTask *task, Frame *frame);
-
+	static class Frame*Renderer::convertFinishedTaskToFrame(RenderTask *task);
 private:
 
 	int mRenderWidth;

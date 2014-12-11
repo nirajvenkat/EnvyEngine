@@ -17,7 +17,7 @@ Frame::Frame(SDL_Rect *rect, float modeltime)
 
 	// Copy frame rect
 	this->rect = (SDL_Rect*)malloc(sizeof(SDL_Rect));
-	memcpy(&this->rect, rect, sizeof(SDL_Rect));
+	memcpy(this->rect, rect, sizeof(SDL_Rect));
 }
 
 Frame::~Frame() {
@@ -39,6 +39,10 @@ SDL_Surface *Frame::getSurface() {
 unsigned long Frame::getMaxId()
 {
 	return idMax;
+}
+
+SDL_Rect *Frame::getRect() {
+	return this->rect;
 }
 
 unsigned long Frame::getModelTime()

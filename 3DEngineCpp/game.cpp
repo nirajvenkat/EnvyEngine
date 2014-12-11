@@ -39,14 +39,15 @@ void Game::Render(RenderingEngine* renderingEngine)
 		RenderNode *n = it->first;
 		RenderTask *t = it->second;
 
+		// This code will be moved to where we need it after network integration.
 		if (n->getStatus() == RenderNode::LOADING_DATA) {
 			gRenderer->renderTask(t);
+			Frame *f = Renderer::convertFinishedTaskToFrame(t);
+			n->clearTask();
+			n->setFinishedFrame(f);
 		}
 	}
 
-	//renderingEngine->RenderWater(&m_root);
-
-	/*
 	t = Time::GetTime() - start;
 	if (ct++ == 0)
 		avg = t;
@@ -55,7 +56,7 @@ void Game::Render(RenderingEngine* renderingEngine)
 	if (ct == 60) {
 		fprintf(stderr, "Rendered in %lf ms\n", avg);
 		ct = 0;
-	}*/
+	}
 #else
 	renderingEngine->Render(&m_root);
 #endif
