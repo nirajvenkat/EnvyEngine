@@ -163,6 +163,10 @@ int main(int argc, char **argv)
 	RenderTask *rt = RenderTaskFactory::createCameraTask(0, view, proj);
 	*/
 
+	TestGame game; // For camera position, input.
+	
+	
+
 	// Game / Envy Rendering
 	TestGame game;
 	CoreEngine engine(1366, 720, 60, &game);

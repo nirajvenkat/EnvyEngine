@@ -22,6 +22,7 @@
 #include "time.h"
 #include "game.h"
 #include "camera.h"
+#include "envy_mc_driver.h"
 
 using namespace std;
 // TODO: Network code to wait for incoming real hardware node connections.
@@ -105,6 +106,9 @@ void MasterController::init(int width, int height) {
 	Gdiplus::GdiplusStartupInput startupInput;
 	ULONG_PTR token;
 	GdiplusStartup(&token, &startupInput, NULL);
+
+	// Start server
+	enableRegistration();
 
 	// Init successful
 	fprintf(stderr, "Master Controller Initialized...\n");
