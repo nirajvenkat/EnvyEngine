@@ -10,8 +10,10 @@
 #include <map>
 #include <cstdlib>
 #include <ctime>
+#include <map>
 
 extern FrameDriver *gFrameDriver;
+std::map<RenderNode *,RenderTask*> gTasks;
 
 // Statics
 int SimulatedNode::bitmapWidth;
@@ -43,6 +45,8 @@ void SimulatedNode::acceptTask(RenderTask *rt) {
 	SDL_TimerID tid;
 	Uint32 waitTime;
 
+	gTasks[this->mParent] = rt;
+
 	// Accept render task
 	// fprintf(stderr, "SimNode %d accepted render task\n", mParent->getNodeId());
 
@@ -62,18 +66,9 @@ void SimulatedNode::acceptTask(RenderTask *rt) {
 }
 
 void SimulatedNode::finishTask() {
-
 	SDL_RemoveTimer(mTid); // Wait time over.
-
-	// Grab the next available created frame.
-	if (gFrameDriver->hasFrames()) {
-		mParent->receiveSimData(gFrameDriver->nextFrame());
-		mParent->receiveResponse();
-	}
-	else {
-		mParent->simNullResponse();
-	}
-
+	mParent->receiveResponse();
+	
 	mTasksDone++;
 }
 

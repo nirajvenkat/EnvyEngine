@@ -23,6 +23,10 @@ void Camera::AddToEngine(CoreEngine* engine)
 	engine->GetRenderingEngine()->AddCamera(this);
 }
 
+void Camera::setProjection(Matrix4f *newProjection) {
+	m_projection = *newProjection;
+}
+
 void Camera::setSlice(int slices, int idx, float renderHeight) {
 
 	float viewHeight = renderHeight / (float)slices;

@@ -39,10 +39,6 @@ void Window::Create(int width, int height, const std::string& title)
 
 void Window::Render()
 {
-	// Call framedriver tick in MC Mode.
-#ifdef TEST_MC
-	gFrameDriver->_tick();
-#endif
 	SDLSwapBuffers();
 }
 

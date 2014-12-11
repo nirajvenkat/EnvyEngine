@@ -6,12 +6,16 @@
 #include "renderer.h"
 #include "frame.h"
 #include "overlay.h"
+#include "camera.h"
+#include "renderTask.h"
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 #include <stdio.h>
 #include <atlbase.h>
+#include "sdl_backend.h"
 
-Renderer::Renderer() {
+Renderer::Renderer(Camera *camera) {
+	mCamera = camera;
 	mSDLRenderWindow = NULL;
 	mSDLRenderer = NULL;
 }
@@ -54,6 +58,8 @@ void Renderer::renderFrame(Frame *frame) {
 	SDL_DestroyTexture(tex);
 }
 
+// Public domain code from user "selbie" on StackExchange.
+// Sections also appear on the MSDN website from Microsoft Corp.
 HRESULT GetEncoderClsid(__in LPCWSTR pwszFormat, __out GUID *pGUID)
 {
 	HRESULT hr = E_FAIL;
@@ -138,6 +144,32 @@ Gdiplus::Bitmap *Renderer::getFrameBuffer(void **pixels)
 		*pixels = frameBufBytes; // Return the pixel buffer
 	}
 	return resultBitmap; // Return bitmap object
+}
+
+void Renderer::updateViewportForTask(RenderTask *t) {
+
+	GLint viewport[4];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	int vw = viewport[2]-viewport[0];
+	int vh = viewport[3]-viewport[1];
+	int sw = mRenderWidth;
+	int sh = mRenderHeight / t->getSlices();
+
+	if (vw != sw || vh != sh) {
+		SDLResizeWindow(sw, sh);
+	}
+
+	// mCamera->setProjection(t->getProjectionMatrix());
+	mCamera->setSlice(t->getSlices(), t->getSliceIndex(), mRenderHeight);
+}
+
+// Accessors
+int Renderer::getHeight() {
+	return mRenderHeight;
+}
+
+int Renderer::getWidth() {
+	return mRenderWidth;
 }
 
 // Overlay passthrough functions

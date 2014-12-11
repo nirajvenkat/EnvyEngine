@@ -38,9 +38,11 @@ void RenderNode::setupSimNode(int minLatency, int maxLatency, int dropTime)
 {
 	mSimNode = new SimulatedNode(this, minLatency, maxLatency, dropTime);
 }
+
+/*
 void RenderNode::receiveSimData(Frame *newFrame) {
 	mFinishedFrame = newFrame;
-}
+}*/
 
 void RenderNode::simNullResponse() {
 	updateResponseTime();
@@ -58,7 +60,7 @@ void RenderNode::assignTask(class RenderTask *task) {
 
 	// Set task start time
 	mLastAssignTime = Time::GetTime();
-
+	
 #ifdef SIMULATE
 	mSimNode->acceptTask(task);
 #endif
@@ -70,7 +72,8 @@ void RenderNode::receiveResponse() {
 	// TODO: Receive response from the network
 	// This will be called by a callback (or similar) for when a response is received from a hardware node on the network.
 	updateResponseTime(); // Update average response time.
-	mStatus = Status::RECEIVED_DATA;
+	//mStatus = Status::RECEIVED_DATA;
+	mStatus = Status::LOADING_DATA;
 }
 
 void RenderNode::clearTask() {
@@ -82,6 +85,12 @@ void RenderNode::clearTask() {
 
 int RenderNode::getNodeId() {
 	return mId;
+}
+
+// Temporary
+void RenderNode::setFinishedFrame(Frame *f) {
+	mFinishedFrame = f;
+	mStatus = RECEIVED_DATA;
 }
 
 Frame *RenderNode::unloadFinishedFrame()

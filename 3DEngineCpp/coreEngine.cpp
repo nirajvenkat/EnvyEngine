@@ -44,7 +44,7 @@ void CoreEngine::Stop()
 {
 	if(!m_isRunning)
 		return;
-		
+
 	m_isRunning = false;
 }
 

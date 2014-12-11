@@ -8,7 +8,7 @@
 
 class Frame {
 public:
-	Frame(struct SDL_Rect *rect, unsigned long modelTime);
+	Frame(struct SDL_Rect *rect, float modelTime);
 	virtual ~Frame();
 
 	unsigned long getMaxId();

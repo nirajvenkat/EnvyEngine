@@ -20,12 +20,21 @@
 #include <SDL2/SDL_thread.h>
 #include <assert.h>
 #include "time.h"
+#include "game.h"
+#include "camera.h"
 
 using namespace std;
-
 // TODO: Network code to wait for incoming real hardware node connections.
 
-MasterController::MasterController(int frameRateMax) {
+#ifdef TEST_MC
+std::map<unsigned int, class RenderNode*> *gNodes;
+Renderer *gRenderer;
+#endif
+extern Camera *gCamera;
+
+MasterController::MasterController(int frameRateMax, Game *game) {
+
+	mGame = game;
 	mFrameTime = Time::GetTime();
 	mFrameRateMax = frameRateMax;
 	mMaxNodeId = 0;
@@ -35,6 +44,10 @@ MasterController::MasterController(int frameRateMax) {
 	mFramePeriod = 1000.0 / (double)frameRateMax; // Default to max frame period
 	mMinFramePeriod = mFramePeriod;
 	mLastTaskId = 0;
+
+#ifdef TEST_MC
+	gNodes = &this->mNodes;
+#endif
 }
 
 // Destroy the master controller in a thread-safe manner.
@@ -80,8 +93,11 @@ void MasterController::init(int width, int height) {
 	}
 
 	// Create renderer
-	mRenderer = new Renderer();
+	mRenderer = new Renderer(gCamera);
 	mRenderer->initOutputWindow(width, height, "EnvyEngine Master Controller");
+#ifdef TEST_MC
+	gRenderer = mRenderer;
+#endif
 
 	// Initialize GdiPlus
 	Gdiplus::GdiplusStartupInput startupInput;
@@ -166,7 +182,7 @@ void MasterController::_execute() {
 				// Set the projection matrix from the Camera position on the master controller, NOT the nodes
 				// TODO *** curTask->setProjectionMatrix(matrix);
 
-				curTask->setSliceIdx(i);
+				curTask->setSliceIdx(i, mNodes.size());
 				mWaitingTasks.insert(curTask);
 			}
 		}

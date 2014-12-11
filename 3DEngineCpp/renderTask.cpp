@@ -21,16 +21,21 @@ RenderTask::~RenderTask() {
 	clearPayload();
 }
 
-void RenderTask::setProjectionMatrix(Matrix4<double> & matrix) {
+void RenderTask::setProjectionMatrix(Matrix4f & matrix) {
 	mProjectionMatrix = matrix;
 }
 
-Matrix4<double> *RenderTask::getProjectionMatrix() {
+Matrix4f *RenderTask::getProjectionMatrix() {
 	return &mProjectionMatrix;
 }
 
-void RenderTask::setSliceIdx(int idx) {
+int RenderTask::getSlices() {
+	return mSlices;
+}
+
+void RenderTask::setSliceIdx(int idx, int slices) {
 	mSliceIdx = idx;
+	mSlices = slices;
 }
 
 int RenderTask::getSliceIndex() {

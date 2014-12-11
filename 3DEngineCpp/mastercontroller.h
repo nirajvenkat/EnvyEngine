@@ -12,7 +12,7 @@
 #include "frame.h"
 
 #define MC_MAX_LATENCY 300 // In ms
-// #define TEST_MC // Uncomment for MC test mode
+#define TEST_MC // Uncomment for MC test mode
 
 class Frame;
 
@@ -20,7 +20,7 @@ class MasterController
 {
 public:
 
-	MasterController(int frameRateMax);
+	MasterController(int frameRateMax, class Game *game);
 	virtual ~MasterController();
 	void init(int width, int height);
 	void run();
@@ -52,6 +52,7 @@ private:
 	double mFrameTime;
 	unsigned int mMaxNodeId;
 	unsigned long mLastTaskId;
+	class Game *mGame;
 
 	double curTime;
 

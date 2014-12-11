@@ -20,13 +20,15 @@ public:
 		READY,
 		BUSY,
 		FAILURE,
-		RECEIVED_DATA
+		RECEIVED_DATA,
+		LOADING_DATA // Might drop this after testing concludes
 	};
 
 	void assignTask(class RenderTask *task);
 	void clearTask();
 	void receiveResponse();
 	RenderNode::Status getStatus();
+	void setFinishedFrame(class Frame*);
 	class Frame *unloadFinishedFrame();
 
 	int getNodeId();
@@ -36,7 +38,7 @@ public:
 
 #ifdef SIMULATE
 	void setupSimNode(int minLatency, int maxLatency, int dropTime);
-	void receiveSimData(class Frame *newFrame);
+	//void receiveSimData(class Frame *newFrame);
 	void simNullResponse();
 #endif
 

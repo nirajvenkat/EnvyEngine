@@ -9,7 +9,7 @@
 
 unsigned long Frame::idMax = 1;
 
-Frame::Frame(SDL_Rect *rect, unsigned long modeltime)
+Frame::Frame(SDL_Rect *rect, float modeltime)
 {
 	mSurface = NULL;
 	this->modelTime = modeltime;

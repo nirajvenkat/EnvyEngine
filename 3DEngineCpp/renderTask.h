@@ -23,9 +23,10 @@ public:
 	void clearPayload();
 
 	// Accessors
-	void setSliceIdx(int idx);
-	void setProjectionMatrix(Matrix4<double> & matrix);
-	Matrix4<double> *getProjectionMatrix();
+	void setSliceIdx(int idx, int slices);
+	void setProjectionMatrix(Matrix4f & matrix);
+	Matrix4f *getProjectionMatrix();
+	int getSlices();
 	int getSliceIndex();
 	double getTimeStamp();
 
@@ -33,7 +34,7 @@ public:
 		RT_CAMERA
 	};
 
-	Matrix4<double> mProjectionMatrix;
+	Matrix4f mProjectionMatrix;
 
 	// Data types for render tasks
 	//typedef double SimpleMat4[4][4]; // Simple 4x4 matrix for task type 0
@@ -45,6 +46,7 @@ public:
 private:
 	unsigned long seqNo;		 // Task sequence number
 	int mSliceIdx;
+	int mSlices;
 	double mTimeStamp;			 // Timestamp
 	RenderTaskPayload *mPayload; // Actual task payload to be sent over the net.
 };

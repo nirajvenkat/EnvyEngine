@@ -53,7 +53,7 @@ void testSimNodes4Drop(class MasterController *mc) {
 
 	rn1->setupSimNode(10, 10, 0);
 	rn2->setupSimNode(10, 10, 0);
-	rn3->setupSimNode(10, 10, 200);
+	rn3->setupSimNode(10, 10, 600);
 	rn4->setupSimNode(10, 10, 0);
 
 	mc->addNode(rn1);

@@ -16,7 +16,7 @@
 
 class Renderer {
 public:
-	Renderer();
+	Renderer(class Camera *gCamera);
 	virtual ~Renderer();
 	void renderFrame(class Frame *frame);
 
@@ -26,16 +26,22 @@ public:
 	// Framebuffer extraction
 	Gdiplus::Bitmap *getFrameBuffer(void **pixels);
 
+	// Accessors
+	int getHeight();
+	int getWidth();
+
 	// Overlay passthrough
 	void addNodeToOverlay(int nodeId);
 	void removeNodeFromOverlay(int nodeId);
 	void updateNodeOnOverlay(int nodeId, const char *text, float avg);
+	void updateViewportForTask(class RenderTask *task);
 
 private:
 
 	int mRenderWidth;
 	int mRenderHeight;
 
+	class Camera *mCamera;
 	class SDL_Display *mDisplay;
 	class Overlay *mOverlay;
 	class SDL_Window *mSDLRenderWindow;
