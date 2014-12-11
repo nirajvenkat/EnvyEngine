@@ -9,4 +9,7 @@ void SDLSwapBuffers();
 void SDLDestroyWindow();
 void SDLSetMousePosition(int x, int y);
 
+// Added
+void SDLResizeWindow(int width, int height);
+
 #endif

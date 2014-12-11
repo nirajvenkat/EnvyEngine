@@ -111,21 +111,28 @@ void FrameDriver::_tick() {
 	}
 
 	GLubyte *frameBufData = (GLubyte*)malloc(bufSize);
-	memset(frameBufData, 0, bufSize);
+	if (frameBufData) // We've run out of memory in tests before.
+		memset(frameBufData, 0, bufSize);
 
 	// Create a surface
 	SDL_Surface *surface = SDL_CreateRGBSurfaceFrom(frameBufData, 1366, 720, 32, 1366*4, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
 	if (!surface) {
-	fprintf(stderr, "Error creating surface: %s\n", SDL_GetError());
+		fprintf(stderr, "Error creating surface (possibly out of memory): %s\n", SDL_GetError());
 	}
 
 	if (frameBufData && surface) {
 		glReadPixels(0, 0, 1366, 720, GL_RGBA, GL_UNSIGNED_BYTE, frameBufData);
-	}
 
-	Frame *nFrame = new Frame(mFrameIdx++);
-	nFrame->setSurface(surface);
-	mFrameQueue.push(nFrame);
+		SDL_Rect rect;
+		rect.x = rect.y = 0;
+		rect.w = 1366;
+		rect.h = 720;
+
+		Frame *nFrame = new Frame(&rect, mFrameIdx++);
+		nFrame->setSurface(surface);
+		mFrameQueue.push(nFrame);
+
+	}
 
 	unlock();
 }
@@ -148,7 +155,7 @@ Frame *FrameDriver::nextFrame()
 }
 
 void FrameDriver::tick() {
-
+	/* From Sprint 1. Candidate for deletion.
 	static unsigned int idx = 0;
 
 	Frame *curFrame = new Frame(idx++); 
@@ -174,6 +181,7 @@ void FrameDriver::tick() {
 
 	if (mFrameIdx >= mFrameFiles.size())
 		mFrameIdx = 0;
+		*/
 }
 
 // Threading

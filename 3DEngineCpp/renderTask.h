@@ -7,34 +7,47 @@
 #ifndef RENDERTASK_H
 #define RENDERTASK_H
 
+#include "windows.h"
+#include <objidl.h>
+#include <gdiplus.h>
 #include "renderTaskPayload.h"
+#include "math3d.h"
 
 class RenderTask {
 
 public:
 
-	RenderTask(unsigned long seqNo);
+	RenderTask(unsigned long seqNo, double timeStamp);
 	virtual ~RenderTask();
 
 	unsigned long getSeqNo();
 	RenderTaskPayload *getPayload();
-	void setPayload(int taskType, size_t payloadSize, void *payloadData);
-	void clearPayload();
+
+	// Accessors
+	void setSliceIdx(int idx, int slices);
+	void setProjectionMatrix(Matrix4f & matrix);
+	Matrix4f *getProjectionMatrix();
+	int getSlices();
+	int getSliceIndex();
+	double getTimeStamp();
+	void setResultBitmap(Gdiplus::Bitmap *bitmap, void *pixels);
+	void getResultBitmap(Gdiplus::Bitmap **bitmap, void **pixels);
 
 	enum TaskType {
 		RT_CAMERA
 	};
 
-	// Data types for render tasks
-	typedef double SimpleMat4[4][4]; // Simple 4x4 matrix for task type 0
-	typedef struct CameraTaskData {
-		SimpleMat4	view;
-		SimpleMat4	projection;
-	} CameraTaskData;
+	Matrix4f mProjectionMatrix;
 
 private:
-	unsigned long seqNo;		// Task sequence number
-	RenderTaskPayload *mPayload; // Actual task payload to be sent over the net.
+	unsigned long seqNo;		 // Task sequence number
+	int mSliceIdx;
+	int mSlices;
+	double mTimeStamp;			 // Timestamp
+	// RenderTaskPayload *mPayload; // Actual task payload to be sent over the net.
+
+	void *mFramePixels;
+	Gdiplus::Bitmap *mBitmap;
 };
 
 #endif

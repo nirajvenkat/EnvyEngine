@@ -4,15 +4,20 @@
 // controller.
 
 #include "frame.h"
+#include <string.h>
 #include <SDL2/SDL.h>
 
 unsigned long Frame::idMax = 1;
 
-Frame::Frame(unsigned long modeltime)
+Frame::Frame(SDL_Rect *rect, float modeltime)
 {
 	mSurface = NULL;
 	this->modelTime = modeltime;
 	this->id = idMax++;
+
+	// Copy frame rect
+	this->rect = (SDL_Rect*)malloc(sizeof(SDL_Rect));
+	memcpy(&this->rect, rect, sizeof(SDL_Rect));
 }
 
 Frame::~Frame() {
@@ -20,6 +25,7 @@ Frame::~Frame() {
 		free(mSurface->pixels); // In SDL, if we're responsible for creating the surface from our own bitmap, so we have to dispose of it.
 	if (mSurface)
 		SDL_FreeSurface(mSurface); // Free the surface
+	free(this->rect);
 }
 
 void Frame::setSurface(SDL_Surface *surf) {

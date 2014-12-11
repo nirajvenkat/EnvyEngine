@@ -5,12 +5,14 @@
 #include "renderer.h"
 #include "framedriver.h"
 #include "mastercontroller.h"
-
-// TEMP
 #include "renderTask.h"
-#include "renderTaskFactory.h"
 
 FrameDriver *gFrameDriver = NULL;
+Camera *gCamera;
+
+#ifdef TEST_MC
+CoreEngine *gEngine;
+#endif
 
 class TestGame : public Game
 {
@@ -113,8 +115,12 @@ void TestGame::Init()
 	AddToScene(monkeyLightObject);
 
 	cameraObject->GetTransform().SetPos(Vector3f(15, 10, 15));
+
+	// Give this camera to the renderer class
+	gCamera = new Camera(Matrix4f().InitPerspective(ToRadians(70.0f), Window::GetAspect(), 0.1f, 1000.0f));
+
 	cameraObject->AddChild((new GameObject())
-		->AddComponent(new Camera(Matrix4f().InitPerspective(ToRadians(70.0f), Window::GetAspect(), 0.1f, 1000.0f)))
+		->AddComponent(gCamera)
 		->AddComponent(new FreeLook())
 		->AddComponent(new FreeMove()));
 	
@@ -123,21 +129,6 @@ void TestGame::Init()
 
 int main()
 {
-#ifdef TEST_MC
-	MasterController *mc = new MasterController(60); // New MC, 60FPS target rate
-	mc->init();
-
-	// Framedriver
-	gFrameDriver = new FrameDriver(mc);
-	// gFrameDriver->loadFrames();
-	
-	mc->run();
-
-	//while (1) {
-	//	_sleep(50);
-	//	gFrameDriver->tick();
-	//}
-#endif
 
 	/* Unit test for rendertask
 	RenderTask::SimpleMat4 view;
@@ -152,6 +143,24 @@ int main()
 	TestGame game;
 	CoreEngine engine(1366, 720, 60, &game);
 	engine.CreateWindowCE("EnvyEngine");
+
+#ifdef TEST_MC
+	gEngine = &engine;
+	MasterController *mc = new MasterController(60, &game); // New MC, 60FPS target rate
+	mc->init(1366, 720);
+
+	// Framedriver
+	gFrameDriver = new FrameDriver(mc);
+	// gFrameDriver->loadFrames();
+
+	mc->run();
+
+	//while (1) {
+	//	_sleep(50);
+	//	gFrameDriver->tick();
+	//}
+#endif
+
 	engine.Start();
 	
 	return 0;

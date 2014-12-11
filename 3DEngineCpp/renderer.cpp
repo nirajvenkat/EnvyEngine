@@ -6,14 +6,20 @@
 #include "renderer.h"
 #include "frame.h"
 #include "overlay.h"
+#include "renderTask.h"
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 #include <stdio.h>
 #include <atlbase.h>
+#include "sdl_backend.h"
+#include "coreEngine.h"
+#include "game.h"
 
-Renderer::Renderer() {
+Renderer::Renderer(Game *game) {
+	mGame = game;
 	mSDLRenderWindow = NULL;
 	mSDLRenderer = NULL;
+	mEngine = NULL;
 }
 Renderer::~Renderer() {
 	delete mOverlay;
@@ -54,6 +60,8 @@ void Renderer::renderFrame(Frame *frame) {
 	SDL_DestroyTexture(tex);
 }
 
+// Public domain code from user "selbie" on StackExchange.
+// Sections also appear on the MSDN website from Microsoft Corp.
 HRESULT GetEncoderClsid(__in LPCWSTR pwszFormat, __out GUID *pGUID)
 {
 	HRESULT hr = E_FAIL;
@@ -138,6 +146,47 @@ Gdiplus::Bitmap *Renderer::getFrameBuffer(void **pixels)
 		*pixels = frameBufBytes; // Return the pixel buffer
 	}
 	return resultBitmap; // Return bitmap object
+}
+
+void Renderer::setCoreEngine(CoreEngine *engine) {
+	mEngine = engine;
+}
+
+void Renderer::renderTask(RenderTask *t) {
+	void *pixels;
+	Gdiplus::Bitmap *bitmap;
+
+	updateViewportForTask(t);
+	mEngine->GetRenderingEngine()->Render(&mGame->GetRoot());
+
+	bitmap = getFrameBuffer(&pixels);
+	t->setResultBitmap(bitmap, pixels);
+}
+
+void Renderer::updateViewportForTask(RenderTask *t) {
+
+	GLint viewport[4];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	int vw = viewport[2]-viewport[0];
+	int vh = viewport[3]-viewport[1];
+	int sw = mRenderWidth;
+	int sh = mRenderHeight / t->getSlices();
+
+	if (vw != sw || vh != sh) {
+		SDLResizeWindow(sw, sh);
+	}
+
+	// mCamera->setProjection(t->getProjectionMatrix());
+	Camera::setSlice(t->getSlices(), t->getSliceIndex(), mRenderHeight);
+}
+
+// Accessors
+int Renderer::getHeight() {
+	return mRenderHeight;
+}
+
+int Renderer::getWidth() {
+	return mRenderWidth;
 }
 
 // Overlay passthrough functions
