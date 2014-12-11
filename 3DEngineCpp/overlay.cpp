@@ -67,8 +67,11 @@ void Overlay::insertLine(int nodeId) {
 		newLine->nodeId = nodeId;
 		newLine->curGraphIdx = 0;
 		newLine->curAvg = 0.0f;
+		color->r = thisColor[0];
+		color->g = thisColor[1];
+		color->b = thisColor[2];
+		color->a = 255;
 		newLine->color = color;
-		*newLine->color = { thisColor[0], thisColor[1], thisColor[2], 255 }; // TEMP
 		newLine->textChanged = false;
 		newLine->graphChanged = false;
 		newLine->text[0] = 0;

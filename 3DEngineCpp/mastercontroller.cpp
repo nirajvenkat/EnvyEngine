@@ -88,11 +88,12 @@ void MasterController::init(int width, int height) {
 	}
 
 	// Create the mastercontroller thread.
+	/*
 	SDL_Thread *mThread = SDL_CreateThread(MasterController::_startMCThread, "Envy MasterController", this);
 	if (mThread == NULL) {
 		fprintf(stderr, "SDL_CreateThread failed: %s\n", SDL_GetError());
 		return;
-	}
+	}*/
 
 	// Create renderer
 	mRenderer = new Renderer(mGame);
@@ -113,15 +114,17 @@ void MasterController::init(int width, int height) {
 	// Init successful
 	fprintf(stderr, "Master Controller Initialized...\n");
 	mInitialized = true;
+
+	_execute();
 }
 
-// Kick off the thread.
+// Kick off the thread - may not be necessary
 void MasterController::run() {
 	fprintf(stderr, "Master Controller Executing...\n");
 	SDL_SemPost(mStartSem);
 }
 
-// Do not call this externally
+// Do not call this externally (OK, we are calling it externally now since we have seperate modes)
 void MasterController::_execute() {
 
 	unsigned long last = 0;
@@ -151,7 +154,7 @@ void MasterController::_execute() {
 
 		// This is the portion of the master controller that checks to see if all slices are present, then if they are,
 		// renders them *all* to the current viewport. The overlay is triggered later on, if overlay mode is on.
-		assert(mFrameQueue.size() <= mNodes.size());
+		// assert(mFrameQueue.size() <= mNodes.size());
 		
 		// FRAME RENDERING
 		if (mFrameQueue.size() == mNodes.size()      // We have N ready tasks.

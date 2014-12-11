@@ -144,16 +144,6 @@ int main(int argc, char **argv)
 		}
 	}
 
-	// Announce
-	switch (gMode) {
-		case MASTER_CONTROLLER:
-			fprintf(stderr, "Master controller mode.\n");
-		break;
-		case RENDER_NODE:
-			fprintf(stderr, "Render node mode.\n");
-		break;
-	}
-
 	/* Unit test for rendertask
 	RenderTask::SimpleMat4 view;
 	RenderTask::SimpleMat4 proj;
@@ -164,13 +154,24 @@ int main(int argc, char **argv)
 	*/
 
 	TestGame game; // For camera position, input.
-	
-	
+	MasterController *mc = NULL;
 
-	// Game / Envy Rendering
-	TestGame game;
-	CoreEngine engine(1366, 720, 60, &game);
-	engine.CreateWindowCE("EnvyEngine");
+	// Announce
+	switch (gMode) {
+	case MASTER_CONTROLLER:
+		fprintf(stderr, "Master controller mode.\n");
+		mc = new MasterController(60, &game); // New MC, 60FPS target rate
+		mc->init(1366, 720);
+		break;
+	case RENDER_NODE:
+		fprintf(stderr, "Render node mode.\n");
+		// Game / Envy Rendering
+		TestGame game;
+		CoreEngine engine(1366, 720, 60, &game);
+		engine.CreateWindowCE("EnvyEngine");
+		engine.Start();
+		break;
+	}
 
 #ifdef TEST_MC
 	gEngine = &engine;
@@ -188,8 +189,6 @@ int main(int argc, char **argv)
 	//	gFrameDriver->tick();
 	//}
 #endif
-
-	engine.Start();
 	
 	return 0;
 }

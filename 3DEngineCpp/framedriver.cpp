@@ -34,9 +34,11 @@ FrameDriver::~FrameDriver() {
 }
 
 // For sorting wstrings
+/*
 bool _wstringptr_sort(std::wstring *i, std::wstring *j) {
 	return (*i < *j); // This is strcmp for dummies
 }
+*/
 
 void FrameDriver::loadFrames() {
 	
@@ -74,7 +76,7 @@ void FrameDriver::loadFrames() {
 	while (FindNextFileW(hFind, &findData))
 		mFrameFiles.push_back(new std::wstring(findData.cFileName));
 
-	std::sort(mFrameFiles.begin(), mFrameFiles.end(), _wstringptr_sort);
+	//std::sort(mFrameFiles.begin(), mFrameFiles.end(), _wstringptr_sort);
 
 	// Load textures
 	fprintf(stderr, "FrameDriver found %d surfaces for use.\n", mFrameFiles.size());

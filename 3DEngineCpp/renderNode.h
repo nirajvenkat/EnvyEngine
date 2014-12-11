@@ -4,7 +4,7 @@
 // for rendering specific requests made by the master controller.
 
 //#define SIMULATE testSimNodes3Bad1
-#define SIMULATE testSimNodes4Equal
+//#define SIMULATE testSimNodes4Equal
 
 #ifndef RENDERNODE_H
 #define RENDERNODE_H

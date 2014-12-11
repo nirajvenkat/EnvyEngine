@@ -227,10 +227,6 @@ void sendCommand(){
 			printf("REMOVING %s\n\n", inet_ntoa(*(struct in_addr*)&add));
 			addresses.erase(add);
 			
-
-
-
-
 			//recvfrom(nodes[node_id - 1].sock, buffer, sizeof(recv_packet), 0, (struct sockaddr*)&nodes[node_id - 1].addr, sizeof(nodes[node_id - 1].addr));
 			r=recv(sock, buffer, sizeof(recv_packet), 0);
 			if(r<=0)
@@ -470,12 +466,6 @@ DWORD WINAPI registerThread(LPVOID param){
 		DWORD id;
 		HANDLE thread;
 		thread = CreateThread(0, 0, responseFunnel, &temp, 0, &id);
-
-		
-		
-		
-		
-		
 		
 		//add stuff to sets
 		int addr=node.sin_addr.s_addr;
