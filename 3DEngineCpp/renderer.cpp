@@ -159,13 +159,17 @@ Gdiplus::Bitmap *Renderer::getFrameBuffer(void **pixels, SDL_Rect *rect)
 	GLubyte *frameBufBytes = (GLubyte*)malloc(bufSize);
 	if (frameBufBytes) // We may be out of memory otherwise
 	{
-		SDL_RenderReadPixels(mSDLRenderer, rect, SDL_PIXELFORMAT_ARGB8888, frameBufBytes, 4*width);
+		//SDL_RenderReadPixels(mSDLRenderer, rect, SDL_PIXELFORMAT_ARGB8888, frameBufBytes, 4*width);
+		glReadPixels(0, 0, rect->w, rect->h, GL_RGBA, GL_UNSIGNED_BYTE, frameBufBytes);
+		// Convert RGBA->ARGB
+		Renderer::convertRGBAtoARGB32(rect->w, rect->h, rect->w, frameBufBytes, frameBufBytes);
+		
 		resultBitmap = new Gdiplus::Bitmap(width, height, width * 4,
 			PixelFormat32bppARGB, frameBufBytes);
 
 		CLSID pngClsid;
 		GetEncoderClsid(L"image/png", &pngClsid);
-		resultBitmap->Save(L"C:\\Users\\Hanau\\Documents\\resultimage1.png", &pngClsid, NULL);
+		//resultBitmap->Save(L"C:\\Users\\Hanau\\Documents\\resultimage1.png", &pngClsid, NULL);
 
 		*pixels = frameBufBytes; // Return the pixel buffer
 	}
@@ -266,4 +270,23 @@ void Renderer::removeNodeFromOverlay(int nodeId) {
 void Renderer::updateNodeOnOverlay(int nodeId, const char *text, float avg) {
 	mOverlay->updateText(nodeId, text);
 	mOverlay->updateAvg(nodeId, avg);
+}
+
+// Pixels must be 32 bits
+void Renderer::convertRGBAtoARGB32(int width, int height, int pitch, void *srcPixels, void *dstPixels) {
+	int w;
+	UINT32* srcRow = (UINT32*)srcPixels;
+	UINT32* dstRow = (UINT32*)dstPixels;
+	UINT32* s;
+	UINT32* d;
+	while (height--) {
+		s = srcRow;
+		d = dstRow;
+		w = width >> 2;
+		while (w--) {
+			*d = (*s << 24) | (*s & 0xFFFFFF);
+		}
+		srcRow += pitch >> 2;
+		dstRow += pitch >> 2;
+	}
 }

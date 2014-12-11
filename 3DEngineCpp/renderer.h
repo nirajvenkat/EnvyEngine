@@ -42,6 +42,7 @@ public:
 
 	// Conversion
 	static class Frame*Renderer::convertFinishedTaskToFrame(RenderTask *task);
+	static void convertRGBAtoARGB32(int width, int height, int pitch, void *srcPixels, void *dstPixels);
 private:
 
 	int mRenderWidth;
