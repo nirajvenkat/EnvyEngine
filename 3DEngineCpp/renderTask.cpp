@@ -11,14 +11,18 @@
 #include <stdlib.h>
 
 RenderTask::RenderTask(unsigned long seqNo, double timeStamp) {
-	this->mPayload = NULL;
+	this->mFramePixels = NULL;
+	this->mBitmap = NULL;
 	this->seqNo = seqNo;
 	this->mTimeStamp = timeStamp;
 	this->mSliceIdx = 0;
 }
 
 RenderTask::~RenderTask() {
-	clearPayload();
+	if (mFramePixels != NULL)
+		free(mFramePixels);
+	if (mBitmap != NULL)
+		delete mBitmap;
 }
 
 void RenderTask::setProjectionMatrix(Matrix4f & matrix) {
@@ -46,30 +50,14 @@ double RenderTask::getTimeStamp() {
 	return mTimeStamp;
 }
 
-void RenderTask::setPayload(int taskType, size_t payloadDataSize, void *payloadData) {
-	RenderTaskPayload *payload;
-
-	payload = (RenderTaskPayload*)malloc(RENDERTASKPAYLOAD_HEADER_SIZE + payloadDataSize);
-	if (payload) {
-		memset(payload, 0, sizeof(payload));
-		payload->type = taskType;
-		payload->totalSize = RENDERTASKPAYLOAD_HEADER_SIZE + payloadDataSize;
-		payload->dataSize = payloadDataSize;
-		memcpy(&payload->taskData, payloadData, payloadDataSize); // Load actual task data
-
-		mPayload = payload;
-	}
+void RenderTask::setResultBitmap(Gdiplus::Bitmap *bitmap, void *pixels) {
+	mBitmap = bitmap;
+	mFramePixels = pixels;
 }
 
-RenderTaskPayload *RenderTask::getPayload() {
-	return this->mPayload;
-}
-
-void RenderTask::clearPayload() {
-	if (mPayload != NULL) {
-		free(mPayload);
-		mPayload = NULL;
-	}
+void RenderTask::getResultBitmap(Gdiplus::Bitmap **bitmap, void **pixels) {
+	*bitmap = mBitmap;
+	*pixels = mFramePixels;
 }
 
 unsigned long RenderTask::getSeqNo() {

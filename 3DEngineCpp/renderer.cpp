@@ -6,18 +6,20 @@
 #include "renderer.h"
 #include "frame.h"
 #include "overlay.h"
-#include "camera.h"
 #include "renderTask.h"
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 #include <stdio.h>
 #include <atlbase.h>
 #include "sdl_backend.h"
+#include "coreEngine.h"
+#include "game.h"
 
-Renderer::Renderer(Camera *camera) {
-	mCamera = camera;
+Renderer::Renderer(Game *game) {
+	mGame = game;
 	mSDLRenderWindow = NULL;
 	mSDLRenderer = NULL;
+	mEngine = NULL;
 }
 Renderer::~Renderer() {
 	delete mOverlay;
@@ -146,6 +148,21 @@ Gdiplus::Bitmap *Renderer::getFrameBuffer(void **pixels)
 	return resultBitmap; // Return bitmap object
 }
 
+void Renderer::setCoreEngine(CoreEngine *engine) {
+	mEngine = engine;
+}
+
+void Renderer::renderTask(RenderTask *t) {
+	void *pixels;
+	Gdiplus::Bitmap *bitmap;
+
+	updateViewportForTask(t);
+	mEngine->GetRenderingEngine()->Render(&mGame->GetRoot());
+
+	bitmap = getFrameBuffer(&pixels);
+	t->setResultBitmap(bitmap, pixels);
+}
+
 void Renderer::updateViewportForTask(RenderTask *t) {
 
 	GLint viewport[4];
@@ -160,7 +177,7 @@ void Renderer::updateViewportForTask(RenderTask *t) {
 	}
 
 	// mCamera->setProjection(t->getProjectionMatrix());
-	mCamera->setSlice(t->getSlices(), t->getSliceIndex(), mRenderHeight);
+	Camera::setSlice(t->getSlices(), t->getSliceIndex(), mRenderHeight);
 }
 
 // Accessors

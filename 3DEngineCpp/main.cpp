@@ -10,6 +10,10 @@
 FrameDriver *gFrameDriver = NULL;
 Camera *gCamera;
 
+#ifdef TEST_MC
+CoreEngine *gEngine;
+#endif
+
 class TestGame : public Game
 {
 public:
@@ -141,6 +145,7 @@ int main()
 	engine.CreateWindowCE("EnvyEngine");
 
 #ifdef TEST_MC
+	gEngine = &engine;
 	MasterController *mc = new MasterController(60, &game); // New MC, 60FPS target rate
 	mc->init(1366, 720);
 

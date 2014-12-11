@@ -29,6 +29,7 @@ using namespace std;
 #ifdef TEST_MC
 std::map<unsigned int, class RenderNode*> *gNodes;
 Renderer *gRenderer;
+extern CoreEngine *gEngine;
 #endif
 extern Camera *gCamera;
 
@@ -93,10 +94,11 @@ void MasterController::init(int width, int height) {
 	}
 
 	// Create renderer
-	mRenderer = new Renderer(gCamera);
+	mRenderer = new Renderer(mGame);
 	mRenderer->initOutputWindow(width, height, "EnvyEngine Master Controller");
 #ifdef TEST_MC
 	gRenderer = mRenderer;
+	mRenderer->setCoreEngine(gEngine);
 #endif
 
 	// Initialize GdiPlus

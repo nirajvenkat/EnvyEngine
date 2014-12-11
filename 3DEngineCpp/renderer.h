@@ -16,7 +16,7 @@
 
 class Renderer {
 public:
-	Renderer(class Camera *gCamera);
+	Renderer(class Game *game);
 	virtual ~Renderer();
 	void renderFrame(class Frame *frame);
 
@@ -34,18 +34,27 @@ public:
 	void addNodeToOverlay(int nodeId);
 	void removeNodeFromOverlay(int nodeId);
 	void updateNodeOnOverlay(int nodeId, const char *text, float avg);
+
+	// Engine interaction
+	void setCoreEngine(class CoreEngine *engine);
 	void updateViewportForTask(class RenderTask *task);
+	void renderTask(class RenderTask *task);
+
+	// Conversion
+	static Renderer::convertFinishedTaskToFrame(RenderTask *task, Frame *frame);
 
 private:
 
 	int mRenderWidth;
 	int mRenderHeight;
 
-	class Camera *mCamera;
+	class CoreEngine *mEnvyCoreEngine;
 	class SDL_Display *mDisplay;
 	class Overlay *mOverlay;
 	class SDL_Window *mSDLRenderWindow;
 	class SDL_Renderer *mSDLRenderer;
+	class Game *mGame;
+	class CoreEngine *mEngine;
 };
 
 #endif

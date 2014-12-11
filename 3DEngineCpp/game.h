@@ -14,8 +14,7 @@ public:
 	void Input(float delta);
 	void Update(float delta);
 	void Render(RenderingEngine* renderingEngine);
-	void Render(RenderingEngine* renderingEngine, class RenderTask *task); // Added
-
+	
 	inline GameObject& GetRoot() { return m_root; }
 	
 	inline void SetEngine(CoreEngine* engine) { m_root.SetEngine(engine); }

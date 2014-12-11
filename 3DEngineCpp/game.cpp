@@ -26,12 +26,6 @@ void Game::Update(float delta)
 	m_root.UpdateAll(delta);
 }
 
-void Game::Render(RenderingEngine* renderingEngine, RenderTask *task) {
-
-	
-
-}
-
 void Game::Render(RenderingEngine* renderingEngine)
 {
 #ifdef TEST_MC
@@ -46,8 +40,7 @@ void Game::Render(RenderingEngine* renderingEngine)
 		RenderTask *t = it->second;
 
 		if (n->getStatus() == RenderNode::LOADING_DATA) {
-			gRenderer->updateViewportForTask(t);
-			Render(renderingEngine, t);
+			gRenderer->renderTask(t);
 		}
 	}
 

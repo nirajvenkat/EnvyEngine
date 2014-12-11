@@ -67,8 +67,8 @@ private:
 
 	void _execute();
 	RenderTask *nextWaitingTask();
-	void assignTask(RenderNode *node, RenderTask *task);
-	void unassignTask(RenderNode *node, RenderTask *task);
+	void assignTask(class RenderNode *node, class RenderTask *task);
+	void unassignTask(class RenderNode *node, class RenderTask *task);
 	void resetWork();
 	void clearWaitingTasks();
 	void clearWorkingTasks();
