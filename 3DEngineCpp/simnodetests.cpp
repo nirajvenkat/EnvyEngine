@@ -7,6 +7,8 @@
 #include "renderNode.h"
 #include "simulatednode.h"
 
+#ifdef SIMULATE
+
 void RunSimNodeTest(SimNodeTest testFunc, MasterController *mc)
 {
 	testFunc(mc);
@@ -58,3 +60,5 @@ void testSimNodes4Drop(class MasterController *mc) {
 	mc->addNode(rn3);
 	mc->addNode(rn4);
 }
+
+#endif

@@ -10,6 +10,7 @@ Matrix4f gLastDefaultProjection;
 Camera::Camera(const Matrix4f& projection) :
 	m_projection(projection) {
 	gLastDefaultProjection = m_projection; // Default to normal slicing
+	gSlicedProjection = gLastDefaultProjection;
 }
 
 Matrix4f Camera::GetViewProjection() const
