@@ -9,6 +9,7 @@
 
 FrameDriver *gFrameDriver = NULL;
 Camera *gCamera;
+MasterMode gMode;
 
 #ifdef TEST_MC
 CoreEngine *gEngine;
@@ -127,8 +128,31 @@ void TestGame::Init()
 	directionalLightObject->GetTransform().SetRot(Quaternion(Vector3f(1,0,0), ToRadians(-45)));
 }
 
-int main()
+int main(int argc, char **argv)
 {
+	char *mainFlag;
+
+	// Get command line arguments.
+	gMode = MASTER_CONTROLLER; // Default
+	if (argc > 1) {
+		mainFlag = argv[1];
+		if (!strcmp(mainFlag, "-master")) {
+			gMode = MASTER_CONTROLLER;
+		}
+		else if (!strcmp(mainFlag, "-node")) {
+			gMode = RENDER_NODE;
+		}
+	}
+
+	// Announce
+	switch (gMode) {
+		case MASTER_CONTROLLER:
+			fprintf(stderr, "Master controller mode.\n");
+		break;
+		case RENDER_NODE:
+			fprintf(stderr, "Render node mode.\n");
+		break;
+	}
 
 	/* Unit test for rendertask
 	RenderTask::SimpleMat4 view;

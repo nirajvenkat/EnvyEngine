@@ -14,7 +14,7 @@ integrate with other classes
 #include <sys/types.h>
 #include <stdio.h>
 #include <time.h>
-
+#include "envy_mc_driver.h"
 #include <Windows.h>
 
 #include<set>
@@ -33,22 +33,15 @@ std::map<HANDLE, int> rNodesID;
 std::map<SOCKET, _int32> stoaddr;//to remove addresses from spamfilter
 std::map<SOCKET, int> stid;
 
-
 //for testing
 //production wont include these
 std::map<int, SOCKET> idtosock; 
-
 
 SOCKET broadCastSocket;//, tSock;
 HANDLE broadCastListenerHandle;
 DWORD broadCastListenerID;
 
 int nextID = 1;//used to assign IDs' to threads
-
-void enableRegistration();
-void disableRegistration();
-DWORD WINAPI registerThread(LPVOID);
-
 
 #define MAXBUF 1024
 
@@ -527,9 +520,9 @@ void disableRegistration(){//cleans up thread space and closes socket
 	WSACleanup();
 }
 
-
+/*
 int main(int argc, char** argv){
 	enableRegistration();
 	sendCommand();
 	disableRegistration();
-}
+}*/

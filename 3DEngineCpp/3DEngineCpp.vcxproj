@@ -15,6 +15,11 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="compositeFrame.h" />
     <ClInclude Include="coreEngine.h" />
+    <ClInclude Include="ENVY_CONSTANTS.h" />
+    <ClInclude Include="envy_mc_driver.h" />
+    <ClInclude Include="envy_network.h" />
+    <ClInclude Include="ENVY_PACKET.h" />
+    <ClInclude Include="ENVY_TYPES.h" />
     <ClInclude Include="frame.h" />
     <ClInclude Include="framedriver.h" />
     <ClInclude Include="freeLook.h" />
@@ -54,6 +59,7 @@
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="coreEngine.cpp" />
+    <ClCompile Include="envy_mc_driver.cpp" />
     <ClCompile Include="frame.cpp" />
     <ClCompile Include="framedriver.cpp" />
     <ClCompile Include="freeLook.cpp" />

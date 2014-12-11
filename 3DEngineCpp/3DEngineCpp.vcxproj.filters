@@ -132,6 +132,21 @@
     <ClInclude Include="compositeFrame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ENVY_CONSTANTS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ENVY_PACKET.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ENVY_TYPES.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="envy_network.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="envy_mc_driver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp">
@@ -225,6 +240,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="compositeFrame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="envy_mc_driver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
