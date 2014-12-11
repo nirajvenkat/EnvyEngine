@@ -63,9 +63,13 @@ void Renderer::renderFrame(Frame *frame) {
 	// Frame should be identical in size to the current window
 	SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_NONE);
 	SDL_RenderCopyEx(mSDLRenderer, tex, &srcRect, destRect, 0.0, NULL, SDL_FLIP_VERTICAL);
+	SDL_DestroyTexture(tex);
+}
+
+void Renderer::commit()
+{
 	mOverlay->render();
 	SDL_RenderPresent(mSDLRenderer);
-	SDL_DestroyTexture(tex);
 }
 
 // Public domain code from user "selbie" on StackExchange.

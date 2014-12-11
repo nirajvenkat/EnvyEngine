@@ -34,6 +34,7 @@ public:
 	void addNodeToOverlay(int nodeId);
 	void removeNodeFromOverlay(int nodeId);
 	void updateNodeOnOverlay(int nodeId, const char *text, float avg);
+	void commit();
 
 	// Engine interaction
 	void setCoreEngine(class CoreEngine *engine);

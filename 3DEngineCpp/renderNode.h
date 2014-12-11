@@ -3,7 +3,7 @@
 // The Master Controller-side representation of a hardware rendering node. The hardware rendering node is responsible
 // for rendering specific requests made by the master controller.
 
-#define SIMULATE testSimNodes4Drop
+#define SIMULATE testSimNodes3Bad1
 //#define SIMULATE testSimNodes4Bad1
 
 #ifndef RENDERNODE_H

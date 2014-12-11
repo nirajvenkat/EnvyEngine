@@ -61,11 +61,10 @@ void SDLSetMousePosition(int x, int y)
 	SDL_WarpMouseInWindow(window, x, y);
 }
 
-
 // Added to effect window resize tasks when node number increases or decreases
 // Window and glContexts must be valid!
 void SDLResizeWindow(int width, int height)
 {
-	SDL_SetWindowSize(window, width, height); // Resize our window (seems to be unnecessary but check to make sure)
+	//SDL_SetWindowSize(window, width, height); // Resize our window (seems to be unnecessary but check to make sure)
 	glViewport(0, 0, width, height);	      // Change the GL viewport
 }

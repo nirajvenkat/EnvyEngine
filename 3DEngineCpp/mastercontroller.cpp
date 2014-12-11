@@ -159,7 +159,7 @@ void MasterController::_execute() {
 				mFrameQueue.pop();
 				delete curFrame; // Fixed memory leak here.
 			}
-
+			mRenderer->commit();
 			// Update the wait time so that we know how long the whole operation took.
 			//mWaitPeriod = Time::GetTime() - mFrameTime;
 		}

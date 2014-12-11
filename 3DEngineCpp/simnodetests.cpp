@@ -29,21 +29,18 @@ void testSimNodes4Equal(class MasterController *mc) {
 	mc->addNode(rn3);
 	mc->addNode(rn4);
 }
-void testSimNodes4Bad1(class MasterController *mc) {
+void testSimNodes3Bad1(class MasterController *mc) {
 	RenderNode *rn1 = new RenderNode(1);
 	RenderNode *rn2 = new RenderNode(2);
 	RenderNode *rn3 = new RenderNode(3);
-	RenderNode *rn4 = new RenderNode(4);
 
 	rn1->setupSimNode(10, 11, 0);
 	rn2->setupSimNode(13, 20, 0);
-	rn4->setupSimNode(4, 7, 0);
-	rn3->setupSimNode(140, 170, 0);
+	rn3->setupSimNode(60, 75, 0);
 
 	mc->addNode(rn1);
 	mc->addNode(rn2);
 	mc->addNode(rn3);
-	mc->addNode(rn4);
 }
 void testSimNodes4Drop(class MasterController *mc) {
 	RenderNode *rn1 = new RenderNode(1);
