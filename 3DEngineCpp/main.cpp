@@ -176,6 +176,9 @@ int main(int argc, char **argv)
 		else if (!strcmp(mainFlag, "-node")) {
 			gMode = RENDER_NODE;
 		}
+		else if (!strcmp(mainFlag, "-standalone")) {
+			gMode = STANDALONE;
+		}
 	}
 
 	/* Unit test for rendertask
@@ -199,8 +202,14 @@ int main(int argc, char **argv)
 		mc->init(1366, 720);
 		break;
 	case RENDER_NODE:
-		fprintf(stderr, "Render node mode.\n");
+		fprintf(stderr, "Running as render node.\n");
 		runNode();
+		break;
+	case STANDALONE:
+		TestGame game;
+		CoreEngine engine(1366, 720, 60, &game);
+		engine.CreateWindowCE("EnvyEngine");
+		engine.Start();
 		break;
 	}
 

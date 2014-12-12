@@ -32,6 +32,8 @@ void FreeLook::Input(float delta)
 			
 		if(rotY || rotX)
 			Input::SetMousePosition(centerPosition);
+
+		fprintf(stderr, "%f, %f\n", deltaPos.GetX(), deltaPos.GetY());
 	}
 
 	if(Input::GetMouseDown(Input::LEFT_MOUSE))
