@@ -11,6 +11,7 @@
 #include <objidl.h>
 #include <gdiplus.h>
 #include <GdiPlusImageCodec.h>
+#include "math3d.h"
 
 #define RENDERER_OUTPUT_WINDOW_DEFAULT_TITLE "Envy Engine Output"
 
