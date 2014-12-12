@@ -79,7 +79,8 @@ void RenderNode::assignTask(class RenderTask *task) {
 	pkt_command_payload payload;
 	char tsbuf[8];
 	char packbuf[sizeof(pkt)];
-	htonFloat(tsbuf, taskTime);
+	//htonFloat(tsbuf, taskTime);
+	memcpy(tsbuf, &taskTime, sizeof(taskTime));
 
 	memcpy(&payload.taskMatrix, &taskMatrix, sizeof(taskMatrix));
 	payload.taskSeq = taskSeq;
@@ -91,11 +92,23 @@ void RenderNode::assignTask(class RenderTask *task) {
 	commandPacket->header.pkt_type = PKT_TYPE_TASK;
 	commandPacket->header.status = STATUS_OK;
 	commandPacket->header.p_length = sizeof(pkt_command_payload);
+
 	memcpy(&commandPacket->header.timestamp, &tsbuf, sizeof(tsbuf));
 	memcpy(&commandPacket->payload.data[0], &payload, sizeof(pkt_command_payload));
 	//htonPacket(*commandPacket, packbuf);
-	fprintf(stderr, "Sending task id %d to node %d...", task->getSeqNo(), this->getNodeId()); 
-	send(mSocket, (char*)&commandPacket, sizeof(commandPacket), 0);
+	
+	int err = send(mSocket, (char*)commandPacket, sizeof(pkt), 0);
+	if(err < 0)
+	{
+		fprintf(stderr, "Error code %d\n", err);
+	}
+	else
+	{
+		fprintf(stderr, "Sent task id %d to node %d...\n", task->getSeqNo(), this->getNodeId()); 
+	}
+	if(WSAGetLastError()!=0)
+		printf("Error %d\n",WSAGetLastError());
+	
 	free(commandPacket);
 
 	//send(mSocket, packbuf, sizeof(packbuf), 0);
