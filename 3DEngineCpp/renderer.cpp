@@ -16,6 +16,8 @@
 #include "game.h"
 
 Renderer *gRenderer;
+SDL_sem *renderSem;
+RenderTask *curTask;
 
 Renderer::Renderer(Game *game) {
 
@@ -30,9 +32,56 @@ Renderer::Renderer(Game *game) {
 	mEngine = NULL;
 
 	gRenderer = this;
+
+	mTCrit = SDL_CreateMutex();
+	mRenderSem = SDL_CreateSemaphore(0);
+	mExtSem = SDL_CreateSemaphore(0);
 }
 Renderer::~Renderer() {
 	delete mOverlay;
+
+	lock();
+	SDL_DestroySemaphore(mRenderSem);
+	SDL_DestroySemaphore(mExtSem);
+	unlock();
+	SDL_DestroyMutex(mTCrit);
+}
+
+// Called by an external thread
+Gdiplus::Bitmap *Renderer::waitOnRender(RenderTask *task, char **pixels) {
+	lock();
+	curTask = task;
+	unlock();
+
+	SDL_SemPost(mRenderSem); // Trigger renderer to render
+	SDL_SemWait(mExtSem);	 // Wait for renderer to finish
+
+	*pixels = finishedPixels;
+	return finishedBitmap;
+}
+
+void Renderer::renderLoop() {
+	while(true) {
+		SDL_SemWait(mRenderSem);
+		lock();
+		if (!curTask)
+			return;
+		else {
+			
+			SDL_Rect rect;
+
+			rect.x = rect.y = 0;
+			rect.w = mRenderWidth;
+			rect.h = mRenderHeight/curTask->getSlices();
+			
+			renderTask(curTask);
+
+			finishedBitmap = getFrameBuffer((void**)&finishedPixels, &rect);
+
+			unlock();
+			SDL_SemPost(mExtSem);
+		}
+	}
 }
 
 void Renderer::initOutputWindow(int width, int height, const char *title) 
@@ -308,4 +357,12 @@ void Renderer::convertRGBAtoARGB32(int width, int height, int pitch, void *srcPi
 		srcRow += pitch >> 2;
 		dstRow += pitch >> 2;
 	}
+}
+
+void Renderer::lock() {
+	SDL_LockMutex(mTCrit);
+}
+
+void Renderer::unlock() {
+	SDL_UnlockMutex(mTCrit);
 }

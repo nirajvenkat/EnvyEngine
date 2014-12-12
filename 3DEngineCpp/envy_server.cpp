@@ -107,6 +107,7 @@ int nodeMain()
 		}
 
 		//pthread_join(server_thread, NULL);
+		gRenderer->renderLoop();
 		WaitForSingleObject(server_thread,INFINITE);
 		//while(didACK)
 			//printf("WINNER\n");
@@ -182,7 +183,8 @@ DWORD WINAPI TCPHandler(void *args)
 
 		//struct pkt recv_packet = ntohPacket(buffer);
 		int r;
-		r = recv(client, (char*)&recv_packet, sizeof(recv_packet), 0);
+		r = recv(client, (char*)&recv_packet, sizeof(recv_packet)+50, 0);
+		int err = WSAGetLastError();
 
 		int tmp;
 		//memcpy(&tmp, recv_packet.payload.data, sizeof(tmp));
@@ -199,12 +201,15 @@ DWORD WINAPI TCPHandler(void *args)
 		{
 			//recvfrom(client, buffer, sizeof(buffer), 0, (struct sockaddr*)&cli_addr, &clilen);
 			//recv_packet = ntohPacket(buffer);
-			recv(client, (char*)&recv_packet, sizeof(send_packet), 0);
+			r = sizeof(recv_packet);
+			r = recv(client, (char*)&recv_packet, sizeof(recv_packet), 0);
+			fprintf(stderr, "%d", *(unsigned long*)(&recv_packet));
+			err = WSAGetLastError();
 			status = -1;
 			//memset(&send_packet, 0, sizeof(send_packet));
 
 			//Handle each type of packet differently
-			if (recv_packet.header.pkt_type == PKT_TYPE_TASK)
+			if (recv_packet.header.pkt_type == PKT_TYPE_TASK || recv_packet.header.pkt_type == ntohs(PKT_TYPE_TASK)  || recv_packet.header.pkt_type == htons(PKT_TYPE_TASK))
 			{
 				pkt_command_payload cmd;
 				memcpy(&cmd, &recv_packet.payload.data[0], recv_packet.header.p_length);
@@ -335,8 +340,7 @@ void RenderAndSend(SOCKET client, class RenderTask *rt, class Renderer *renderer
 
 	imagePacket = (pkt*)malloc(sizeof(pkt_hdr) + bufSize);
 
-	renderer->renderTask(rt);
-	resultBitmap = renderer->getFrameBuffer((void**)&pix, &rect);
+	resultBitmap = renderer->waitOnRender(rt, &pix);
 	memcpy((char*)imagePacket + sizeof(pkt_hdr), pix, bufSize);
 	free(pix);
 

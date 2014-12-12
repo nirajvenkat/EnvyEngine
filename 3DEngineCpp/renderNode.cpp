@@ -118,13 +118,14 @@ void RenderNode::receiveResponse() {
 
 	pkt packet;
 	pkt_payload *payload;
+	size_t bytesIn;
 
 	// Receive response from the network
 	mStatus = Status::LOADING_DATA; // This is set *during* receive
 
 	// This will be called by a callback (or similar) for when a response is received from a hardware node on the network.
-	recv(mSocket, (char*)&packet, sizeof(pkt_hdr), 0); // block
-
+	bytesIn = recv(mSocket, (char*)&packet, sizeof(pkt_hdr), 0); // block
+	
 	// Check header
 	if (packet.header.status == STATUS_OK) {
 		if (packet.header.pkt_type == PKT_TYPE_TASK) {
@@ -133,7 +134,8 @@ void RenderNode::receiveResponse() {
 			int w = mCurrentTask->getWidth();
 			int h = mCurrentTask->getHeight();
 
-			recv(mSocket, payload, packet.header.p_length, 0);
+			bytesIn = recv(mSocket, payload, packet.header.p_length, 0);
+			fprintf(stderr, "Received %d kb from node %d", bytesIn, this->getNodeId());
 
 			// Create GDI+ bitmap
 			Gdiplus::Bitmap *bitmap = new Gdiplus::Bitmap(w, h, w * 4,

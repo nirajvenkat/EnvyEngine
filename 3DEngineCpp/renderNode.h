@@ -40,6 +40,7 @@ public:
 	double getLastLatency();
 	float getAvgLatency();
 	void refreshRates();
+	bool renderReady();
 
 #ifdef SIMULATE
 	void setupSimNode(int minLatency, int maxLatency, int dropTime);
@@ -60,6 +61,8 @@ private:
 	class SimulatedNode *mSimNode;
 #endif
 
+    void *mBitmap;
+
 	// TODO: NETWORK RELATED ATTRIBUTES
 	struct in_addr *mAddr;
 	SOCKET mSocket;
@@ -71,7 +74,7 @@ private:
 	float mLastLatency;		// The last (individual) response rate.
 	int mCurSample;			// The current sample in the mLatencySamples array, used for computing a moving average.
 	float *mLatencySamples;	// Array of response times, used for computing a moving average.
-
+	
 };
 
 #endif

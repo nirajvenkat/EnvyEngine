@@ -45,10 +45,20 @@ public:
 	// Conversion
 	static class Frame*Renderer::convertFinishedTaskToFrame(RenderTask *task);
 	static void convertRGBAtoARGB32(int width, int height, int pitch, void *srcPixels, void *dstPixels);
+
+	Gdiplus::Bitmap *waitOnRender(RenderTask *task, char **pixels);
+	void renderLoop();
+
+	// Threading
+	void lock();
+	void unlock();
 private:
 
 	int mRenderWidth;
 	int mRenderHeight;
+
+	Gdiplus::Bitmap *finishedBitmap;
+	char *finishedPixels;
 
 	class CoreEngine *mEnvyCoreEngine;
 	class SDL_Display *mDisplay;
@@ -57,6 +67,9 @@ private:
 	class SDL_Renderer *mSDLRenderer;
 	class Game *mGame;
 	class CoreEngine *mEngine;
+	struct SDL_semaphore  *mRenderSem;
+	struct SDL_semaphore  *mExtSem;
+	struct SDL_mutex      *mTCrit;
 };
 
 #endif
