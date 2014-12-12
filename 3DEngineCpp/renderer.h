@@ -41,6 +41,7 @@ public:
 	void setCoreEngine(class CoreEngine *engine);
 	void updateViewportForTask(class RenderTask *task);
 	void renderTask(class RenderTask *task);
+	void setCameraProjection(Matrix4f matrix);
 
 	// Conversion
 	static class Frame*Renderer::convertFinishedTaskToFrame(RenderTask *task);

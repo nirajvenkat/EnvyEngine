@@ -7,11 +7,13 @@
 Matrix4f gSlicedProjection;
 Matrix4f gLastDefaultProjection;
 Matrix4f gTransmitProjection;
+bool gUseRemote;
 
 Camera::Camera(const Matrix4f& projection) :
 	m_projection(projection) {
 	gLastDefaultProjection = m_projection; // Default to normal slicing
 	gSlicedProjection = gLastDefaultProjection;
+	gUseRemote = false;
 }
 
 Matrix4f Camera::GetViewProjection() const
@@ -21,7 +23,11 @@ Matrix4f Camera::GetViewProjection() const
 	
 	cameraTranslation.InitTranslation(GetTransform().GetTransformedPos() * -1);
 	
-	return gSlicedProjection * cameraRotation * cameraTranslation;
+	if (!gUseRemote) {
+		return gSlicedProjection * cameraRotation * cameraTranslation;
+	} else {
+		return gSlicedProjection * gTransmitProjection;
+	}
 	//return m_projection * cameraRotation * cameraTranslation;
 }
 

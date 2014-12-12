@@ -23,6 +23,8 @@
 Renderer *gRenderer;
 SDL_sem *renderSem;
 RenderTask *curTask;
+extern Matrix4f gTransmitProjection;
+extern bool gUseRemote;
 
 Renderer::Renderer(Game *game) {
 
@@ -93,6 +95,12 @@ void Renderer::renderLoop() {
 			SDL_SemPost(mExtSem);
 		}
 	}
+}
+
+void Renderer::setCameraProjection(Matrix4f matrix) {
+	// Set the transmit projection, tell the camera to use it.
+	gTransmitProjection = matrix;
+	gUseRemote = true;
 }
 
 void Renderer::initOutputWindow(int width, int height, const char *title) 
@@ -293,7 +301,7 @@ void Renderer::updateViewportForTask(RenderTask *t) {
 		SDLResizeWindow(sw, sh);
 	}
 
-	// mCamera->setProjection(t->getProjectionMatrix());
+	//mCamera->setProjection(t->getProjectionMatrix());
 	Camera::setSlice(t->getSlices(), t->getSliceIndex(), mRenderHeight);
 }
 
