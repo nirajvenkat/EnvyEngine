@@ -62,6 +62,8 @@ private:
 
 	double curTime;
 
+
+
 	// Threading
 	struct SDL_Thread	  *mThread;
 	struct SDL_semaphore  *mStartSem;	// Wait on this while we load up.

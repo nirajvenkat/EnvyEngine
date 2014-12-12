@@ -42,6 +42,8 @@ public:
 	void refreshRates();
 	bool renderReady();
 
+	void setConnHandle(HANDLE h);
+
 #ifdef SIMULATE
 	void setupSimNode(int minLatency, int maxLatency, int dropTime);
 	//void receiveSimData(class Frame *newFrame);
@@ -66,6 +68,8 @@ private:
 	// TODO: NETWORK RELATED ATTRIBUTES
 	struct in_addr *mAddr;
 	SOCKET mSocket;
+	HANDLE connThread;
+
 
 	// Node stats
 	float mCommandRate;		// Commands per second given by Master Controller to this node.

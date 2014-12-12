@@ -37,6 +37,9 @@ RenderNode::RenderNode(unsigned int number)
 RenderNode::~RenderNode() {
 	free(mLatencySamples);
 	free(mAddr);
+
+	CloseHandle(connThread);
+	closesocket(mSocket);
 #ifdef SIMULATE
 	if (mSimNode)
 		delete(mSimNode);
@@ -242,4 +245,8 @@ void RenderNode::setNodeInAddr(in_addr *addr) {
 
 void RenderNode::getNodeInAddr(in_addr *dest) {
 	memcpy(dest, mAddr, sizeof(in_addr));
+}
+
+void RenderNode::setConnHandle(HANDLE h){
+	this->connThread=h;
 }

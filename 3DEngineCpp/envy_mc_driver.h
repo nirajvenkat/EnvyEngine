@@ -1,4 +1,6 @@
 #pragma once
+#include <set>
+
 
 void enableRegistration();
 void disableRegistration();
