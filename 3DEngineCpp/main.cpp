@@ -7,14 +7,18 @@
 #include "mastercontroller.h"
 #include "renderTask.h"
 #include "envy_server.h"
+#include "time.h"
 
 FrameDriver *gFrameDriver = NULL;
 Camera *gCamera;
 MasterMode gMode;
+Game *gGame;
 
 #ifdef TEST_MC
 CoreEngine *gEngine;
 #endif
+
+void runNode();
 
 class MCGame : public Game
 {
@@ -179,7 +183,6 @@ int main(int argc, char **argv)
 	RenderTask *rt = RenderTaskFactory::createCameraTask(0, view, proj);
 	*/
 
-	TestGame game; // For camera position, input.
 	MCGame mcGame;
 	MasterController *mc = NULL;
 
@@ -192,12 +195,7 @@ int main(int argc, char **argv)
 		break;
 	case RENDER_NODE:
 		fprintf(stderr, "Render node mode.\n");
-		// Game / Envy Rendering
-		CoreEngine engine(1366, 720, 60, &game);
-		engine.CreateWindowCE("EnvyEngine");
-		game.Init();
-		//engine.Start();
-		nodeMain();
+		runNode();
 		break;
 	}
 
@@ -219,4 +217,24 @@ int main(int argc, char **argv)
 #endif
 	
 	return 0;
+}
+
+void runNode() {
+	TestGame *game = new TestGame(); // For camera position, input.
+	
+	// Game / Envy Rendering
+	double timeStep = 1.0/60.0;
+	RenderingEngine *renderingEngine;
+	Renderer *renderer;
+	CoreEngine *engine = new CoreEngine(1366, 720, 60, game);
+	engine->CreateWindowCE("EnvyEngine");
+	game->Init();
+	renderingEngine = engine->GetRenderingEngine();
+	renderer = new Renderer(game);
+	renderer->setDimensions(1366, 720);
+	renderer->setCoreEngine(engine);
+	game->Update((float)timeStep);
+	gGame = game;
+
+	nodeMain();
 }

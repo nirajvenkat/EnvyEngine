@@ -111,11 +111,6 @@ void MasterController::init(int width, int height) {
 	mRenderer->setCoreEngine(gEngine);
 #endif
 
-	// Initialize GdiPlus
-	Gdiplus::GdiplusStartupInput startupInput;
-	ULONG_PTR token;
-	GdiplusStartup(&token, &startupInput, NULL);
-
 	// Start server
 	enableRegistration();
 

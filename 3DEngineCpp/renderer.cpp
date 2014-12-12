@@ -15,11 +15,21 @@
 #include "coreEngine.h"
 #include "game.h"
 
+Renderer *gRenderer;
+
 Renderer::Renderer(Game *game) {
+
+	// Initialize GdiPlus
+	Gdiplus::GdiplusStartupInput startupInput;
+	ULONG_PTR token;
+	GdiplusStartup(&token, &startupInput, NULL);
+
 	mGame = game;
 	mSDLRenderWindow = NULL;
 	mSDLRenderer = NULL;
 	mEngine = NULL;
+
+	gRenderer = this;
 }
 Renderer::~Renderer() {
 	delete mOverlay;
@@ -45,6 +55,11 @@ void Renderer::initOutputWindow(int width, int height, const char *title)
 	// Set up overlay	
 	Overlay::initializeOverlays();
 	mOverlay = new Overlay(mSDLRenderer);
+}
+
+void Renderer::setDimensions(int width, int height) {
+	mRenderWidth = width;
+	mRenderHeight = height;
 }
 
 void Renderer::renderFrame(Frame *frame) {

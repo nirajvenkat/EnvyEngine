@@ -10,10 +10,15 @@ spinlocks could be more efficient
 
 */
 
+
 #include "envy_network.h"
 #include "envy_server.h"
 #include <sys/types.h>
 #include <time.h>
+#include "renderer.h"
+#include "renderTask.h"
+
+extern Renderer *gRenderer;
 
 int didACK = false;
 int NODE_ID = 0;
