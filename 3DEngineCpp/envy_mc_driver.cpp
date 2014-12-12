@@ -10,18 +10,16 @@ integrate with other classes
 */
 
 #include "envy_network.h"
-
+#include <windows.h>
 #include <sys/types.h>
 #include <stdio.h>
 #include <time.h>
 #include "envy_mc_driver.h"
-#include <Windows.h>
-
 #include "mastercontroller.h"
 #include "renderNode.h"
-
 #include<set>
 #include<map>
+
 using namespace std;
 
 MasterController *gmc;
@@ -164,10 +162,10 @@ void sendCommand(){
 			GetSystemTime(&tv);
 			double send_time = tv.wSecond * 1000.0 + tv.wMilliseconds;// possible /1000
 
-			htonPacket(send_packet, buffer);
+			//htonPacket(send_packet, buffer);
 			//sendto(nodes[node_id - 1].sock, buffer, sizeof(send_packet), 0, (struct sockaddr*)&nodes[node_id - 1].addr, sizeof(nodes[node_id - 1].addr));
 			int r;
-			r=send(sock, buffer, sizeof(send_packet), 0);
+			r=send(sock, (char*)&send_packet, sizeof(send_packet), 0);
 			if(r<=0)
 				printf("send ERROR %d\n",WSAGetLastError());
 			
@@ -396,13 +394,13 @@ void sendAck(SOCKET sock){
 	//send_packet.header.timestamp = 0;
 	memset(&packet.header.timestamp, 0, sizeof(float));
 
-	int tmp = htonl(nextID-1);
+	int tmp = nextID-1;
 	memcpy(packet.payload.data, &tmp, sizeof(tmp));
-	htonPacket(packet, buffer);
+	//htonPacket(packet, buffer);
 	//fprintf(stdout, "\t* Assigning new node ID %d. Sending response...\n", num_nodes);
 	//int sent = sendto(cli_sock, buffer, sizeof(struct pkt), 0, (struct sockaddr*)&masteraddr, sizeof(masteraddr));
 	printf("sending ACK....");
-	int r =send(sock, buffer, sizeof(struct pkt), 0);
+	int r =send(sock, (char*)&packet, sizeof(struct pkt), 0);
 	printf("sent %d bytes and error if 0!=%d\n",r,WSAGetLastError());
 }
 

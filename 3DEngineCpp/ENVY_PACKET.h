@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdint.h>
 #include "ENVY_CONSTANTS.h"
 #include "math3d.h"

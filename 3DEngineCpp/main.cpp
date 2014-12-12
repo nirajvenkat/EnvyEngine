@@ -6,6 +6,7 @@
 #include "framedriver.h"
 #include "mastercontroller.h"
 #include "renderTask.h"
+#include "envy_server.h"
 
 FrameDriver *gFrameDriver = NULL;
 Camera *gCamera;
@@ -192,10 +193,11 @@ int main(int argc, char **argv)
 	case RENDER_NODE:
 		fprintf(stderr, "Render node mode.\n");
 		// Game / Envy Rendering
-		TestGame game;
 		CoreEngine engine(1366, 720, 60, &game);
 		engine.CreateWindowCE("EnvyEngine");
-		engine.Start();
+		game.Init();
+		//engine.Start();
+		nodeMain();
 		break;
 	}
 

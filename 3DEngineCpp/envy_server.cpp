@@ -11,15 +11,9 @@ spinlocks could be more efficient
 */
 
 #include "envy_network.h"
-
+#include "envy_server.h"
 #include <sys/types.h>
 #include <time.h>
-#include <Windows.h>
-
-
-void htonPacket(struct pkt packet, char buffer[sizeof(struct pkt)]);
-DWORD WINAPI TCPHandler(void* arg);
-
 
 int didACK = false;
 int NODE_ID = 0;
@@ -27,7 +21,7 @@ int NODE_ID = 0;
 //pthread_mutex_t lock;
 volatile HANDLE lock;
 
-int main(int argc, char* argv[])
+int nodeMain()
 {
 	WSADATA wsa;
 	WSAStartup(MAKEWORD(2, 2), &wsa);
@@ -121,7 +115,6 @@ int main(int argc, char* argv[])
 	WSACleanup();
 }
 
-
 //Set up TCP socket to listen for incoming TCP connection from master controller
 DWORD WINAPI TCPHandler(void *args)
 {
@@ -179,28 +172,36 @@ DWORD WINAPI TCPHandler(void *args)
 		//printf("%d %s\n", GetLastError(), GetLastError());
 
 		char buffer[sizeof(struct pkt)];
-		recvfrom(client, buffer, sizeof(buffer), 0, (struct sockaddr*)&cli_addr, &clilen);
-		struct pkt recv_packet = ntohPacket(buffer);
+		//recvfrom(client, buffer, sizeof(buffer), 0, (struct sockaddr*)&cli_addr, &clilen);
+		pkt recv_packet;
+
+		//struct pkt recv_packet = ntohPacket(buffer);
+		int r;
+		r = recv(client, (char*)&recv_packet, sizeof(recv_packet), 0);
+
 		int tmp;
-		memcpy(&tmp, recv_packet.payload.data, sizeof(tmp));
-		NODE_ID = ntohl(tmp);
+		//memcpy(&tmp, recv_packet.payload.data, sizeof(tmp));
+		//NODE_ID = ntohl(tmp);
+		NODE_ID = (int)recv_packet.payload.data[0];
 		fprintf(stdout, "Received acknowledgement from master controller! My node ID is %d!\n", NODE_ID);
 
 		int finished = false;
 		int status;
+
 		struct pkt send_packet;
 
 		while (!finished) //Loop until we receive a stop command from master
 		{
-			recvfrom(client, buffer, sizeof(buffer), 0, (struct sockaddr*)&cli_addr, &clilen);
-			recv_packet = ntohPacket(buffer);
+			//recvfrom(client, buffer, sizeof(buffer), 0, (struct sockaddr*)&cli_addr, &clilen);
+			//recv_packet = ntohPacket(buffer);
+			recv(client, (char*)&send_packet, sizeof(send_packet), 0);
 			status = -1;
-			memset(&send_packet, 0, sizeof(send_packet));
+			//memset(&send_packet, 0, sizeof(send_packet));
 
 			//Handle each type of packet differently
 			if (recv_packet.header.pkt_type == PKT_TYPE_TASK)
 			{
-				//We got a task from MC....        
+				//We got a task from MC.... 
 				switch (recv_packet.header.status) //Data for task command will be in the status field
 				{
 				case TASK_LOAD_WORLD:

@@ -4,7 +4,6 @@
 // for rendering specific requests made by the master controller.
 
 #include "envy_network.h"
-#include <stdlib.h>
 #include "renderNode.h"
 #include "renderTask.h"
 #include "frame.h"
@@ -13,6 +12,7 @@
 #include <windows.h>
 #include <objidl.h>
 #include <gdiplus.h>
+#include <stdlib.h>
 
 RenderNode::RenderNode(unsigned int number) 
 {

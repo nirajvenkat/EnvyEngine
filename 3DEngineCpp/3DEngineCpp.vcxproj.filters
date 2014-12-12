@@ -147,6 +147,9 @@
     <ClInclude Include="envy_mc_driver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="envy_server.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp">
@@ -249,6 +252,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="bmpconverter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="envy_server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

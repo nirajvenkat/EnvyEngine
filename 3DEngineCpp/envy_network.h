@@ -1,5 +1,4 @@
-#ifndef ENVYNETWORKH
-#define ENVYNETWORKH
+#pragma once
 
 /*
 Sam's port
@@ -32,5 +31,3 @@ struct pkt ntohPacket(char buffer[sizeof(struct pkt)]);
 void htonFloat(char *bytes, float f);
 float ntohFloat(char *bytes);
 int getSystemEndianness();
-
-#endif

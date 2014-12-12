@@ -25,6 +25,8 @@
 #include "envy_mc_driver.h"
 #include "game.h"
 
+extern MasterController *gmc;
+
 using namespace std;
 // TODO: Network code to wait for incoming real hardware node connections.
 
@@ -47,6 +49,8 @@ MasterController::MasterController(int frameRateMax, Game *game) {
 	mFramePeriod = 1.0 / (double)frameRateMax; // Default to max frame period
 	mMinFramePeriod = mFramePeriod;
 	mLastTaskId = 0;
+	
+	gmc = this;
 
 #ifdef TEST_MC
 	gNodes = &this->mNodes;
