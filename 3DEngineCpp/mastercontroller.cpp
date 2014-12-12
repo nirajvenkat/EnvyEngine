@@ -195,10 +195,17 @@ void MasterController::_execute() {
 			for (int i = 0; i < mNodes.size(); i++) {
 				RenderTask *curTask = new RenderTask(mLastTaskId++, mFrameTime);
 				// Set the projection matrix from the Camera position on the master controller, NOT the nodes
-				Matrix4f matrix = gCamera->GetViewProjection();
+				Matrix4f trans;
+				trans.InitTranslation(gCamera->GetTransform().GetTransformedPos() * -1);
+				Matrix4f matrix = (gCamera->GetTransform().GetTransformedRot().Conjugate().ToRotationMatrix()) * trans;
 				curTask->setProjectionMatrix(matrix);
 				curTask->setSliceIdx(i, mNodes.size());
 				curTask->setDimensions(mRenderer->getWidth(), mRenderer->getHeight() / mNodes.size());
+				/*
+				fprintf(stderr, "%f\t%f\t%f\%f\n", matrix[0][0], matrix[1][0], matrix[2][0], matrix[3][0]);
+				fprintf(stderr, "%f\t%f\t%f\%f\n", matrix[0][1], matrix[1][1], matrix[2][1], matrix[3][1]);
+				fprintf(stderr, "%f\t%f\t%f\%f\n", matrix[0][2], matrix[1][2], matrix[2][2], matrix[3][2]);
+				fprintf(stderr, "%f\t%f\t%f\%f\n", matrix[0][3], matrix[1][3], matrix[2][3], matrix[3][3]);*/
 
 				mWaitingTasks.insert(curTask);
 			}
@@ -230,8 +237,8 @@ void MasterController::_execute() {
 		}
 
 		// Rotate Camera
-		//gCamera->GetTransform().Rotate(gCamera->GetTransform().GetRot().GetLeft(), ToRadians(0.8f));
-		//gCamera->GetTransform().Rotate(gCamera->GetTransform().GetRot().GetUp(), ToRadians(0.5f));
+		gCamera->GetTransform().Rotate(gCamera->GetTransform().GetRot().GetLeft(), ToRadians(0.01f));
+		gCamera->GetTransform().Rotate(gCamera->GetTransform().GetRot().GetUp(), ToRadians(0.3f));
 
 		// *** Work on nodes ***
 
@@ -279,16 +286,15 @@ void MasterController::_execute() {
 		unlock();
 
 		statTimer++;
-		if (statTimer > 30) {
+		if (statTimer > 180) {
 			statTimer = 0;
 			refreshNodeTimeshares();
 			debugNodeStatistics();
 		}
 
-		
 		mEngine->RunMC();
 
-		Sleep(1.0);
+		Sleep(pause);
 	}
 }
 // Add a frame to the frame queue (thread-safe).
