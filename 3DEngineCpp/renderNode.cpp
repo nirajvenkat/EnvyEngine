@@ -14,6 +14,8 @@
 #include <objidl.h>
 #include <gdiplus.h>
 #include <stdlib.h>
+#include <SDL2/SDL.h>
+#include "bmpconverter.h"
 
 RenderNode::RenderNode(unsigned int number) 
 {
@@ -122,7 +124,7 @@ void RenderNode::receiveResponse() {
 	int bytesIn;
 	int bytesLeft;
 	size_t totalBytes;
-	char *p;
+	BYTE *p;
 
 	// This will be called by a callback (or similar) for when a response is received from a hardware node on the network.
 	bytesIn = recv(mSocket, (char*)&packet, sizeof(pkt_hdr), 0); // block
@@ -131,7 +133,7 @@ void RenderNode::receiveResponse() {
 	if (packet.header.status == STATUS_OK) {
 		if (packet.header.pkt_type == PKT_TYPE_TASK) {
 
-			char *payload = (char*)malloc(packet.header.p_length);
+			BYTE *payload = (BYTE*)malloc(packet.header.p_length);
 			int w = mCurrentTask->getWidth();
 			int h = mCurrentTask->getHeight();
 
@@ -139,16 +141,16 @@ void RenderNode::receiveResponse() {
 			mStatus = Status::LOADING_DATA; // This is set *during* receive
 
 			totalBytes = 0;
-			p = (char*)payload;
+			p = payload;
 			bytesIn = 1;
-			bytesLeft = packet.header.p_length - 16;
+			bytesLeft = packet.header.p_length;
 			while(bytesIn > 0 && bytesLeft > 0) {
 				if (bytesLeft < 4000)
 					bytesIn = bytesLeft;
 				else
 					bytesIn = 4000;
 
-				bytesIn = recv(mSocket, p, bytesIn, 0);
+				bytesIn = recv(mSocket, (char*)p, bytesIn, 0);
 
 				fprintf(stderr, "Received %d bytes, %d remaining...\n", bytesIn, bytesLeft);
 
@@ -160,10 +162,9 @@ void RenderNode::receiveResponse() {
 
 			fprintf(stderr, "Received %d kb from node %d", (packet.header.p_length - bytesLeft)/1024, this->getNodeId());
 
-			// Create GDI+ bitmap
-			Gdiplus::Bitmap *bitmap = new Gdiplus::Bitmap(w, h, w * 4,
-				PixelFormat32bppARGB, (BYTE*)payload);
-			mCurrentTask->setResultBitmap(bitmap, payload);
+			// Decompress JPEG data
+			Gdiplus::Bitmap *inflatedImage = convertJPG(payload, packet.header.p_length);
+			mCurrentTask->setResultBitmap(inflatedImage, NULL);
 
 			// Make a new frame
 		    Frame *f = Renderer::convertFinishedTaskToFrame(mCurrentTask);

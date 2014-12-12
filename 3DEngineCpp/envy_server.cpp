@@ -324,40 +324,38 @@ DWORD WINAPI TCPHandler(void *args)
 
 void RenderAndSend(SOCKET client, class RenderTask *rt, class Renderer *renderer) {
 	
-	Gdiplus::Bitmap *resultBitmap;
-	size_t bufSize;
+	BYTE* image;
+	size_t imgSize;
 	SDL_Rect rect;
 	pkt *imagePacket;
 	char *buf;
-	char *pix;
 
 	rect.x = 0;
 	rect.y = 0;
 	rect.w = rt->getWidth();
 	rect.h = rt->getHeight()/rt->getSlices();
 
-	bufSize = rect.w*rect.h*4;
+	// Compressed JPEG image that is imgSize bytes long
+	image = renderer->waitOnRender(rt, &imgSize);
 
-	imagePacket = (pkt*)malloc(sizeof(pkt_hdr) + bufSize);
+	imagePacket = (pkt*)malloc(sizeof(pkt_hdr) + imgSize);
+	memcpy((char*)imagePacket + sizeof(pkt_hdr), image, imgSize);
 
-	resultBitmap = renderer->waitOnRender(rt, &pix);
-	memcpy((char*)imagePacket + sizeof(pkt_hdr), pix, bufSize);
-	free(pix);
-
-	fprintf(stderr, "Node sending %d kb of image data for frame %d, slice %d\n", bufSize/1024, rt->getSeqNo(), rt->getSliceIndex());
+	fprintf(stderr, "Node sending %d kb of image data for frame %d, slice %d\n", imgSize/1024, rt->getSeqNo(), rt->getSliceIndex());
 
 	imagePacket->header.pkt_type = PKT_TYPE_TASK;
 	imagePacket->header.status = STATUS_OK;
 	double ts = rt->getTimeStamp();
 	memcpy(imagePacket->header.timestamp, (char*)&ts, sizeof(double));
-	imagePacket->header.p_length = bufSize;
+	imagePacket->header.p_length = imgSize;
 
 	int num_sent_bytes = 0;
-	int bytesLeft = bufSize;
+	int packetSize = imgSize + sizeof(pkt_hdr);
+	int bytesLeft = packetSize;
 	int bytesOut = 1;
-	while(num_sent_bytes < bufSize && bytesOut > 0)
+	while(num_sent_bytes < packetSize && bytesOut > 0)
 	{
-		bytesLeft = bufSize - num_sent_bytes;
+		bytesLeft = packetSize - num_sent_bytes;
 		if (bytesLeft < 4000)
 			bytesOut = 4000;
 		else
@@ -366,6 +364,9 @@ void RenderAndSend(SOCKET client, class RenderTask *rt, class Renderer *renderer
 		if (bytesOut > 0)
 			num_sent_bytes += bytesOut;
 	}
+
+	// Free image data
+	delete [] image;
 
 	free(imagePacket);
 }

@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3DEngine.h" />
+    <ClInclude Include="bmpconverter.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="compositeFrame.h" />
     <ClInclude Include="coreEngine.h" />

@@ -1,10 +1,6 @@
-#include <windows.h>
-#include <objidl.h>
-#include <gdiplus.h>
+#include "bmpconverter.h"
 #include <stdio.h>
 #include <istream>
-
-#pragma comment (lib,"Gdiplus.lib")
 
 using namespace Gdiplus;
 using namespace Gdiplus::DllExports;
@@ -30,7 +26,7 @@ int GetEncoderClsid(WCHAR *format, CLSID *pClsid)
 }
 
 //Call this function with desired jpg quality (0-100)
-BYTE* convertBMP(Bitmap *frame, ULONG uQuality)
+BYTE* convertBMP(Bitmap *frame, ULONG uQuality, size_t *finalSize)
 {
 	ULONG_PTR gdiplusToken;
 	GdiplusStartupInput gdiplusStartupInput;
@@ -51,8 +47,8 @@ BYTE* convertBMP(Bitmap *frame, ULONG uQuality)
 	GetEncoderClsid(L"image/jpeg", &imageCLSID); //Here specify final conversion format (image/png, image/tiff, image/jpeg, etc)
 
 	//If we wanted to save this jpg to disk...
-	//LPWSTR filename = (L"test2.jpg");
-	//int iRes = (frame->Save(filename, &imageCLSID, &encoderParams) == Ok);
+	LPWSTR filename = (L"H:\\test2.jpg");
+	int iRes = (frame->Save(filename, &imageCLSID, &encoderParams) == Ok);
 
 	IStream *pStream = NULL;
 	LARGE_INTEGER liZero = {};
@@ -86,6 +82,8 @@ BYTE* convertBMP(Bitmap *frame, ULONG uQuality)
 
 	delete frame;
 	GdiplusShutdown(gdiplusToken);
+
+	*finalSize = dwBufferSize;
 	return buffer;
 }
 
@@ -96,13 +94,12 @@ Bitmap* convertJPG(BYTE* jpg, size_t jpg_size)
     GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
 	//TODO: Need to convert JPG stream to BMP format before creating the IStream.
-
 	HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, jpg_size);
 	PVOID pMem = GlobalLock(hMem);
 	RtlMoveMemory(pMem, jpg, jpg_size);
 	IStream *pStream = 0;
-	HRESULT hr = CreateStreamOnHGlobal(hMem, TRUE, &pStream);
-
+	HRESULT hr = CreateStreamOnHGlobal(hMem, FALSE, &pStream);
 	GdiplusShutdown(gdiplusToken);
+
     return Bitmap::FromStream(pStream);
 }

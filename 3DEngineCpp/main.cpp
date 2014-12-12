@@ -10,6 +10,9 @@
 #include "time.h"
 #include <Mmsystem.h>
 #include <Windows.h>
+#include <SDL2/SDL.h>
+
+#include "bmpconverter.h"
 
 FrameDriver *gFrameDriver = NULL;
 Camera *gCamera;
@@ -192,7 +195,7 @@ int main(int argc, char **argv)
 	switch (gMode) {
 	case MASTER_CONTROLLER:
 		fprintf(stderr, "Master controller mode.\n");
-		PlaySound(TEXT("./res/sound/jaz.wav"), NULL, SND_FILENAME | SND_ASYNC);
+		PlaySound(TEXT("jaz.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		mc = new MasterController(60, &mcGame); // New MC, 60FPS target rate
 		mc->init(1366, 720);
 		break;
@@ -232,12 +235,65 @@ void runNode() {
 	CoreEngine *engine = new CoreEngine(1366, 720, 60, game);
 	engine->CreateWindowCE("EnvyEngine");
 	game->Init();
+
 	renderingEngine = engine->GetRenderingEngine();
 	renderer = new Renderer(game);
 	renderer->setDimensions(1366, 720);
 	renderer->setCoreEngine(engine);
 	game->Update((float)timeStep);
 	gGame = game;
+
+	// Test jpeg
+	/*
+	char *pix;
+	game->Render(renderingEngine);
+	Window::Render();
+	game->Render(renderingEngine);
+	Window::Render();
+
+	Gdiplus::Bitmap *origImage = renderer->getFrameBuffer((void**)&pix, NULL);
+	size_t finalSize;
+	BYTE *jpegBytes = convertBMP(origImage, 75, &finalSize);
+	Gdiplus::Bitmap *inflatedImage = convertJPG(jpegBytes, finalSize);
+
+	int width = inflatedImage->GetWidth();
+	int height = inflatedImage->GetHeight();
+
+	CLSID imageCLSID;
+	GetEncoderClsid(L"image/png", &imageCLSID);
+	inflatedImage->Save(L"H:\\inflatedimage.png", &imageCLSID);
+	//Gdiplus::Bitmap *origCopy = inflatedImage->Clone(0, 0,
+	//												 inflatedImage->GetWidth(), 
+	//	                                             inflatedImage->GetHeight(),
+	//												 PixelFormat32bppARGB);
+
+	SDL_Rect tempRect;
+	tempRect.x = tempRect.y = 0;
+	tempRect.w = 1366;
+	tempRect.h = 720;
+	//Frame *f = new Frame(&tempRect, Time::GetTime());
+	Gdiplus::BitmapData bmd;
+	inflatedImage->LockBits(&Gdiplus::Rect(0, 0, width, height),Gdiplus::ImageLockModeRead,PixelFormat32bppARGB,&bmd);
+	
+	SDL_Surface *newSurf = SDL_CreateRGBSurfaceFrom(bmd.Scan0, width, height, 32, bmd.Stride, 
+						  0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+	inflatedImage->UnlockBits(&bmd);
+
+	SDL_Window *renderWindow = SDL_CreateWindow("Jpeg Test", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+		width, height,
+		0);
+
+	SDL_SaveBMP(newSurf, "H:\\Test.bmp");
+
+	// Create our renderer
+	SDL_Renderer *r = SDL_CreateRenderer(renderWindow, -1, SDL_RENDERER_ACCELERATED);
+	SDL_Texture *tex = SDL_CreateTextureFromSurface(r, newSurf);
+	if (!tex) {
+		fprintf(stderr, "%s", SDL_GetError());
+	}
+	SDL_RenderCopy(r, tex, NULL, NULL);
+	SDL_RenderPresent(r);
+	*/
 
 	nodeMain();
 }

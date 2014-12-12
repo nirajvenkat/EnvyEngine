@@ -5,11 +5,11 @@
 #include <assert.h>
 
 const int Overlay::_overlayColors[OVERLAY_COLORS][3] = {
-	{ 255, 255, 255 },    // White
-	{ 255, 155, 255 },    // Purple
+	{ 255, 40, 40 },      // Red
+	{ 40, 255, 40 },      // Blue
+	{ 0x7F, 0xFF, 0x44 }, // Lt Chartreuse
 	{ 155, 255, 155 },    // Green
-	{ 200, 200, 0 },      // Yellow
-	{ 0x7F, 0xFF, 0x44 }  // Lt Chartreuse
+	{ 200, 200, 0 }       // Yellow
 };
 
 Overlay::Overlay() {

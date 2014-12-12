@@ -46,7 +46,8 @@ public:
 	static class Frame*Renderer::convertFinishedTaskToFrame(RenderTask *task);
 	static void convertRGBAtoARGB32(int width, int height, int pitch, void *srcPixels, void *dstPixels);
 
-	Gdiplus::Bitmap *waitOnRender(RenderTask *task, char **pixels);
+	// Gdiplus::Bitmap *waitOnRender(RenderTask *task, char **pixels);
+	BYTE *Renderer::waitOnRender(RenderTask *task, size_t *jpegSize);
 	void renderLoop();
 
 	// Threading

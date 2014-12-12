@@ -15,6 +15,10 @@
 #include "coreEngine.h"
 #include "game.h"
 #include "window.h"
+#include <windows.h>
+#include <objidl.h>
+#include <gdiplus.h>
+#include "bmpconverter.h"
 
 Renderer *gRenderer;
 SDL_sem *renderSem;
@@ -49,7 +53,7 @@ Renderer::~Renderer() {
 }
 
 // Called by an external thread
-Gdiplus::Bitmap *Renderer::waitOnRender(RenderTask *task, char **pixels) {
+BYTE *Renderer::waitOnRender(RenderTask *task, size_t *jpegSize) {
 	lock();
 	curTask = task;
 	unlock();
@@ -57,8 +61,14 @@ Gdiplus::Bitmap *Renderer::waitOnRender(RenderTask *task, char **pixels) {
 	SDL_SemPost(mRenderSem); // Trigger renderer to render
 	SDL_SemWait(mExtSem);	 // Wait for renderer to finish
 
-	*pixels = finishedPixels;
-	return finishedBitmap;
+	// Convert to JPEG in this thread
+	BYTE* jpegBytes = convertBMP(finishedBitmap, 75, jpegSize);
+
+	// Release finished bitmap
+	free(finishedPixels);
+	delete finishedBitmap;
+
+	return jpegBytes;
 }
 
 void Renderer::renderLoop() {
@@ -76,6 +86,8 @@ void Renderer::renderLoop() {
 			rect.h = mRenderHeight/curTask->getSlices();
 			
 			renderTask(curTask);
+
+			
 
 			finishedBitmap = getFrameBuffer((void**)&finishedPixels, &rect);
 
@@ -120,6 +132,8 @@ void Renderer::renderFrame(Frame *frame) {
 	SDL_Rect srcRect;
 	SDL_Rect *destRect = frame->getRect();
 
+	lock();
+
 	srcRect.x = 0;
 	srcRect.y = 0;
 	srcRect.w = destRect->w;
@@ -129,6 +143,8 @@ void Renderer::renderFrame(Frame *frame) {
 	SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_NONE);
 	SDL_RenderCopyEx(mSDLRenderer, tex, &srcRect, destRect, 0.0, NULL, SDL_FLIP_VERTICAL);
 	SDL_DestroyTexture(tex);
+
+	unlock();
 }
 
 void Renderer::commit()
@@ -210,35 +226,34 @@ Gdiplus::Bitmap *Renderer::getFrameBuffer(void **pixels, SDL_Rect *rect)
 	Gdiplus::Bitmap *resultBitmap = NULL;
 	int width;
 	int height;
+	int x = 0;
+	int y = 0;
 
 	if (rect) {
 		width = rect->w;
 		height = rect->h;
+		rect->y = 180 * 3;
 	}
 	else { 
 		width = mRenderWidth;
 		height = mRenderHeight;
 	}
 
-	//width = mRenderWidth;
-	//height = mRenderHeight;
-
 	bufSize = width * height * 4;
-	rect->y = 180 * 3;
 	GLubyte *frameBufBytes = (GLubyte*)malloc(bufSize);
 	if (frameBufBytes) // We may be out of memory otherwise
 	{
 		//SDL_RenderReadPixels(mSDLRenderer, rect, SDL_PIXELFORMAT_ARGB8888, frameBufBytes, 4*width);
-		glReadPixels(0, 0, rect->w, rect->h, GL_RGBA, GL_UNSIGNED_BYTE, frameBufBytes);
+		glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, frameBufBytes);
 		// Convert RGBA->ARGB
-		Renderer::convertRGBAtoARGB32(rect->w, rect->h, rect->w, frameBufBytes, frameBufBytes);
+		Renderer::convertRGBAtoARGB32(width, height, width, frameBufBytes, frameBufBytes);
 		
 		resultBitmap = new Gdiplus::Bitmap(width, height, width * 4,
 			PixelFormat32bppARGB, frameBufBytes);
 
 		CLSID pngClsid;
 		GetEncoderClsid(L"image/png", &pngClsid);
-		//resultBitmap->Save(L"C:\\Users\\Hanau\\Documents\\resultimage1.png", &pngClsid, NULL);
+		resultBitmap->Save(L"H:\\resultimage1.png", &pngClsid, NULL);
 
 		*pixels = frameBufBytes; // Return the pixel buffer
 	}
@@ -292,7 +307,7 @@ Frame *Renderer::convertFinishedTaskToFrame(RenderTask *task) {
 	int height;
 	Frame *result = NULL;
 
-	task->getResultBitmap(&bitmap, &pixels);
+	task->getResultBitmap(&bitmap, &pixels); // Pixels is no longer needed
 	width = bitmap->GetWidth();
 	height = bitmap->GetHeight();
 
@@ -300,7 +315,13 @@ Frame *Renderer::convertFinishedTaskToFrame(RenderTask *task) {
 	newBuf = malloc(width* height * 4);
 	memcpy(newBuf, pixels, width*height * 4);
 
-	newSurf = SDL_CreateRGBSurfaceFrom(newBuf, width, height, 32, 4 * width, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+	Gdiplus::BitmapData bmd;
+	bitmap->LockBits(&Gdiplus::Rect(0, 0, width, height), Gdiplus::ImageLockModeRead,PixelFormat32bppARGB,&bmd);
+	newSurf = SDL_CreateRGBSurfaceFrom(bmd.Scan0, width, height, 32, bmd.Stride, 
+						 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
+	bitmap->UnlockBits(&bmd);
+
+	//newSurf = SDL_CreateRGBSurfaceFrom(newBuf, width, height, 32, 4 * width, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
 	if (!newSurf) {
 		fprintf(stderr, "Error: Could not create surface. %s", SDL_GetError());
 	}

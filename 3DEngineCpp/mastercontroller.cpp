@@ -160,7 +160,7 @@ void MasterController::_execute() {
 		// assert(mFrameQueue.size() <= mNodes.size());
 		
 		// FRAME RENDERING
-		if (mFrameQueue.size() == mNodes.size()      // We have N ready tasks.
+		if (mFrameQueue.size() >= mNodes.size()      // We have N ready tasks.
 			&& curTime - mFrameTime >= mFramePeriod  // Correct period has elapsed.
 			) {
 			while (mFrameQueue.size()) {
@@ -206,7 +206,14 @@ void MasterController::_execute() {
 			for (it = mNodes.begin(); it != mNodes.end() && !mWaitingTasks.empty(); ++it) {
 				RenderNode *cn = it->second;
 				if (cn->getStatus() == RenderNode::READY) {
+
+					// TEMPORARY FIX FOR SLICE SYNC. Make a slice map in future development
+					mRenderer->lock();
+					RenderTask *t = nextWaitingTask();
+					t->setDimensions(mRenderer->getWidth(), mRenderer->getHeight()/mNodes.size());
+					t->setSliceIdx(cn->getNodeId() % mNodes.size(), mNodes.size());
 					assignTask(cn, nextWaitingTask());
+					mRenderer->unlock();
 				}
 			}
 		}
