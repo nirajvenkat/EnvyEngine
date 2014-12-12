@@ -25,9 +25,6 @@
 #include "envy_mc_driver.h"
 #include "game.h"
 #include "math3d.h"
-#include "freeLook.h"
-#include "input.h"
-#include "coreEngine.h"
 
 extern MasterController *gmc;
 
@@ -229,8 +226,8 @@ void MasterController::_execute() {
 		}
 
 		// Rotate Camera
-		//gCamera->GetTransform().Rotate(gCamera->GetTransform().GetRot().GetLeft(), ToRadians(0.8f));
-		//gCamera->GetTransform().Rotate(gCamera->GetTransform().GetRot().GetUp(), ToRadians(0.5f));
+		gCamera->GetTransform().Rotate(gCamera->GetTransform().GetRot().GetLeft(), ToRadians(0.8f));
+		gCamera->GetTransform().Rotate(gCamera->GetTransform().GetRot().GetUp(), ToRadians(0.5f));
 
 		// *** Work on nodes ***
 
