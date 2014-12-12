@@ -84,6 +84,8 @@ void RenderNode::assignTask(class RenderTask *task) {
 	memcpy(&payload.taskMatrix, &taskMatrix, sizeof(taskMatrix));
 	payload.taskSeq = taskSeq;
 	payload.taskTime = taskTime;
+	payload.sliceIdx = task->getSliceIndex();
+	payload.slices = task->getSlices();
 
 	commandPacket = (pkt*)malloc(sizeof(pkt)); // 128 payload size
 	commandPacket->header.pkt_type = PKT_TYPE_TASK;
@@ -92,6 +94,7 @@ void RenderNode::assignTask(class RenderTask *task) {
 	memcpy(&commandPacket->header.timestamp, &tsbuf, sizeof(tsbuf));
 	memcpy(&commandPacket->payload.data[0], &payload, sizeof(pkt_command_payload));
 	//htonPacket(*commandPacket, packbuf);
+	fprintf(stderr, "Sending task id %d to node %d...", task->getSeqNo(), this->getNodeId()); 
 	send(mSocket, (char*)&commandPacket, sizeof(commandPacket), 0);
 	free(commandPacket);
 

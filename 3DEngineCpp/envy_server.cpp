@@ -17,6 +17,7 @@ spinlocks could be more efficient
 #include <time.h>
 #include "renderer.h"
 #include "renderTask.h"
+#include "SDL2/SDL.h"
 
 extern Renderer *gRenderer;
 
@@ -38,7 +39,6 @@ int nodeMain()
 	//pthread_t server_thread;
 	HANDLE server_thread;
 	DWORD server_thread_id;
-
 
 	/*Set up UDP socket for broadcast until we can establish a reliable
 	TCP connection with the master controller*/
@@ -199,19 +199,23 @@ DWORD WINAPI TCPHandler(void *args)
 		{
 			//recvfrom(client, buffer, sizeof(buffer), 0, (struct sockaddr*)&cli_addr, &clilen);
 			//recv_packet = ntohPacket(buffer);
-			recv(client, (char*)&send_packet, sizeof(send_packet), 0);
+			recv(client, (char*)&recv_packet, sizeof(send_packet), 0);
 			status = -1;
 			//memset(&send_packet, 0, sizeof(send_packet));
 
 			//Handle each type of packet differently
 			if (recv_packet.header.pkt_type == PKT_TYPE_TASK)
 			{
-				//We got a task from MC.... 
-				switch (recv_packet.header.status) //Data for task command will be in the status field
-				{
-				case TASK_LOAD_WORLD:
-					break;
-				}
+				pkt_command_payload cmd;
+				memcpy(&cmd, &recv_packet.payload.data[0], recv_packet.header.p_length);
+
+				// We got a task from MC.... 
+				RenderTask *rt = new RenderTask(cmd.taskSeq,cmd.taskTime);
+				rt->setProjectionMatrix(cmd.taskMatrix);
+				rt->setDimensions(SCRN_WIDTH, SCRN_HEIGHT);
+				rt->setSliceIdx(cmd.sliceIdx, cmd.slices);
+
+				RenderAndSend(client, rt, gRenderer);
 			}
 			else if (recv_packet.header.pkt_type == PKT_TYPE_CMD)
 			{
@@ -311,4 +315,40 @@ DWORD WINAPI TCPHandler(void *args)
 
 		}
 	}
+}
+
+void RenderAndSend(SOCKET client, class RenderTask *rt, class Renderer *renderer) {
+	
+	Gdiplus::Bitmap *resultBitmap;
+	size_t bufSize;
+	SDL_Rect rect;
+	pkt *imagePacket;
+	char *buf;
+	char *pix;
+
+	rect.x = 0;
+	rect.y = 0;
+	rect.w = rt->getWidth();
+	rect.h = rt->getHeight()/rt->getSlices();
+
+	bufSize = rect.w*rect.h*4;
+
+	imagePacket = (pkt*)malloc(sizeof(pkt_hdr) + bufSize);
+
+	renderer->renderTask(rt);
+	resultBitmap = renderer->getFrameBuffer((void**)&pix, &rect);
+	memcpy((char*)imagePacket + sizeof(pkt_hdr), pix, bufSize);
+	free(pix);
+
+	fprintf(stderr, "Node sending %d kb of image data for frame %d, slice %d\n", bufSize/1024, rt->getSeqNo(), rt->getSliceIndex());
+
+	imagePacket->header.pkt_type = PKT_TYPE_TASK;
+	imagePacket->header.status = STATUS_OK;
+	double ts = rt->getTimeStamp();
+	memcpy(imagePacket->header.timestamp, (char*)&ts, sizeof(double));
+	imagePacket->header.p_length = bufSize;
+
+	send(client, (char*)imagePacket, sizeof(pkt_hdr) + bufSize, 0);
+
+	free(imagePacket);
 }

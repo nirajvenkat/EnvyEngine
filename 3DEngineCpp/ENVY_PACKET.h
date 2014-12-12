@@ -27,4 +27,6 @@ struct pkt_command_payload {
 	unsigned long taskSeq;
 	double taskTime;
 	Matrix4f taskMatrix;
+	int slices;
+	int sliceIdx;
 };
