@@ -282,6 +282,9 @@ void Renderer::renderTask(RenderTask *t) {
 	rect.w = mRenderWidth;
 	rect.h = mRenderHeight / t->getSlices();
 
+	Matrix4f *mat = t->getProjectionMatrix();
+	setCameraProjection(*mat);
+
 	gGame->Update((float)t->getTimeStamp());
 
 	updateViewportForTask(t);

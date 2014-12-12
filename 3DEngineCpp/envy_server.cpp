@@ -218,7 +218,6 @@ DWORD WINAPI TCPHandler(void *args)
 				// We got a task from MC.... 
 				RenderTask *rt = new RenderTask(cmd.taskSeq,cmd.taskTime);
 				rt->setProjectionMatrix(cmd.taskMatrix);
-				
 				rt->setDimensions(SCRN_WIDTH, SCRN_HEIGHT);
 				rt->setSliceIdx(cmd.sliceIdx, cmd.slices);
 
