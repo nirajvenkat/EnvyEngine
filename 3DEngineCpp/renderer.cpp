@@ -87,8 +87,6 @@ void Renderer::renderLoop() {
 			
 			renderTask(curTask);
 
-			
-
 			finishedBitmap = getFrameBuffer((void**)&finishedPixels, &rect);
 
 			unlock();
@@ -251,9 +249,9 @@ Gdiplus::Bitmap *Renderer::getFrameBuffer(void **pixels, SDL_Rect *rect)
 		resultBitmap = new Gdiplus::Bitmap(width, height, width * 4,
 			PixelFormat32bppARGB, frameBufBytes);
 
-		CLSID pngClsid;
-		GetEncoderClsid(L"image/png", &pngClsid);
-		resultBitmap->Save(L"H:\\resultimage1.png", &pngClsid, NULL);
+		// CLSID pngClsid;
+		// GetEncoderClsid(L"image/png", &pngClsid);
+		// resultBitmap->Save(L"H:\\resultimage1.png", &pngClsid, NULL);
 
 		*pixels = frameBufBytes; // Return the pixel buffer
 	}

@@ -47,8 +47,8 @@ BYTE* convertBMP(Bitmap *frame, ULONG uQuality, size_t *finalSize)
 	GetEncoderClsid(L"image/jpeg", &imageCLSID); //Here specify final conversion format (image/png, image/tiff, image/jpeg, etc)
 
 	//If we wanted to save this jpg to disk...
-	LPWSTR filename = (L"H:\\test2.jpg");
-	int iRes = (frame->Save(filename, &imageCLSID, &encoderParams) == Ok);
+	// LPWSTR filename = (L"H:\\test2.jpg");
+	// int iRes = (frame->Save(filename, &imageCLSID, &encoderParams) == Ok);
 
 	IStream *pStream = NULL;
 	LARGE_INTEGER liZero = {};
@@ -80,7 +80,7 @@ BYTE* convertBMP(Bitmap *frame, ULONG uQuality, size_t *finalSize)
 		pStream->Release();
 	}
 
-	delete frame;
+	// delete frame;
 	GdiplusShutdown(gdiplusToken);
 
 	*finalSize = dwBufferSize;
