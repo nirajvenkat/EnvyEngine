@@ -105,3 +105,32 @@ void CoreEngine::Run()
 	}
 }
 
+void CoreEngine::RunMC() {
+		
+	static double lastTime = Time::GetTime();
+	static double unprocessedTime = 0;
+	static double frameCounter = 0;
+	static int frames = 0;
+	double startTime = Time::GetTime();
+	double passedTime = startTime - lastTime;
+	lastTime = startTime;
+
+	unprocessedTime += passedTime;
+	frameCounter += passedTime;
+
+	if(frameCounter >= 1.0)
+	{
+		printf("%i\n",frames);
+		frames = 0;
+		frameCounter = 0;
+	}
+	while(unprocessedTime > m_frameTime)
+	{
+		Input::Update();
+ 		m_game->Input((float)m_frameTime);
+		m_game->Update((float)m_frameTime);
+
+		unprocessedTime -= m_frameTime;
+	}
+
+}

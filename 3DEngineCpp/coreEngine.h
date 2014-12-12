@@ -17,6 +17,8 @@ public:
 	void Stop();
 	
 	inline RenderingEngine* GetRenderingEngine() { return m_renderingEngine; }
+
+	void RunMC();
 protected:
 private:
 	CoreEngine(const CoreEngine& other) {}

@@ -20,6 +20,8 @@
 #include <gdiplus.h>
 #include "bmpconverter.h"
 
+extern Game *gGame;
+
 Renderer *gRenderer;
 SDL_sem *renderSem;
 RenderTask *curTask;
@@ -280,10 +282,13 @@ void Renderer::renderTask(RenderTask *t) {
 	rect.w = mRenderWidth;
 	rect.h = mRenderHeight / t->getSlices();
 
+	gGame->Update((float)t->getTimeStamp());
+
 	updateViewportForTask(t);
 	mEngine->GetRenderingEngine()->Render(&mGame->GetRoot());
-	Window::Render();
+	//gGame->Input((float)t->getTimeStamp());
 
+	Window::Render();
 	bitmap = getFrameBuffer(&pixels, &rect);
 	t->setResultBitmap(bitmap, pixels);
 }

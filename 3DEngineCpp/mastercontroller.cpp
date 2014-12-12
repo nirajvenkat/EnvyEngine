@@ -41,7 +41,7 @@ extern CoreEngine *gEngine;
 #endif
 extern Camera *gCamera;
 
-MasterController::MasterController(int frameRateMax, Game *game) {
+MasterController::MasterController(int frameRateMax, Game *game, CoreEngine *engine) {
 
 	mGame = game;
 	mFrameTime = Time::GetTime();
@@ -53,6 +53,7 @@ MasterController::MasterController(int frameRateMax, Game *game) {
 	mFramePeriod = 1.0 / (double)frameRateMax; // Default to max frame period
 	mMinFramePeriod = mFramePeriod;
 	mLastTaskId = 0;
+	mEngine = engine;
 	
 	gmc = this;
 
@@ -284,7 +285,10 @@ void MasterController::_execute() {
 			debugNodeStatistics();
 		}
 
-		Sleep(pause);
+		
+		mEngine->RunMC();
+
+		Sleep(1.0);
 	}
 }
 // Add a frame to the frame queue (thread-safe).

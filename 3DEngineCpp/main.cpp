@@ -192,13 +192,16 @@ int main(int argc, char **argv)
 
 	MCGame mcGame;
 	MasterController *mc = NULL;
+	CoreEngine *mcEngine;
 
 	// Announce
 	switch (gMode) {
 	case MASTER_CONTROLLER:
+		gGame = &mcGame;
 		fprintf(stderr, "Master controller mode.\n");
 		PlaySound(TEXT("./res/sound/jaz.wav"), NULL, SND_FILENAME | SND_ASYNC);
-		mc = new MasterController(60, &mcGame); // New MC, 60FPS target rate
+		mcEngine =  new CoreEngine(1366, 720, 60, &mcGame);
+		mc = new MasterController(60, &mcGame, mcEngine); // New MC, 60FPS target rate
 		mc->init(1366, 720);
 		break;
 	case RENDER_NODE:

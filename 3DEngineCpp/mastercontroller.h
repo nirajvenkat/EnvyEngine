@@ -26,7 +26,7 @@ class MasterController
 {
 public:
 
-	MasterController(int frameRateMax, class Game *game);
+	MasterController(int frameRateMax, class Game *game, class CoreEngine *engine);
 	virtual ~MasterController();
 	void init(int width, int height);
 	void run();
@@ -59,9 +59,9 @@ private:
 	unsigned int mMaxNodeId;
 	unsigned long mLastTaskId;
 	class Game *mGame;
+	class CoreEngine *mEngine;
 
 	double curTime;
-
 
 
 	// Threading
