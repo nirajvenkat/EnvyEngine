@@ -11,6 +11,8 @@
 
 #define NODE_LATENCY_WINDOW	15
 
+#include "windows.h"
+
 class RenderNode {
 public:
 	RenderNode(unsigned int number);
