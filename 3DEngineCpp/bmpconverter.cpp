@@ -2,6 +2,7 @@
 #include <objidl.h>
 #include <gdiplus.h>
 #include <stdio.h>
+#include <istream>
 
 #pragma comment (lib,"Gdiplus.lib")
 
@@ -86,4 +87,22 @@ BYTE* convertBMP(Bitmap *frame, ULONG uQuality)
 	delete frame;
 	GdiplusShutdown(gdiplusToken);
 	return buffer;
+}
+
+Bitmap* convertJPG(BYTE* jpg, size_t jpg_size)
+{
+	GdiplusStartupInput gdiplusStartupInput;
+	ULONG_PTR gdiplusToken;
+    GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+
+	//TODO: Need to convert JPG stream to BMP format before creating the IStream.
+
+	HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, jpg_size);
+	PVOID pMem = GlobalLock(hMem);
+	RtlMoveMemory(pMem, jpg, jpg_size);
+	IStream *pStream = 0;
+	HRESULT hr = CreateStreamOnHGlobal(hMem, TRUE, &pStream);
+
+	GdiplusShutdown(gdiplusToken);
+    return Bitmap::FromStream(pStream);
 }
