@@ -309,13 +309,12 @@ Frame *Renderer::convertFinishedTaskToFrame(RenderTask *task) {
 	width = bitmap->GetWidth();
 	height = bitmap->GetHeight();
 
-	// The other buffer will be freed after the render task is destroyed.
-	newBuf = malloc(width* height * 4);
-	memcpy(newBuf, pixels, width*height * 4);
-
 	Gdiplus::BitmapData bmd;
+
 	bitmap->LockBits(&Gdiplus::Rect(0, 0, width, height), Gdiplus::ImageLockModeRead,PixelFormat32bppARGB,&bmd);
-	newSurf = SDL_CreateRGBSurfaceFrom(bmd.Scan0, width, height, 32, bmd.Stride, 
+	pixels = malloc(bmd.Stride*height);
+	memcpy(pixels, bmd.Scan0, bmd.Stride*height);
+	newSurf = SDL_CreateRGBSurfaceFrom(pixels, width, height, 32, bmd.Stride, 
 						 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
 	bitmap->UnlockBits(&bmd);
 

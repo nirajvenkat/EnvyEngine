@@ -152,7 +152,7 @@ void RenderNode::receiveResponse() {
 
 				bytesIn = recv(mSocket, (char*)p, bytesIn, 0);
 
-				fprintf(stderr, "Received %d bytes, %d remaining...\n", bytesIn, bytesLeft);
+				//fprintf(stderr, "Received %d bytes, %d remaining...\n", bytesIn, bytesLeft);
 
 				if (bytesIn > 0) {
 					bytesLeft -= bytesIn;
