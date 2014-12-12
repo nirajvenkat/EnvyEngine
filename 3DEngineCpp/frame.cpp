@@ -23,7 +23,7 @@ Frame::Frame(SDL_Rect *rect, float modeltime)
 
 Frame::~Frame() {
 	if (mSurface->pixels){
-		fprintf(stdout,"\n\nFREEING %p\n\n",mSurface->pixels);
+		//fprintf(stdout,"\n\nFREEING %p\n\n",mSurface->pixels);
 		free(mSurface->pixels); // In SDL, if we're responsible for creating the surface from our own bitmap, so we have to dispose of it.
 	}
 	if (mSurface)

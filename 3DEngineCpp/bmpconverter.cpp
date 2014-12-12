@@ -99,15 +99,16 @@ Bitmap* convertJPG(BYTE* jpg, size_t jpg_size)
 	PVOID pMem = GlobalLock(hMem);
 	RtlMoveMemory(pMem, jpg, jpg_size);
 	IStream *pStream = 0;
-	HRESULT hr = CreateStreamOnHGlobal(hMem, TRUE, &pStream);
+	HRESULT hr = CreateStreamOnHGlobal(hMem, FALSE, &pStream);
 
 	uncompressed = Bitmap::FromStream(pStream);
 
-	if (pStream)
+	//THIS IS VERY BAD
+	/*if (pStream)
 	{
 		pStream->Release();
 	}
-	GlobalFree(hMem);
+	GlobalFree(hMem);*/
 
 	GdiplusShutdown(gdiplusToken);
     return uncompressed;
