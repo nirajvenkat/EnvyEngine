@@ -137,7 +137,7 @@ void MasterController::_execute() {
 	Frame *curFrame;
 	std::stack<unsigned int> markedNodes;
 
-	SDL_SemWait(mStartSem);
+	//SDL_SemWait(mStartSem);
 	fprintf(stderr, "Master controller out of wait state.\n");
 
 #ifdef SIMULATE
@@ -371,6 +371,10 @@ void MasterController::unlock() {
 void MasterController::debugNodeStatistics() {
 	std::map<unsigned int, RenderNode*>::iterator it;
 	char latencyText[256];
+
+	if (mNodes.size() < 1)
+		return;
+
 	fprintf(stderr, "Node Statistics: Latency( ");
 	int i = 0;
 	for (it = mNodes.begin(); it != mNodes.end(); ++it) { // iterate over nodes
