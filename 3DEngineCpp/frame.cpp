@@ -6,6 +6,7 @@
 #include "frame.h"
 #include <string.h>
 #include <SDL2/SDL.h>
+#include <stdio.h>
 
 unsigned long Frame::idMax = 1;
 
@@ -21,8 +22,10 @@ Frame::Frame(SDL_Rect *rect, float modeltime)
 }
 
 Frame::~Frame() {
-	if (mSurface->pixels)
+	if (mSurface->pixels){
+		fprintf(stdout,"\n\nFREEING %p\n\n",mSurface->pixels);
 		free(mSurface->pixels); // In SDL, if we're responsible for creating the surface from our own bitmap, so we have to dispose of it.
+	}
 	if (mSurface)
 		SDL_FreeSurface(mSurface); // Free the surface
 	free(this->rect);
