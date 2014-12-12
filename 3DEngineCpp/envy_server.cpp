@@ -352,7 +352,20 @@ void RenderAndSend(SOCKET client, class RenderTask *rt, class Renderer *renderer
 	memcpy(imagePacket->header.timestamp, (char*)&ts, sizeof(double));
 	imagePacket->header.p_length = bufSize;
 
-	send(client, (char*)imagePacket, sizeof(pkt_hdr) + bufSize, 0);
+	int num_sent_bytes = 0;
+	int bytesLeft = bufSize;
+	int bytesOut = 1;
+	while(num_sent_bytes < bufSize && bytesOut > 0)
+	{
+		bytesLeft = bufSize - num_sent_bytes;
+		if (bytesLeft < 4000)
+			bytesOut = 4000;
+		else
+			bytesOut = bytesLeft;
+		bytesOut = send(client, (char*)(imagePacket + num_sent_bytes), bytesOut, 0);
+		if (bytesOut > 0)
+			num_sent_bytes += bytesOut;
+	}
 
 	free(imagePacket);
 }

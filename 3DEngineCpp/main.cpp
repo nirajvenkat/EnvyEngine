@@ -8,6 +8,8 @@
 #include "renderTask.h"
 #include "envy_server.h"
 #include "time.h"
+#include <Mmsystem.h>
+#include <Windows.h>
 
 FrameDriver *gFrameDriver = NULL;
 Camera *gCamera;
@@ -190,6 +192,7 @@ int main(int argc, char **argv)
 	switch (gMode) {
 	case MASTER_CONTROLLER:
 		fprintf(stderr, "Master controller mode.\n");
+		PlaySound(TEXT("jaz.wav"), NULL, SND_FILENAME | SND_ASYNC);
 		mc = new MasterController(60, &mcGame); // New MC, 60FPS target rate
 		mc->init(1366, 720);
 		break;

@@ -14,6 +14,7 @@
 #include "sdl_backend.h"
 #include "coreEngine.h"
 #include "game.h"
+#include "window.h"
 
 Renderer *gRenderer;
 SDL_sem *renderSem;
@@ -260,6 +261,7 @@ void Renderer::renderTask(RenderTask *t) {
 
 	updateViewportForTask(t);
 	mEngine->GetRenderingEngine()->Render(&mGame->GetRoot());
+	Window::Render();
 
 	bitmap = getFrameBuffer(&pixels, &rect);
 	t->setResultBitmap(bitmap, pixels);
