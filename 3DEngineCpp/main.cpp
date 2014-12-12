@@ -15,6 +15,31 @@ MasterMode gMode;
 CoreEngine *gEngine;
 #endif
 
+class MCGame : public Game
+{
+public:
+	MCGame() {}
+	virtual void Init();
+protected:
+private:
+	MCGame(const MCGame& other) {}
+	void operator=(const MCGame& other) {}
+};
+
+void MCGame::Init()
+{
+	GameObject* cameraObject = new GameObject();
+	cameraObject->GetTransform().SetPos(Vector3f(15, 10, 15));
+
+	// Give this camera to the renderer class
+	gCamera = new Camera(Matrix4f().InitPerspective(ToRadians(70.0f), Window::GetAspect(), 0.1f, 1000.0f));
+
+	cameraObject->AddChild((new GameObject())
+		->AddComponent(gCamera)
+		->AddComponent(new FreeLook())
+		->AddComponent(new FreeMove()));
+}
+
 class TestGame : public Game
 {
 public:
@@ -154,13 +179,14 @@ int main(int argc, char **argv)
 	*/
 
 	TestGame game; // For camera position, input.
+	MCGame mcGame;
 	MasterController *mc = NULL;
 
 	// Announce
 	switch (gMode) {
 	case MASTER_CONTROLLER:
 		fprintf(stderr, "Master controller mode.\n");
-		mc = new MasterController(60, &game); // New MC, 60FPS target rate
+		mc = new MasterController(60, &mcGame); // New MC, 60FPS target rate
 		mc->init(1366, 720);
 		break;
 	case RENDER_NODE:
