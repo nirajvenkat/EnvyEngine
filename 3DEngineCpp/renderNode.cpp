@@ -6,6 +6,7 @@
 #include "envy_network.h"
 #include "renderNode.h"
 #include "renderTask.h"
+#include "renderer.h"
 #include "frame.h"
 #include "simulatednode.h"
 #include "time.h"
@@ -118,14 +119,14 @@ void RenderNode::receiveResponse() {
 
 	pkt packet;
 	pkt_payload *payload;
-	size_t bytesIn;
-
-	// Receive response from the network
-	mStatus = Status::LOADING_DATA; // This is set *during* receive
+	int bytesIn;
+	int bytesLeft;
+	size_t totalBytes;
+	char *p;
 
 	// This will be called by a callback (or similar) for when a response is received from a hardware node on the network.
 	bytesIn = recv(mSocket, (char*)&packet, sizeof(pkt_hdr), 0); // block
-	
+
 	// Check header
 	if (packet.header.status == STATUS_OK) {
 		if (packet.header.pkt_type == PKT_TYPE_TASK) {
@@ -134,13 +135,40 @@ void RenderNode::receiveResponse() {
 			int w = mCurrentTask->getWidth();
 			int h = mCurrentTask->getHeight();
 
-			bytesIn = recv(mSocket, payload, packet.header.p_length, 0);
-			fprintf(stderr, "Received %d kb from node %d", bytesIn, this->getNodeId());
+			// Receive response from the network
+			mStatus = Status::LOADING_DATA; // This is set *during* receive
+
+			totalBytes = 0;
+			p = (char*)payload;
+			bytesIn = 1;
+			bytesLeft = packet.header.p_length - 16;
+			while(bytesIn > 0 && bytesLeft > 0) {
+				if (bytesLeft < 4000)
+					bytesIn = bytesLeft;
+				else
+					bytesIn = 4000;
+
+				bytesIn = recv(mSocket, p, bytesIn, 0);
+
+				fprintf(stderr, "Received %d bytes, %d remaining...\n", bytesIn, bytesLeft);
+
+				if (bytesIn > 0) {
+					bytesLeft -= bytesIn;
+					p += bytesIn;
+				}
+			}
+
+			fprintf(stderr, "Received %d kb from node %d", (packet.header.p_length - bytesLeft)/1024, this->getNodeId());
 
 			// Create GDI+ bitmap
 			Gdiplus::Bitmap *bitmap = new Gdiplus::Bitmap(w, h, w * 4,
 				PixelFormat32bppARGB, (BYTE*)payload);
 			mCurrentTask->setResultBitmap(bitmap, payload);
+
+			// Make a new frame
+		    Frame *f = Renderer::convertFinishedTaskToFrame(mCurrentTask);
+			clearTask();
+			setFinishedFrame(f);
 
 			// For after
 			updateResponseTime(); // Update average response time.
