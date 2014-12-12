@@ -74,6 +74,9 @@ int MasterController::_startMCThread(void* mc) {
 // Set up thread, put it in a waiting state.
 void MasterController::init(int width, int height) {
 
+	// Initialize game
+	mGame->Init();
+
 	// Create critical section
 	mTCrit = SDL_CreateMutex();
 	if (mTCrit == NULL) {
@@ -189,8 +192,7 @@ void MasterController::_execute() {
 				RenderTask *curTask = new RenderTask(mLastTaskId++, mFrameTime);
 
 				// Set the projection matrix from the Camera position on the master controller, NOT the nodes
-				
-				
+				Matrix4f matrix = gCamera->GetViewProjection();
 				curTask->setProjectionMatrix(matrix);
 				curTask->setSliceIdx(i, mNodes.size());
 				curTask->setDimensions(mRenderer->getWidth(), mRenderer->getHeight() / mNodes.size());

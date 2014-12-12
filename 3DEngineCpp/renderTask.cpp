@@ -60,6 +60,19 @@ void RenderTask::getResultBitmap(Gdiplus::Bitmap **bitmap, void **pixels) {
 	*pixels = mFramePixels;
 }
 
+void RenderTask::setDimensions(int w, int h) {
+	mWidth = w;
+	mHeight = h;
+}
+
+int RenderTask::getWidth() {
+	return mWidth;
+}
+
+int RenderTask::getHeight() {
+	return mHeight;
+}
+
 unsigned long RenderTask::getSeqNo() {
 	return seqNo;
 }
