@@ -92,14 +92,23 @@ Bitmap* convertJPG(BYTE* jpg, size_t jpg_size)
 	GdiplusStartupInput gdiplusStartupInput;
 	ULONG_PTR gdiplusToken;
     GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+	Bitmap *uncompressed;
 
 	//TODO: Need to convert JPG stream to BMP format before creating the IStream.
 	HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, jpg_size);
 	PVOID pMem = GlobalLock(hMem);
 	RtlMoveMemory(pMem, jpg, jpg_size);
 	IStream *pStream = 0;
-	HRESULT hr = CreateStreamOnHGlobal(hMem, FALSE, &pStream);
-	GdiplusShutdown(gdiplusToken);
+	HRESULT hr = CreateStreamOnHGlobal(hMem, TRUE, &pStream);
 
-    return Bitmap::FromStream(pStream);
+	uncompressed = Bitmap::FromStream(pStream);
+
+	if (pStream)
+	{
+		pStream->Release();
+	}
+	GlobalFree(hMem);
+
+	GdiplusShutdown(gdiplusToken);
+    return uncompressed;
 }

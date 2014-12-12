@@ -174,6 +174,8 @@ void RenderNode::receiveResponse() {
 			// For after
 			updateResponseTime(); // Update average response time.
 			mStatus = Status::RECEIVED_DATA;
+
+			free(payload);
 		}
 	}
 }

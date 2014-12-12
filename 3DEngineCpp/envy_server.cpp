@@ -328,7 +328,6 @@ void RenderAndSend(SOCKET client, class RenderTask *rt, class Renderer *renderer
 	size_t imgSize;
 	SDL_Rect rect;
 	pkt *imagePacket;
-	char *buf;
 
 	rect.x = 0;
 	rect.y = 0;
@@ -367,6 +366,6 @@ void RenderAndSend(SOCKET client, class RenderTask *rt, class Renderer *renderer
 
 	// Free image data
 	delete [] image;
-
 	free(imagePacket);
+	delete rt;
 }
