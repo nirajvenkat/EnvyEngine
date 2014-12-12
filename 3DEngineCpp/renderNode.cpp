@@ -10,6 +10,9 @@
 #include "frame.h"
 #include "simulatednode.h"
 #include "time.h"
+#include <windows.h>
+#include <objidl.h>
+#include <gdiplus.h>
 
 RenderNode::RenderNode(unsigned int number) 
 {
@@ -64,20 +67,68 @@ void RenderNode::assignTask(class RenderTask *task) {
 
 	// Set task start time
 	mLastAssignTime = Time::GetTime();
-	
-#ifdef SIMULATE
-	mSimNode->acceptTask(task);
-#endif
 
 	// TODO: Send task payload over the network
+	unsigned long taskSeq = mCurrentTask->getSeqNo();
+	double taskTime = mCurrentTask->getTimeStamp();
+	Matrix4f taskMatrix;
+
+	memcpy(&taskMatrix, mCurrentTask->getProjectionMatrix(), sizeof(Matrix4f));
+	
+	pkt *commandPacket;
+	pkt_command_payload payload;
+	char tsbuf[8];
+	char packbuf[sizeof(pkt)];
+	htonFloat(tsbuf, taskTime);
+
+	memcpy(&payload.taskMatrix, &taskMatrix, sizeof(taskMatrix));
+	payload.taskSeq = taskSeq;
+	payload.taskTime = taskTime;
+
+	commandPacket = (pkt*)malloc(sizeof(pkt)); // 128 payload size
+	commandPacket->header.pkt_type = PKT_TYPE_TASK;
+	commandPacket->header.status = STATUS_OK;
+	commandPacket->header.p_length = sizeof(pkt_command_payload);
+	memcpy(&commandPacket->header.timestamp, &tsbuf, sizeof(tsbuf));
+	memcpy(&commandPacket->payload.data[0], &payload, sizeof(pkt_command_payload));
+	//htonPacket(*commandPacket, packbuf);
+	send(mSocket, (char*)&commandPacket, sizeof(commandPacket), 0);
+	free(commandPacket);
+
+	//send(mSocket, packbuf, sizeof(packbuf), 0);
 }
 
 void RenderNode::receiveResponse() {
-	// TODO: Receive response from the network
+
+	pkt packet;
+	pkt_payload *payload;
+
+	// Receive response from the network
+	mStatus = Status::LOADING_DATA; // This is set *during* receive
+
 	// This will be called by a callback (or similar) for when a response is received from a hardware node on the network.
-	updateResponseTime(); // Update average response time.
-	//mStatus = Status::RECEIVED_DATA;
-	mStatus = Status::LOADING_DATA;
+	recv(mSocket, (char*)&packet, sizeof(pkt_hdr), 0); // block
+
+	// Check header
+	if (packet.header.status == STATUS_OK) {
+		if (packet.header.pkt_type == PKT_TYPE_TASK) {
+
+			char *payload = (char*)malloc(packet.header.p_length);
+			int w = mCurrentTask->getWidth();
+			int h = mCurrentTask->getHeight();
+
+			recv(mSocket, payload, packet.header.p_length, 0);
+
+			// Create GDI+ bitmap
+			Gdiplus::Bitmap *bitmap = new Gdiplus::Bitmap(w, h, w * 4,
+				PixelFormat32bppARGB, (BYTE*)payload);
+			mCurrentTask->setResultBitmap(bitmap, payload);
+
+			// For after
+			updateResponseTime(); // Update average response time.
+			mStatus = Status::RECEIVED_DATA;
+		}
+	}
 }
 
 void RenderNode::clearTask() {
@@ -115,6 +166,10 @@ RenderNode::Status RenderNode::getStatus() {
 
 float RenderNode::getAvgLatency() {
 	return mResponseRate;
+}
+
+void RenderNode::setSocket(SOCKET sock) {
+	mSocket = sock;
 }
 
 // Computes a moving average of response times with window size equal to NODE_LATENCY_WINDOW.

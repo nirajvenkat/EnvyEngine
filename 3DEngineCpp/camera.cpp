@@ -6,6 +6,7 @@
 // up after the renderer does.
 Matrix4f gSlicedProjection;
 Matrix4f gLastDefaultProjection;
+Matrix4f gTransmitProjection;
 
 Camera::Camera(const Matrix4f& projection) :
 	m_projection(projection) {

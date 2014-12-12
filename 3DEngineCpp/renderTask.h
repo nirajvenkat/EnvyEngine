@@ -30,6 +30,9 @@ public:
 	int getSlices();
 	int getSliceIndex();
 	double getTimeStamp();
+	void setDimensions(int w, int h);
+	int getWidth();
+	int getHeight();
 	void setResultBitmap(Gdiplus::Bitmap *bitmap, void *pixels);
 	void getResultBitmap(Gdiplus::Bitmap **bitmap, void **pixels);
 
@@ -43,6 +46,8 @@ private:
 	unsigned long seqNo;		 // Task sequence number
 	int mSliceIdx;
 	int mSlices;
+	int mWidth;
+	int mHeight;
 	double mTimeStamp;			 // Timestamp
 	// RenderTaskPayload *mPayload; // Actual task payload to be sent over the net.
 

@@ -23,6 +23,7 @@
 #include "game.h"
 #include "camera.h"
 #include "envy_mc_driver.h"
+#include "game.h"
 
 using namespace std;
 // TODO: Network code to wait for incoming real hardware node connections.
@@ -188,9 +189,12 @@ void MasterController::_execute() {
 				RenderTask *curTask = new RenderTask(mLastTaskId++, mFrameTime);
 
 				// Set the projection matrix from the Camera position on the master controller, NOT the nodes
-				// TODO *** curTask->setProjectionMatrix(matrix);
-
+				
+				
+				curTask->setProjectionMatrix(matrix);
 				curTask->setSliceIdx(i, mNodes.size());
+				curTask->setDimensions(mRenderer->getWidth(), mRenderer->getHeight() / mNodes.size());
+
 				mWaitingTasks.insert(curTask);
 			}
 		}

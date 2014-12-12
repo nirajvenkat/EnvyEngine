@@ -248,5 +248,8 @@
     <ClCompile Include="envy_network.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="bmpconverter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

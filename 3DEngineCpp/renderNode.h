@@ -34,6 +34,7 @@ public:
 	int getNodeId();
 	void setNodeInAddr(struct in_addr *addr);
 	void getNodeInAddr(struct in_addr *dest);
+	void setSocket(SOCKET sock);
 	double getLastLatency();
 	float getAvgLatency();
 	void refreshRates();
@@ -59,6 +60,7 @@ private:
 
 	// TODO: NETWORK RELATED ATTRIBUTES
 	struct in_addr *mAddr;
+	SOCKET mSocket;
 
 	// Node stats
 	float mCommandRate;		// Commands per second given by Master Controller to this node.

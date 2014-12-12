@@ -57,6 +57,7 @@
     <ClInclude Include="window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="bmpconverter.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="coreEngine.cpp" />
     <ClCompile Include="envy_mc_driver.cpp" />

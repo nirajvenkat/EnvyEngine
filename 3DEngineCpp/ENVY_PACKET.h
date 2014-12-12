@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "ENVY_CONSTANTS.h"
+#include "math3d.h"
 
 struct pkt_hdr //Packet header
 {
@@ -18,4 +19,10 @@ struct pkt //Packet
 {
 	struct pkt_hdr header;
 	struct pkt_payload payload;
+};
+
+struct pkt_command_payload {
+	unsigned long taskSeq;
+	double taskTime;
+	Matrix4f taskMatrix;
 };

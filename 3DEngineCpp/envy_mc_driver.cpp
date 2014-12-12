@@ -474,8 +474,9 @@ DWORD WINAPI registerThread(LPVOID param){
 
 		RenderNode *newNode = new RenderNode(nextID-1);
 		newNode->setNodeInAddr(&(node.sin_addr));
-		gmc->addNode(newNode);
+		newNode->setSocket(*temp);
 		gmc->lock();
+		gmc->addNode(newNode);
 		gmc->unlock();
 
 		//add stuff to sets
@@ -491,7 +492,6 @@ DWORD WINAPI registerThread(LPVOID param){
 		//rNodes.insert(std::pair<HANDLE, RenderNode*>(thread, new RenderNode(nextID - 1)));
 		rNodesID[thread] = nextID-1;
 	}
-
 }
 
 void enableRegistration(){//creates thread to respond to registration broadcasts
