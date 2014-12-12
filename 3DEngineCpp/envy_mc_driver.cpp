@@ -357,7 +357,9 @@ void sendCommand(){
 DWORD WINAPI responseFunnel(LPVOID param){//create tcp connection and listen for responses
 	//fprintf(stdout, "NEW THREAD\n");
 
-	SOCKET nodeStream = **(SOCKET**)param;
+	//SOCKET nodeStream = **(SOCKET**)param;
+
+	RenderNode * renderNode= (RenderNode*)param;
 	//printf("SOCKET: %d\n",nodeStream);
 	//int node = rNodes.at(GetCurrentThread())->getNodeId();
 	//rNodes.at(GetCurrentThread());
@@ -367,7 +369,7 @@ DWORD WINAPI responseFunnel(LPVOID param){//create tcp connection and listen for
 	//fprintf(stdout,"GETTING INPUT\n");
 	//sendCommand(nodeStream);
 	while (true){
-			//getResponse();
+		renderNode->receiveResponse();
 	}
 	return 0;
 }
@@ -465,17 +467,19 @@ DWORD WINAPI registerThread(LPVOID param){
 		
 		sendAck(*temp);
 		
-		//create new thread
-		DWORD id;
-		HANDLE thread;
-		thread = CreateThread(0, 0, responseFunnel, &temp, 0, &id);
-
 		RenderNode *newNode = new RenderNode(nextID-1);
 		newNode->setNodeInAddr(&(node.sin_addr));
 		newNode->setSocket(*temp);
 		gmc->lock();
 		gmc->addNode(newNode);
 		gmc->unlock();
+		
+		//create new thread
+		DWORD id;
+		HANDLE thread;
+		thread = CreateThread(0, 0, responseFunnel, newNode, 0, &id);
+
+		
 
 		//add stuff to sets
 		int addr=node.sin_addr.s_addr;
